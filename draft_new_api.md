@@ -7,6 +7,7 @@ This is a draft for the new v3 API design of Box CLI Maker which improves the ol
 - Uses idomatic Go coding style
 - Easier to use
 - Better support for terminals
+- Remove `interface{}` for Color Types. Allow only string.
 
 The API design is inspired from [charmbracelet/huh](https://github.com/charmbracelet/huh) and [charmbracelet/lipgloss](https://github.com/charmbracelet/lipgloss).
 
@@ -33,6 +34,85 @@ b := box.NewBox().
         Color("Cyan")
 
 if boxStr, err := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker"); err == nil {
+    fmt.Println(boxStr)
+}
+```
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+```go
+config := box.Config{Px: 2, Py: 3, Type: "", TitlePos: "Inside", Color: "Green"}
+boxNew := box.Box{TopRight: "*", TopLeft: "*", BottomRight: "*", BottomLeft: "*", Horizontal: "-", Vertical: "|", Config: config}
+boxNew.Println("Box CLI Maker", "Make Highly Customized Terminal Boxes")
+```
+
+</td>
+<td>
+
+```go
+b := box.NewBox().
+        Width(2).
+        Height(3).
+        TitlePositon("Inside").
+        Color("Green").
+        TopRight("*").
+        TopLeft("*").
+        BottomRight("*").
+        BottomLeft("*").
+        Horizontal("-").
+        Vertical("|")
+
+// Even the below will work
+
+b = box.Box{TopRight: "*", TopLeft: "*", BottomRight: "*", BottomLeft: "*", Horizontal: "-", Vertical: "|"}
+b = b.Width(2).
+    Height(3).
+    TitlePositon("Inside").
+    Color("Green")
+
+if boxStr, err := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker"); err == nil {
+    fmt.Println(boxStr)
+}
+```
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+```go
+bx := box.New(box.Config{
+		Px:            2,
+		Py:            0,
+		Type:          "Single",
+		Color:         "Green",
+		TitlePos:      "Top",
+		AllowWrapping: true,
+		WrappingLimit: num,
+	})
+	bx.Println("Content Wrappingg works!", strings.Repeat(" Box CLI Maker 盒子製 造商,📦 ", 160))
+```
+
+</td>
+<td>
+
+```go
+b := box.NewBox().
+        Width(2).
+        Height(0).
+        Type("Single").
+        Color("Green").
+        TitlePosition("Top").
+        AllowWrapping(true).
+        WrappingLimit(num)
+
+
+if boxStr, err := b.Render("Content Wrappingg works!", strings.Repeat(" Box CLI Maker 盒子製 造商,📦 ", 160)); err == nil {
     fmt.Println(boxStr)
 }
 ```
