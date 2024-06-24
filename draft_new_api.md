@@ -8,6 +8,7 @@ This is a draft for the new v3 API design of Box CLI Maker which improves the ol
 - Easier to use
 - Better support for terminals
 - Remove `interface{}` for Color Types. Allow only string.
+- Remove untyped strings for Box Types and Title Position and use imported named strings.
 
 The API design is inspired from [charmbracelet/huh](https://github.com/charmbracelet/huh) and [charmbracelet/lipgloss](https://github.com/charmbracelet/lipgloss).
 
@@ -30,7 +31,7 @@ Box.Print("Box CLI Maker", "Highly Customized Terminal Box Maker")
 b := box.NewBox().
         Width(2).
         Height(5).
-        Type("Single").
+        Type(box.Single).
         Color("Cyan")
 
 if boxStr, err := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker"); err == nil {
@@ -57,7 +58,7 @@ boxNew.Println("Box CLI Maker", "Make Highly Customized Terminal Boxes")
 b := box.NewBox().
         Width(2).
         Height(3).
-        TitlePositon("Inside").
+        TitlePositon(box.Inside).
         Color("Green").
         TopRight("*").
         TopLeft("*").
@@ -71,7 +72,7 @@ b := box.NewBox().
 b = box.Box{TopRight: "*", TopLeft: "*", BottomRight: "*", BottomLeft: "*", Horizontal: "-", Vertical: "|"}
 b = b.Width(2).
     Height(3).
-    TitlePositon("Inside").
+    TitlePositon(box.Inside).
     Color("Green")
 
 if boxStr, err := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker"); err == nil {
@@ -105,9 +106,9 @@ bx := box.New(box.Config{
 b := box.NewBox().
         Width(2).
         Height(0).
-        Type("Single").
+        Type(box.Single).
         Color("Green").
-        TitlePosition("Top").
+        TitlePosition(box.Inside).
         AllowWrapping(true).
         WrappingLimit(num)
 
