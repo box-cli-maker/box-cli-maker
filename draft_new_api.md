@@ -1,6 +1,8 @@
-# V3 Design
+# v3 release plans
 
-This is a draft for the new v3 API design of Box CLI Maker which improves the old API design and solves.
+This is a draft for the new v3 API design of Box CLI Maker which improves the old API design and lays down a roadmap for the release.
+
+The API design is inspired from [charmbracelet/huh](https://github.com/charmbracelet/huh), [charmbracelet/glamour](https://github.com/charmbracelet/glamour) and [charmbracelet/lipgloss](https://github.com/charmbracelet/lipgloss).
 
 - User level error handling
 - No more unecessary printing errors
@@ -9,8 +11,11 @@ This is a draft for the new v3 API design of Box CLI Maker which improves the ol
 - Better support for terminals
 - Remove `interface{}` for Color Types. Allow only string.
 - Remove untyped strings for Box Types and Title Position and use imported named strings.
-
-The API design is inspired from [charmbracelet/huh](https://github.com/charmbracelet/huh) and [charmbracelet/lipgloss](https://github.com/charmbracelet/lipgloss).
+- Add more inbuilt Box styles.
+- Remove manual color detection and rounding off code and use an external library.
+- Decrease the number of dependencies.
+- Use [charmbracelet/vhs](https://github.com/charmbracelet/vhs) to record demos.
+- Shift to a GitHub organization and start an Open Collective
 
 <table>
 
@@ -34,9 +39,10 @@ b := box.NewBox().
         Type(box.Single).
         Color("Cyan")
 
-if boxStr, err := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker"); err == nil {
-    fmt.Println(boxStr)
-}
+// Ignore error if Box rendering is possible
+boxStr, _ := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker") 
+fmt.Println(boxStr)
+
 ```
 
 </td>
@@ -75,9 +81,9 @@ b = b.Width(2).
     TitlePositon(box.Inside).
     Color("Green")
 
-if boxStr, err := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker"); err == nil {
-    fmt.Println(boxStr)
-}
+// Ignore error if Box rendering is possible
+boxStr, _ := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker") 
+fmt.Println(boxStr)
 ```
 
 </td>
@@ -95,6 +101,7 @@ bx := box.New(box.Config{
 		TitlePos:      "Top",
 		AllowWrapping: true,
 		WrappingLimit: num,
+        ContentColor: "Red",
 	})
 	bx.Println("Content Wrappingg works!", strings.Repeat(" Box CLI Maker 盒子製 造商,📦 ", 160))
 ```
@@ -110,12 +117,13 @@ b := box.NewBox().
         Color("Green").
         TitlePosition(box.Inside).
         AllowWrapping(true).
-        WrappingLimit(num)
+        WrappingLimit(num).
+        ContentColor("Red")
 
 
-if boxStr, err := b.Render("Content Wrappingg works!", strings.Repeat(" Box CLI Maker 盒子製 造商,📦 ", 160)); err == nil {
-    fmt.Println(boxStr)
-}
+// Ignore error if Box rendering is possible
+boxStr, _ := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker") 
+fmt.Println(boxStr)
 ```
 
 </td>
