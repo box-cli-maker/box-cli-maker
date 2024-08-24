@@ -66,12 +66,12 @@ b := box.NewBox().
         Height(3).
         TitlePositon(box.Inside).
         Color("Green").
-        TopRight("*").
-        TopLeft("*").
-        BottomRight("*").
-        BottomLeft("*").
-        Horizontal("-").
-        Vertical("|")
+        SetTopRight("*").
+        SetTopLeft("*").
+        SetBottomRight("*").
+        SetBottomLeft("*").
+        SetHorizontal("-").
+        SetVertical("|")
 
 // Even the below will work
 
@@ -101,7 +101,7 @@ bx := box.New(box.Config{
 		TitlePos:      "Top",
 		AllowWrapping: true,
 		WrappingLimit: num,
-        ContentColor: "Red",
+                ContentColor: "Red",
 	})
 	bx.Println("Content Wrappingg works!", strings.Repeat(" Box CLI Maker 盒子製 造商,📦 ", 160))
 ```

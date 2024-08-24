@@ -1,5 +1,7 @@
 package box
 
+import "github.com/muesli/termenv"
+
 type BoxStyle string
 type AlignType string
 type TitlePosition string
@@ -28,77 +30,80 @@ const (
 	Bottom TitlePosition = "Bottom"
 )
 
-var boxes map[BoxStyle]Box = map[BoxStyle]Box{
-	Single: {
-		TopRight:    "┐",
-		TopLeft:     "┌",
-		BottomRight: "┘",
-		BottomLeft:  "└",
-		Horizontal:  "─",
-		Vertical:    "│",
-	},
-	Douuble: {
-		TopRight:    "╗",
-		TopLeft:     "╔",
-		BottomRight: "╝",
-		BottomLeft:  "╚",
-		Horizontal:  "═",
-		Vertical:    "║",
-	},
-	Round: {
-		TopRight:    "╮",
-		TopLeft:     "╭",
-		BottomRight: "╯",
-		BottomLeft:  "╰",
-		Horizontal:  "─",
-		Vertical:    "│",
-	},
-	Bold: {
-		TopRight:    "┓",
-		TopLeft:     "┏",
-		BottomRight: "┛",
-		BottomLeft:  "┗",
-		Horizontal:  "━",
-		Vertical:    "┃",
-	},
-	SingleDouble: {
-		TopRight:    "╖",
-		TopLeft:     "╓",
-		BottomRight: "╜",
-		BottomLeft:  "╙",
-		Horizontal:  "─",
-		Vertical:    "║",
-	},
-	DoubleSingle: {
-		TopRight:    "╕",
-		TopLeft:     "╒",
-		BottomRight: "╛",
-		BottomLeft:  "╘",
-		Horizontal:  "═",
-		Vertical:    "│",
-	},
-	Classic: {
-		TopRight:    "+",
-		TopLeft:     "+",
-		BottomRight: "+",
-		BottomLeft:  "+",
-		Horizontal:  "-",
-		Vertical:    "|",
-	},
-	Hidden: {
-		TopRight:    "+",
-		TopLeft:     "+",
-		BottomRight: "+",
-		BottomLeft:  "+",
-		Horizontal:  " ",
-		Vertical:    " ",
-	},
-	Block: {
-		TopRight:    "█",
-		TopLeft:     "█",
-		BottomRight: "█",
-		BottomLeft:  "█",
-		Horizontal:  "█",
-		Vertical:    "█",
-	},
-}
+var (
+	boxes map[BoxStyle]Box = map[BoxStyle]Box{
+		Single: {
+			TopRight:    "┐",
+			TopLeft:     "┌",
+			BottomRight: "┘",
+			BottomLeft:  "└",
+			Horizontal:  "─",
+			Vertical:    "│",
+		},
+		Douuble: {
+			TopRight:    "╗",
+			TopLeft:     "╔",
+			BottomRight: "╝",
+			BottomLeft:  "╚",
+			Horizontal:  "═",
+			Vertical:    "║",
+		},
+		Round: {
+			TopRight:    "╮",
+			TopLeft:     "╭",
+			BottomRight: "╯",
+			BottomLeft:  "╰",
+			Horizontal:  "─",
+			Vertical:    "│",
+		},
+		Bold: {
+			TopRight:    "┓",
+			TopLeft:     "┏",
+			BottomRight: "┛",
+			BottomLeft:  "┗",
+			Horizontal:  "━",
+			Vertical:    "┃",
+		},
+		SingleDouble: {
+			TopRight:    "╖",
+			TopLeft:     "╓",
+			BottomRight: "╜",
+			BottomLeft:  "╙",
+			Horizontal:  "─",
+			Vertical:    "║",
+		},
+		DoubleSingle: {
+			TopRight:    "╕",
+			TopLeft:     "╒",
+			BottomRight: "╛",
+			BottomLeft:  "╘",
+			Horizontal:  "═",
+			Vertical:    "│",
+		},
+		Classic: {
+			TopRight:    "+",
+			TopLeft:     "+",
+			BottomRight: "+",
+			BottomLeft:  "+",
+			Horizontal:  "-",
+			Vertical:    "|",
+		},
+		Hidden: {
+			TopRight:    "+",
+			TopLeft:     "+",
+			BottomRight: "+",
+			BottomLeft:  "+",
+			Horizontal:  " ",
+			Vertical:    " ",
+		},
+		Block: {
+			TopRight:    "█",
+			TopLeft:     "█",
+			BottomRight: "█",
+			BottomLeft:  "█",
+			Horizontal:  "█",
+			Vertical:    "█",
+		},
+	}
+	env = termenv.EnvColorProfile()
+)

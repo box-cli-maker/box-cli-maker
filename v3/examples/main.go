@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	bx := box.NewBox().Width(12).Height(14)
-	b, _ := bx.Render("Box CLI Maker", "Make")
+	bx := box.NewBox().Width(0).Height(0).Color("#26552e")
+	b, _ := bx.Render("Box CLI Maker", "Make Highly Customizable Boxes for CLI")
 	fmt.Println(b)
 }
