@@ -15,9 +15,16 @@ type expandedLine struct {
 }
 
 // addVertPadding adds Vertical Padding
-func (b *Box) addVertPadding(len int) []string {
-	padding := strings.Repeat(" ", len-2)
-	vertical := b.applyColor(b.Vertical, b.color)
+func (b *Box) addVertPadding(len int, bar string) []string {
+	//fmt.Println(len, runewidth.StringWidth(bar))
+
+	var diff int
+	if runewidth.StringWidth(color.ClearCode(bar)) > len {
+		diff = runewidth.StringWidth(color.ClearCode(bar)) - len
+	}
+
+	padding := strings.Repeat(" ", len-2+diff)
+	vertical := applyColor(b.Vertical, b.color)
 
 	texts := make([]string, b.py)
 	for i := range texts {
@@ -62,7 +69,7 @@ func longestLine(lines []string) (int, []expandedLine) {
 }
 
 // formatLine formats the line according to the information passed
-func (b *Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideMargin, title string, texts []string) []string {
+func (b *Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideMargin, title, bar string, texts []string) []string {
 	for i, line := range lines2 {
 		length := line.len
 
@@ -77,8 +84,15 @@ func (b *Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideM
 		// If current text is shorter than the longest one
 		// center the text, so it looks better
 		if length < longestLine {
+			//fmt.Println(runewidth.StringWidth(color.ClearCode(bar)) - longestLine)
 			// Difference between longest and current one
 			diff := longestLine - length
+
+			// If the bar length is more than the longestLine
+			// get the half of the diff to align
+			if runewidth.StringWidth(color.ClearCode(bar)) > longestLine {
+				diff += (runewidth.StringWidth(color.ClearCode(bar)) - longestLine) / 2
+			}
 
 			// the spaces to add on each side
 			toAdd := diff / 2
@@ -90,20 +104,25 @@ func (b *Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideM
 				oddSpace = " "
 			}
 		}
+		if runewidth.StringWidth(color.ClearCode(bar)) > longestLine && longestLine-length == 0 {
+			fmt.Println("diff", longestLine-length)
+			fmt.Println("here", runewidth.StringWidth(color.ClearCode(bar))-longestLine/2)
+		}
 
 		spacing := strings.Join([]string{space, sideMargin}, "")
 		var format AlignType
 
 		switch {
 		case i < titleLen && title != "" && b.titlePos == Inside:
-			format = AlignType(centerAlign)
+			format = centerAlign
 		default:
 			format = AlignType(b.findAlign())
 		}
 
-		sep := b.applyColor(b.Vertical, b.color)
+		sep := applyColor(b.Vertical, b.color)
 
 		formatted := fmt.Sprintf(string(format), sep, spacing, line.line, oddSpace, space, sideMargin)
+		fmt.Println(len(formatted))
 		texts = append(texts, formatted)
 	}
 	return texts
@@ -130,7 +149,31 @@ func repeatWithString(c string, n int, str string) string {
 	return fmt.Sprintf(" %s %s", str, bar)
 }
 
-func (b *Box) applyColor(str string, color string) string {
+func applyColor(str string, color string) string {
 	o := env.String(str)
 	return o.Foreground(env.Color(color)).String()
+}
+
+func (b *Box) applyColorBar(topBar, bottomBar, title string) (string, string) {
+	if b.titleColor != "" {
+		if b.titlePos == Top {
+			bar_ := strings.Split(color.ClearCode(topBar), color.ClearCode(title))
+
+			b0 := env.String(bar_[0]).Foreground(env.Color(b.color)).String()
+			b1 := env.String(bar_[1]).Foreground(env.Color(b.color)).String()
+
+			topBar = b0 + applyColor(title, b.titleColor) + b1
+		}
+
+		if b.titlePos == Bottom {
+			bar_ := strings.Split(color.ClearCode(bottomBar), color.ClearCode(title))
+
+			b0 := env.String(bar_[0]).Foreground(env.Color(b.color)).String()
+			b1 := env.String(bar_[1]).Foreground(env.Color(b.color)).String()
+
+			bottomBar = b0 + applyColor(title, b.titleColor) + b1
+		}
+	}
+
+	return topBar, bottomBar
 }

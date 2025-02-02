@@ -8,7 +8,7 @@ type TitlePosition string
 
 const (
 	Single       BoxStyle = "Single"
-	Douuble      BoxStyle = "Double"
+	Double       BoxStyle = "Double"
 	Round        BoxStyle = "Round"
 	Bold         BoxStyle = "Bold"
 	SingleDouble BoxStyle = "SingleDouble"
@@ -31,7 +31,7 @@ const (
 )
 
 var (
-	boxes map[BoxStyle]Box = map[BoxStyle]Box{
+	boxes = map[BoxStyle]Box{
 		Single: {
 			TopRight:    "┐",
 			TopLeft:     "┌",
@@ -40,7 +40,7 @@ var (
 			Horizontal:  "─",
 			Vertical:    "│",
 		},
-		Douuble: {
+		Double: {
 			TopRight:    "╗",
 			TopLeft:     "╔",
 			BottomRight: "╝",

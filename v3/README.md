@@ -5,8 +5,8 @@ This is a draft for the new v3 API design of Box CLI Maker which improves the ol
 The API design is inspired from [charmbracelet/huh](https://github.com/charmbracelet/huh), [charmbracelet/glamour](https://github.com/charmbracelet/glamour) and [charmbracelet/lipgloss](https://github.com/charmbracelet/lipgloss).
 
 - User level error handling
-- No more unecessary printing errors
-- Uses idomatic Go coding style
+- No more necessary printing errors
+- Uses idiomatic Go coding style
 - Easier to use
 - Better support for terminals
 - Remove `interface{}` for Color Types. Allow only string.
@@ -78,7 +78,7 @@ b := box.NewBox().
 b = box.Box{TopRight: "*", TopLeft: "*", BottomRight: "*", BottomLeft: "*", Horizontal: "-", Vertical: "|"}
 b = b.Width(2).
     Height(3).
-    TitlePositon(box.Inside).
+    TitlePosition(box.Inside).
     Color("Green")
 
 // Ignore error if Box rendering is possible

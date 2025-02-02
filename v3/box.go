@@ -46,7 +46,7 @@ type config struct {
 }
 
 func NewBox() *Box {
-	return &Box{config: config{style: Single}}
+	return &Box{config: config{style: Single, styleSet: false}}
 }
 
 func (b *Box) Width(width int) *Box {
@@ -110,10 +110,17 @@ func (b *Box) Color(color string) *Box {
 	return b
 }
 
+func (b *Box) TitlePosition(pos TitlePosition) *Box {
+	b.titlePos = pos
+	return b
+}
+
 func (b *Box) Render(title, content string) (string, error) {
 	style, ok := boxes[b.config.style]
-	b = b.SetBottomLeft(style.BottomLeft).SetBottomRight(style.BottomRight).SetTopLeft(style.TopLeft).SetTopRight(style.TopRight).SetHorizontal(style.Horizontal).SetVertical(style.Vertical)
 
+	if ok && b.styleSet {
+		b.SetBottomLeft(style.BottomLeft).SetBottomRight(style.BottomRight).SetTopLeft(style.TopLeft).SetTopRight(style.TopRight).SetHorizontal(style.Horizontal).SetVertical(style.Vertical)
+	}
 	if !ok && b.styleSet {
 		return "", fmt.Errorf("invalid Box type")
 	}
@@ -134,6 +141,9 @@ func (b *Box) Render(title, content string) (string, error) {
 			content = wordwrap.String(content, 2*width/3)
 		}
 	}
+
+	title = applyColor(title, b.titleColor)
+	content = applyColor(content, b.contentColor)
 
 	if b.titlePos == "" {
 		b.titlePos = Inside
@@ -183,28 +193,29 @@ func (b *Box) Render(title, content string) (string, error) {
 			TopBar = b.TopLeft + TitleBar + b.TopRight
 		case Bottom:
 			BottomBar = b.BottomLeft + TitleBar + b.BottomRight
+		default:
+			return "", fmt.Errorf("invalid TitlePos provided")
 		}
 	}
+	TopBar, BottomBar = applyColor(TopBar, b.color), applyColor(BottomBar, b.color)
+
 	// Check type of b.Color then assign the Colors to TopBar and BottomBar accordingly
 	// If title has tabs then expand them accordingly.
-	/*if strings.Contains(title, "\t") {
-		TopBar, BottomBar = b.checkColorType(TopBar, BottomBar, xstrings.ExpandTabs(title, 4))
+	if strings.Contains(title, "\t") {
+		TopBar, BottomBar = b.applyColorBar(TopBar, BottomBar, xstrings.ExpandTabs(title, 4))
 	} else {
-		TopBar, BottomBar = b.checkColorType(TopBar, BottomBar, title)
+		TopBar, BottomBar = b.applyColorBar(TopBar, BottomBar, title)
 	}
-	*/
-
-	TopBar, BottomBar = b.applyColor(TopBar, b.color), b.applyColor(BottomBar, b.color)
 
 	if b.titlePos == Inside && runewidth.StringWidth(TopBar) != runewidth.StringWidth(BottomBar) {
 		return "", fmt.Errorf("cannot create a Box with different sizes of Top and Bottom Bars")
 	}
 
 	// Create lines to print
-	texts := b.addVertPadding(n)
-	texts = b.formatLine(lines2, _longestLine, titleLen, sideMargin, title, texts)
-	vertpadding := b.addVertPadding(n)
-	texts = append(texts, vertpadding...)
+	texts := b.addVertPadding(n, TopBar)
+	texts = b.formatLine(lines2, _longestLine, titleLen, sideMargin, title, TopBar, texts)
+	vertPadding := b.addVertPadding(n, TopBar)
+	texts = append(texts, vertPadding...)
 
 	// Using strings.Builder is more efficient and faster
 	// than concatenating 6 times
