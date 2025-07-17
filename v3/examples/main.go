@@ -7,20 +7,20 @@ import (
 )
 
 func main() {
-	bx := box.NewBox().Width(0).Height(0).Color("#26552e").TitlePosition(box.Top).Style(box.Single).TitleColor("#427ef5").ContentColor("#f5b342")
-	b, _ := bx.Render("Box CLI Maker", "Make Highly Customizable \tBoxes for CLI")
+	bx := box.NewBox().Width(12).Height(15).Color("#26552e").TitlePosition(box.Top).Style(box.Single).TitleColor("#427ef5").ContentColor("#f5b342")
+	b, _ := bx.Render("Box CLI Maker", "Make Highly Customizable Boxes for CLI in Go")
 	fmt.Println(b)
 
-	by := box.NewBox().
-		Width(2).
-		Height(3).TitlePosition(box.Inside).
-		SetTopRight("xyxy").
-		SetTopLeft("xyxy").
-		SetBottomRight("xyxy").
-		SetBottomLeft("xyxy").
-		SetHorizontal("-").
-		SetVertical("|")
+	// by := box.NewBox().
+	// 	Width(10).
+	// 	Height(5).TitlePosition(box.Inside).
+	// 	SetTopRight("xyxy").
+	// 	SetTopLeft("xyxt").
+	// 	SetBottomRight("xyxt").
+	// 	SetBottomLeft("xyxy").
+	// 	SetHorizontal("-").
+	// 	SetVertical("|")
 
-	b, _ = by.Render("Box CLI Maker", "Another custom box type")
-	fmt.Println(b)
+	// b, _ = by.Render("Box CLI Maker", "Another custom box type")
+	// fmt.Println(b)
 }

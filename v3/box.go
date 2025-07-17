@@ -119,7 +119,12 @@ func (b *Box) Render(title, content string) (string, error) {
 	style, ok := boxes[b.config.style]
 
 	if ok && b.styleSet {
-		b.SetBottomLeft(style.BottomLeft).SetBottomRight(style.BottomRight).SetTopLeft(style.TopLeft).SetTopRight(style.TopRight).SetHorizontal(style.Horizontal).SetVertical(style.Vertical)
+		b.SetBottomLeft(style.BottomLeft).
+			SetBottomRight(style.BottomRight).
+			SetTopLeft(style.TopLeft).
+			SetTopRight(style.TopRight).
+			SetHorizontal(style.Horizontal).
+			SetVertical(style.Vertical)
 	}
 	if !ok && b.styleSet {
 		return "", fmt.Errorf("invalid Box type")
