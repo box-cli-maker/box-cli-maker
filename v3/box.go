@@ -5,11 +5,11 @@ import (
 	"os"
 	"strings"
 
+	"github.com/charmbracelet/x/ansi"
+	"github.com/charmbracelet/x/term"
 	"github.com/gookit/color"
 	"github.com/huandu/xstrings"
 	"github.com/mattn/go-runewidth"
-	"github.com/muesli/reflow/wordwrap"
-	"golang.org/x/term"
 )
 
 const (
@@ -46,7 +46,7 @@ type config struct {
 }
 
 func NewBox() *Box {
-	return &Box{config: config{style: Single, styleSet: false}}
+	return &Box{config: config{style: Single}}
 }
 
 func (b *Box) Width(width int) *Box {
@@ -115,6 +115,11 @@ func (b *Box) TitlePosition(pos TitlePosition) *Box {
 	return b
 }
 
+func (b *Box) AllowWrapping(allow bool) *Box {
+	b.allowWrapping = allow
+	return b
+}
+
 func (b *Box) Render(title, content string) (string, error) {
 	style, ok := boxes[b.config.style]
 
@@ -137,13 +142,13 @@ func (b *Box) Render(title, content string) (string, error) {
 		// If limit not provided then use 2*TermWidth/3 as limit else
 		// use the one provided
 		if b.wrappingLimit != 0 {
-			content = wordwrap.String(content, b.wrappingLimit)
+			content = ansi.Wrap(content, b.wrappingLimit, "")
 		} else {
-			width, _, err := term.GetSize(int(os.Stdout.Fd()))
+			width, _, err := term.GetSize(os.Stdout.Fd())
 			if err != nil {
 				return "", fmt.Errorf("cannot get terminal size from the output")
 			}
-			content = wordwrap.String(content, 2*width/3)
+			content = ansi.Wrap(content, 2*width/3, "")
 		}
 	}
 
@@ -174,7 +179,7 @@ func (b *Box) Render(title, content string) (string, error) {
 
 	n := _longestLine + (paddingCount * 2) + 2
 
-	if b.titlePos != Inside && runewidth.StringWidth(color.ClearCode(title)) > n-2 {
+	if b.titlePos != Inside && runewidth.StringWidth(ansi.Strip(title)) > n-2 {
 		return "", fmt.Errorf("title must be shorter than the Top and Bottom Bars")
 	}
 
@@ -217,9 +222,9 @@ func (b *Box) Render(title, content string) (string, error) {
 	}
 
 	// Create lines to print
-	texts := b.addVertPadding(n, TopBar)
-	texts = b.formatLine(lines2, _longestLine, titleLen, sideMargin, title, TopBar, texts)
-	vertPadding := b.addVertPadding(n, TopBar)
+	texts := b.addVertPadding(n)
+	texts = b.formatLine(lines2, _longestLine, titleLen, sideMargin, title, texts)
+	vertPadding := b.addVertPadding(n)
 	texts = append(texts, vertPadding...)
 
 	// Using strings.Builder is more efficient and faster

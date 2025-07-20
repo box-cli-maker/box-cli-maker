@@ -3,8 +3,6 @@ package box
 import "github.com/muesli/termenv"
 
 type BoxStyle string
-type AlignType string
-type TitlePosition string
 
 const (
 	Single       BoxStyle = "Single"
@@ -18,11 +16,15 @@ const (
 	Block        BoxStyle = "Block"
 )
 
+type AlignType string
+
 const (
 	Center AlignType = "Center"
 	Left   AlignType = "Left"
 	Right  AlignType = "Right"
 )
+
+type TitlePosition string
 
 const (
 	Inside TitlePosition = "Inside"

@@ -2,7 +2,6 @@ package box
 
 import (
 	"fmt"
-	"sync"
 
 	"strings"
 
@@ -268,39 +267,18 @@ func (b Box) applyColorToAll(lines, color string, col color.RGBColor, isCustom b
 	// Check if Color provided is Custom i.e. [3]uint or uint type
 	if isCustom {
 		contents := strings.Split(lines, "\n")
-		var wg sync.WaitGroup
-		var mu sync.Mutex
-
 		var line []string
 		for _, str1 := range contents {
-			wg.Add(1)
-			go func(str string) {
-				defer wg.Done()
-				styleLine := addStylePreservingOriginalFormat(str, col.Sprint)
-				mu.Lock()
-				line = append(line, b.roundOffTitleColor(col, styleLine))
-				mu.Unlock()
-			}(str1)
+			styleLine := addStylePreservingOriginalFormat(str1, col.Sprint)
+			line = append(line, b.roundOffTitleColor(col, styleLine))
 		}
-		wg.Wait()
 		return strings.Join(line, "\n")
 	}
-
 	contents := strings.Split(lines, "\n")
-	var wg sync.WaitGroup
-	var mu sync.Mutex
-
 	var line []string
 	for _, str1 := range contents {
-		wg.Add(1)
-		go func(str string) {
-			defer wg.Done()
-			styleLine := addStylePreservingOriginalFormat(str, fgColors[color].Sprint)
-			mu.Lock()
-			line = append(line, styleLine)
-			mu.Unlock()
-		}(str1)
+		styleLine := addStylePreservingOriginalFormat(str1, fgColors[color].Sprint)
+		line = append(line, styleLine)
 	}
-	wg.Wait()
 	return strings.Join(line, "\n")
 }

@@ -3,7 +3,7 @@ package main
 import "github.com/Delta456/box-cli-maker/v2"
 
 func main() {
-	Box := box.New(box.Config{Px: 2, Py: 5, Type: "Single", Color: "Cyan", ContentColor: "Green"})
+	Box := box.New(box.Config{Px: 2, Py: 5, Type: "Single"})
 	// All ANSI Art may not fit inside the box as they can exceed the terminal width
 	Box.Print("", `
 	__________                 _________  .____     .___     _____            __                   
