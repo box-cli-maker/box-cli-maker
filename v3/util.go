@@ -2,6 +2,7 @@ package box
 
 import (
 	"fmt"
+	"image/color"
 	"strings"
 
 	"github.com/charmbracelet/x/ansi"
@@ -16,13 +17,6 @@ type expandedLine struct {
 
 // addVertPadding adds Vertical Padding
 func (b *Box) addVertPadding(len int) []string {
-	//fmt.Println(len, runewidth.StringWidth(bar))
-
-	//var diff int
-	// if runewidth.StringWidth(ansi.Strip(bar)) > len {
-	// 	diff = runewidth.StringWidth(ansi.Strip(bar)) - len
-	// }
-
 	padding := strings.Repeat(" ", len-2)
 	vertical := applyColor(b.Vertical, b.color)
 
@@ -137,51 +131,44 @@ func repeatWithString(c string, n int, str string) string {
 	return fmt.Sprintf(" %s %s", str, bar)
 }
 
-func applyColor(str string, color string) string {
-	o := env.String(str)
-	return o.Foreground(env.Color(stringColorToHex(color))).String()
+func applyColor(str string, colorStr string) string {
+	colorValue := parseColorString(colorStr)
+	convertedColor := profile.Convert(colorValue)
+	return applyConvertedColor(str, convertedColor)
 }
 
-func stringColorToHex(color string) string {
-	switch color {
-	// Basic ANSI colors (0-7)
-	case "Black":
-		color = "#000000"
-	case "Red":
-		color = "#800000"
-	case "Green":
-		color = "#008000"
-	case "Yellow":
-		color = "#808000"
-	case "Blue":
-		color = "#000080"
-	case "Magenta":
-		color = "#800080"
-	case "Cyan":
-		color = "#008080"
-	case "White":
-		color = "#C0C0C0"
-	// Bright ANSI colors (8-15)
-	case "BrightBlack", "DarkGray":
-		color = "#808080"
-	case "BrightRed", "HiRed":
-		color = "#FF0000"
-	case "BrightGreen", "HiGreen":
-		color = "#00FF00"
-	case "BrightYellow", "HiYellow":
-		color = "#FFFF00"
-	case "BrightBlue", "HiBlue":
-		color = "#0000FF"
-	case "BrightMagenta", "HiMagenta":
-		color = "#FF00FF"
-	case "BrightCyan", "HiCyan":
-		color = "#00FFFF"
-	case "BrightWhite":
-		color = "#FFFFFF"
-	default:
-		// Default if unknown
+func stringColorToHex(colorName string) string {
+	if hex, exists := colorNameToHex[colorName]; exists {
+		return hex
 	}
-	return color
+	// Return empty string for unknown colors to let ansi.XParseColor handle it
+	return ""
+}
+
+// parseColorString converts a color string to color.Color using stringColorToHex and ansi.XParseColor
+func parseColorString(colorStr string) color.Color {
+	hexColor := stringColorToHex(colorStr)
+
+	if hexColor == "" {
+		hexColor = colorStr
+	}
+
+	colorValue := ansi.XParseColor(hexColor)
+	if colorValue == nil {
+		// Fallback to white if parsing fails
+		return color.RGBA{R: 255, G: 255, B: 255, A: 255}
+	}
+	return colorValue
+}
+
+func applyConvertedColor(str string, c color.Color) string {
+	if c == nil {
+		return str
+	}
+
+	var style ansi.Style
+	style = style.ForegroundColor(c)
+	return style.Styled(str)
 }
 
 func (b *Box) applyColorBar(topBar, bottomBar, title string) (string, string) {
@@ -189,8 +176,11 @@ func (b *Box) applyColorBar(topBar, bottomBar, title string) (string, string) {
 		if b.titlePos == Top {
 			bar_ := strings.Split(ansi.Strip(topBar), ansi.Strip(title))
 
-			b0 := env.String(bar_[0]).Foreground(env.Color(stringColorToHex(b.color))).String()
-			b1 := env.String(bar_[1]).Foreground(env.Color(stringColorToHex(b.color))).String()
+			colorValue := parseColorString(b.color)
+			convertedColor := profile.Convert(colorValue)
+
+			b0 := applyConvertedColor(bar_[0], convertedColor)
+			b1 := applyConvertedColor(bar_[1], convertedColor)
 
 			topBar = b0 + applyColor(title, b.titleColor) + b1
 		}
@@ -198,8 +188,11 @@ func (b *Box) applyColorBar(topBar, bottomBar, title string) (string, string) {
 		if b.titlePos == Bottom {
 			bar_ := strings.Split(ansi.Strip(bottomBar), ansi.Strip(title))
 
-			b0 := env.String(bar_[0]).Foreground(env.Color(stringColorToHex(b.color))).String()
-			b1 := env.String(bar_[1]).Foreground(env.Color(stringColorToHex(b.color))).String()
+			colorValue := parseColorString(b.color)
+			convertedColor := profile.Convert(colorValue)
+
+			b0 := applyConvertedColor(bar_[0], convertedColor)
+			b1 := applyConvertedColor(bar_[1], convertedColor)
 
 			bottomBar = b0 + applyColor(title, b.titleColor) + b1
 		}
