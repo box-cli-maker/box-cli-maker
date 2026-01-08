@@ -78,55 +78,6 @@ func longestLine(lines []string) (int, []expandedLine) {
 	return longest, expandedLines
 }
 
-/*
-	func longestLine(lines []string) (int, []expandedLine) {
-		longest := 0
-		var expandedLines []expandedLine
-		var tmpLine strings.Builder
-		var wg sync.WaitGroup
-		lineLenCh := make(chan int)
-		var lineLen int
-
-		for _, line := range lines {
-			wg.Add(1)
-			tmpLine.Reset()
-			go func(line string) {
-				defer wg.Done()
-				for _, c := range line {
-					lineLen = runewidth.StringWidth(tmpLine.String())
-
-					if c == '\t' {
-						tmpLine.WriteString(strings.Repeat(" ", 8-(lineLen&7)))
-					} else {
-						tmpLine.WriteRune(c)
-					}
-				}
-				lineLen = runewidth.StringWidth(tmpLine.String())
-				expandedLines = append(expandedLines, expandedLine{tmpLine.String(), lineLen})
-
-				// Check if each line has ANSI Color Code then decrease the length accordingly
-				if runewidth.StringWidth(color.ClearCode(tmpLine.String())) < runewidth.StringWidth(tmpLine.String()) {
-					lineLen = runewidth.StringWidth(color.ClearCode(tmpLine.String()))
-				}
-
-				lineLenCh <- lineLen
-			}(line)
-		}
-
-		go func() {
-			for lineLen := range lineLenCh {
-				if lineLen > longest {
-					longest = lineLen
-				}
-			}
-		}()
-
-		wg.Wait()
-		close(lineLenCh)
-
-		return longest, expandedLines
-	}
-*/
 func repeatWithString(c string, n int, str string) string {
 	cstr := color.ClearCode(str)
 	count := n - runewidth.StringWidth(cstr) - 2

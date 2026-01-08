@@ -7,7 +7,6 @@ import (
 
 	"github.com/charmbracelet/x/ansi"
 	"github.com/charmbracelet/x/term"
-	"github.com/gookit/color"
 	"github.com/huandu/xstrings"
 	"github.com/mattn/go-runewidth"
 )
@@ -49,13 +48,22 @@ func NewBox() *Box {
 	return &Box{config: config{style: Single}}
 }
 
-func (b *Box) Width(width int) *Box {
-	b.px = width
+// Padding sets horizontal (px) and vertical (py) inner padding.
+func (b *Box) Padding(px, py int) *Box {
+	b.px = px
+	b.py = py
 	return b
 }
 
-func (b *Box) Height(height int) *Box {
-	b.py = height
+// HPadding sets horizontal padding (left/right).
+func (b *Box) HPadding(px int) *Box {
+	b.px = px
+	return b
+}
+
+// VPadding sets vertical padding (top/bottom).
+func (b *Box) VPadding(py int) *Box {
+	b.py = py
 	return b
 }
 
@@ -170,7 +178,12 @@ func (b *Box) Render(title, content string) (string, error) {
 	}
 	content_ = append(content_, strings.Split(content, "\n")...)
 
-	titleLen := len(strings.Split(color.ClearCode(title), "\n"))
+	titleLen := 0
+	if title != "" {
+		titleLen = len(strings.Split(ansi.Strip(title), "\n"))
+
+	}
+
 	sideMargin := strings.Repeat(" ", b.px)
 	_longestLine, lines2 := longestLine(content_)
 
@@ -217,7 +230,7 @@ func (b *Box) Render(title, content string) (string, error) {
 		TopBar, BottomBar = b.applyColorBar(TopBar, BottomBar, title)
 	}
 
-	if b.titlePos == Inside && runewidth.StringWidth(TopBar) != runewidth.StringWidth(BottomBar) {
+	if b.titlePos == Inside && runewidth.StringWidth(ansi.Strip(TopBar)) != runewidth.StringWidth(ansi.Strip(BottomBar)) {
 		return "", fmt.Errorf("cannot create a Box with different sizes of Top and Bottom Bars")
 	}
 
@@ -227,8 +240,6 @@ func (b *Box) Render(title, content string) (string, error) {
 	vertPadding := b.addVertPadding(n)
 	texts = append(texts, vertPadding...)
 
-	// Using strings.Builder is more efficient and faster
-	// than concatenating 6 times
 	var sb strings.Builder
 
 	sb.WriteString(TopBar)

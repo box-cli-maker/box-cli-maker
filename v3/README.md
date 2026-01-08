@@ -9,13 +9,14 @@ The API design is inspired from [charmbracelet/huh](https://github.com/charmbrac
 - Uses idiomatic Go coding style
 - Easier to use
 - Better support for terminals
-- Remove `interface{}` for Color Types. Allow only string.
+- Remove `interface{}` for Color Types. Allow only strings.
 - Remove untyped strings for Box Types and Title Position and use imported named strings.
 - Add more inbuilt Box styles.
 - Remove manual color detection and rounding off code and use an external library.
 - Decrease the number of dependencies.
+- Replaced ambiguous `Px` and `Py` fields (which can mean outer size, but were padding) with functions such as `Padding`, `HPadding` and `VPadding`.
 - Use [charmbracelet/vhs](https://github.com/charmbracelet/vhs) to record demos.
-- Shift to a GitHub organization and start an Open Collective
+- Shift to a GitHub organization and start an Open Collective.
 
 <table>
 
@@ -34,8 +35,7 @@ Box.Print("Box CLI Maker", "Highly Customized Terminal Box Maker")
 
 ```go
 b := box.NewBox().
-        Width(2).
-        Height(5).
+        Padding(2, 5).
         Style(box.Single).
         Color("Cyan")
 
@@ -62,9 +62,8 @@ boxNew.Println("Box CLI Maker", "Make Highly Customized Terminal Boxes")
 
 ```go
 b := box.NewBox().
-        Width(2).
-        Height(3).
-        TitlePositon(box.Inside).
+        Padding(2, 3).
+        TitlePosition(box.Inside).
         Color("Green").
         SetTopRight("*").
         SetTopLeft("*").
@@ -76,10 +75,9 @@ b := box.NewBox().
 // Even the below will work
 
 b = box.Box{TopRight: "*", TopLeft: "*", BottomRight: "*", BottomLeft: "*", Horizontal: "-", Vertical: "|"}
-b = b.Width(2).
-    Height(3).
-    TitlePosition(box.Inside).
-    Color("Green")
+b = b.Padding(2, 3).
+        TitlePosition(box.Inside).
+        Color("Green")
 
 // Ignore error if Box rendering is possible
 boxStr, _ := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker") 
@@ -94,16 +92,16 @@ fmt.Println(boxStr)
 
 ```go
 bx := box.New(box.Config{
-		Px:            2,
-		Py:            0,
-		Type:          "Single",
-		Color:         "Green",
-		TitlePos:      "Top",
-		AllowWrapping: true,
-		WrappingLimit: num,
-                ContentColor: "Red",
-	})
-	bx.Println("Content Wrappingg works!", strings.Repeat(" Box CLI Maker 盒子製 造商,📦 ", 160))
+  Px:            2,
+  Py:            0,
+  Type:          "Single",
+  Color:         "Green",
+  TitlePos:      "Top",
+  AllowWrapping: true,
+  WrappingLimit: num,
+  ContentColor: "Red",
+ })
+ bx.Println("Content Wrappingg works!", strings.Repeat(" Box CLI Maker 盒子製 造商,📦 ", 160))
 ```
 
 </td>
@@ -111,8 +109,7 @@ bx := box.New(box.Config{
 
 ```go
 b := box.NewBox().
-        Width(2).
-        Height(0).
+        Padding(2, 0).
         Style(box.Single).
         Color("Green").
         TitlePosition(box.Inside).

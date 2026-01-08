@@ -22,7 +22,7 @@ func (b *Box) addVertPadding(len int) []string {
 
 	texts := make([]string, b.py)
 	for i := range texts {
-		texts[i] = fmt.Sprintf("%s%s%s", vertical, padding, vertical)
+		texts[i] = vertical + padding + vertical
 	}
 
 	return texts
@@ -70,9 +70,10 @@ func (b *Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideM
 		// Use later
 		var space, oddSpace string
 
-		// Check if line.line has ANSI Color Code then decrease length accordingly
-		if runewidth.StringWidth(ansi.Strip(line.line)) < runewidth.StringWidth(line.line) {
-			length = runewidth.StringWidth(ansi.Strip(line.line))
+		// compute stripped width once
+		strippedWidth := runewidth.StringWidth(ansi.Strip(line.line))
+		if strippedWidth < runewidth.StringWidth(line.line) {
+			length = strippedWidth
 		}
 
 		// If current text is shorter than the longest one
@@ -92,7 +93,7 @@ func (b *Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideM
 			}
 		}
 
-		spacing := strings.Join([]string{space, sideMargin}, "")
+		spacing := space + sideMargin
 		var format AlignType
 
 		switch {
@@ -127,13 +128,21 @@ func (b *Box) findAlign() string {
 func repeatWithString(c string, n int, str string) string {
 	cstr := ansi.Strip(str)
 	count := n - runewidth.StringWidth(cstr) - 2
+	if count < 0 {
+		count = 0
+	}
 	bar := strings.Repeat(c, count)
-	return fmt.Sprintf(" %s %s", str, bar)
+	return " " + str + " " + bar
+}
+
+func getConvertedColor(colorStr string) color.Color {
+	cv := parseColorString(colorStr)
+	converted := profile.Convert(cv)
+	return converted
 }
 
 func applyColor(str string, colorStr string) string {
-	colorValue := parseColorString(colorStr)
-	convertedColor := profile.Convert(colorValue)
+	convertedColor := getConvertedColor(colorStr)
 	return applyConvertedColor(str, convertedColor)
 }
 
@@ -143,6 +152,28 @@ func stringColorToHex(colorName string) string {
 	}
 	// Return empty string for unknown colors to let ansi.XParseColor handle it
 	return ""
+}
+
+// addStylePreservingOriginalFormat allows to add style around the orginal formating
+func addStylePreservingOriginalFormat(s string, f func(a string) string) string {
+	const reset = "\033[0m"
+	if !strings.Contains(s, reset) {
+		return f(s)
+	}
+
+	var sb strings.Builder
+	start := 0
+	for {
+		idx := strings.Index(s[start:], reset)
+		if idx == -1 {
+			sb.WriteString(f(s[start:]))
+			break
+		}
+		sb.WriteString(f(s[start : start+idx]))
+		// skip the reset sequence (preserve original behavior of removing it)
+		start += idx + len(reset)
+	}
+	return sb.String()
 }
 
 // parseColorString converts a color string to color.Color using stringColorToHex and ansi.XParseColor
@@ -166,34 +197,53 @@ func applyConvertedColor(str string, c color.Color) string {
 		return str
 	}
 
-	var style ansi.Style
-	style = style.ForegroundColor(c)
-	return style.Styled(str)
+	style := ansi.Style{}.ForegroundColor(c)
+	styled := style.Styled
+
+	// Fast path: no newlines
+	if !strings.Contains(str, "\n") {
+		return styled(str)
+	}
+
+	var sb strings.Builder
+	start := 0
+	for {
+		idx := strings.IndexByte(str[start:], '\n')
+		if idx == -1 {
+			sb.WriteString(addStylePreservingOriginalFormat(str[start:], styled))
+			break
+		}
+		sb.WriteString(addStylePreservingOriginalFormat(str[start:start+idx], styled))
+		sb.WriteByte('\n')
+		start += idx + 1
+	}
+	return sb.String()
 }
 
 func (b *Box) applyColorBar(topBar, bottomBar, title string) (string, string) {
-	if b.titleColor != "" {
-		if b.titlePos == Top {
-			bar_ := strings.Split(ansi.Strip(topBar), ansi.Strip(title))
+	if b.titleColor == "" || title == "" {
+		return topBar, bottomBar
+	}
 
-			colorValue := parseColorString(b.color)
-			convertedColor := profile.Convert(colorValue)
+	converted := getConvertedColor(b.color)
 
-			b0 := applyConvertedColor(bar_[0], convertedColor)
-			b1 := applyConvertedColor(bar_[1], convertedColor)
-
+	if b.titlePos == Top {
+		strippedBar := ansi.Strip(topBar)
+		strippedTitle := ansi.Strip(title)
+		if idx := strings.Index(strippedBar, strippedTitle); idx != -1 {
+			// split around first occurrence to preserve any other repeats
+			b0 := applyConvertedColor(strippedBar[:idx], converted)
+			b1 := applyConvertedColor(strippedBar[idx+len(strippedTitle):], converted)
 			topBar = b0 + applyColor(title, b.titleColor) + b1
 		}
+	}
 
-		if b.titlePos == Bottom {
-			bar_ := strings.Split(ansi.Strip(bottomBar), ansi.Strip(title))
-
-			colorValue := parseColorString(b.color)
-			convertedColor := profile.Convert(colorValue)
-
-			b0 := applyConvertedColor(bar_[0], convertedColor)
-			b1 := applyConvertedColor(bar_[1], convertedColor)
-
+	if b.titlePos == Bottom {
+		strippedBar := ansi.Strip(bottomBar)
+		strippedTitle := ansi.Strip(title)
+		if idx := strings.Index(strippedBar, strippedTitle); idx != -1 {
+			b0 := applyConvertedColor(strippedBar[:idx], converted)
+			b1 := applyConvertedColor(strippedBar[idx+len(strippedTitle):], converted)
 			bottomBar = b0 + applyColor(title, b.titleColor) + b1
 		}
 	}
