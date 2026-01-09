@@ -73,32 +73,32 @@ func (b *Box) Style(box BoxStyle) *Box {
 	return b
 }
 
-func (b *Box) SetTopRight(sym string) *Box {
+func (b *Box) WithTopRight(sym string) *Box {
 	b.TopRight = sym
 	return b
 }
 
-func (b *Box) SetTopLeft(sym string) *Box {
+func (b *Box) WithTopLeft(sym string) *Box {
 	b.TopLeft = sym
 	return b
 }
 
-func (b *Box) SetBottomRight(sym string) *Box {
+func (b *Box) WithBottomRight(sym string) *Box {
 	b.BottomRight = sym
 	return b
 }
 
-func (b *Box) SetBottomLeft(sym string) *Box {
+func (b *Box) WithBottomLeft(sym string) *Box {
 	b.BottomLeft = sym
 	return b
 }
 
-func (b *Box) SetHorizontal(sym string) *Box {
+func (b *Box) WithHorizontal(sym string) *Box {
 	b.Horizontal = sym
 	return b
 }
 
-func (b *Box) SetVertical(sym string) *Box {
+func (b *Box) WithVertical(sym string) *Box {
 	b.Vertical = sym
 	return b
 }
@@ -128,16 +128,21 @@ func (b *Box) AllowWrapping(allow bool) *Box {
 	return b
 }
 
+func (b *Box) Align(align AlignType) *Box {
+	b.contentAlign = align
+	return b
+}
+
 func (b *Box) Render(title, content string) (string, error) {
 	style, ok := boxes[b.config.style]
 
 	if ok && b.styleSet {
-		b.SetBottomLeft(style.BottomLeft).
-			SetBottomRight(style.BottomRight).
-			SetTopLeft(style.TopLeft).
-			SetTopRight(style.TopRight).
-			SetHorizontal(style.Horizontal).
-			SetVertical(style.Vertical)
+		b.WithBottomLeft(style.BottomLeft).
+			WithBottomRight(style.BottomRight).
+			WithTopLeft(style.TopLeft).
+			WithTopRight(style.TopRight).
+			WithHorizontal(style.Horizontal).
+			WithVertical(style.Vertical)
 	}
 	if !ok && b.styleSet {
 		return "", fmt.Errorf("invalid Box type")
@@ -196,7 +201,7 @@ func (b *Box) Render(title, content string) (string, error) {
 		return "", fmt.Errorf("title must be shorter than the Top and Bottom Bars")
 	}
 
-	// Create Top and Bottom Bars
+	// Create Top and Bottom Bars (uncolored)
 	Bar := strings.Repeat(b.Horizontal, n-2)
 	TopBar := b.TopLeft + Bar + b.TopRight
 	BottomBar := b.BottomLeft + Bar + b.BottomRight

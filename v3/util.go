@@ -137,11 +137,20 @@ func repeatWithString(c string, n int, str string) string {
 
 func getConvertedColor(colorStr string) color.Color {
 	cv := parseColorString(colorStr)
+	// If profile conversion results in nil, fall back to the
+	// parsed color so we always emit color.
 	converted := profile.Convert(cv)
+	if converted == nil {
+		return cv
+	}
 	return converted
 }
 
 func applyColor(str string, colorStr string) string {
+	// Empty color string means: do not apply any styling.
+	if colorStr == "" {
+		return str
+	}
 	convertedColor := getConvertedColor(colorStr)
 	return applyConvertedColor(str, convertedColor)
 }
@@ -202,7 +211,7 @@ func applyConvertedColor(str string, c color.Color) string {
 
 	// Fast path: no newlines
 	if !strings.Contains(str, "\n") {
-		return styled(str)
+		return addStylePreservingOriginalFormat(str, styled)
 	}
 
 	var sb strings.Builder

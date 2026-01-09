@@ -65,12 +65,12 @@ b := box.NewBox().
         Padding(2, 3).
         TitlePosition(box.Inside).
         Color("Green").
-        SetTopRight("*").
-        SetTopLeft("*").
-        SetBottomRight("*").
-        SetBottomLeft("*").
-        SetHorizontal("-").
-        SetVertical("|")
+        WithTopRight("*").
+        WithTopLeft("*").
+        WithBottomRight("*").
+        WithBottomLeft("*").
+        WithHorizontal("-").
+        WithVertical("|")
 
 // Even the below will work
 
