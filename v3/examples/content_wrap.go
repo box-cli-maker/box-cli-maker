@@ -12,7 +12,7 @@ func main() {
 		Style(box.Single).
 		Color("Green").
 		TitlePosition(box.Top).
-		AllowWrapping(true)
+		WrapContent(true)
 
 	s, err := b.Render("Content Wrappingg works!", strings.Repeat("\tBox CLI Maker 盒子製 造商,📦 ", 160))
 	if err != nil {

@@ -19,12 +19,12 @@ const (
 )
 
 type Box struct {
-	TopRight    string // TopRight Corner Symbols
-	TopLeft     string // TopLeft Corner Symbols
-	Vertical    string // Vertical Bar Symbols
-	BottomRight string // BottomRight Corner Symbols
-	BottomLeft  string // BottomLeft Corner Symbols
-	Horizontal  string // Horizontal Bars Symbols
+	topRight    string // TopRight Corner Symbols
+	topLeft     string // TopLeft Corner Symbols
+	vertical    string // Vertical Bar Symbols
+	bottomRight string // BottomRight Corner Symbols
+	bottomLeft  string // BottomLeft Corner Symbols
+	horizontal  string // Horizontal Bars Symbols
 	config             // Box Config
 
 }
@@ -73,33 +73,33 @@ func (b *Box) Style(box BoxStyle) *Box {
 	return b
 }
 
-func (b *Box) WithTopRight(sym string) *Box {
-	b.TopRight = sym
+func (b *Box) TopRight(sym string) *Box {
+	b.topRight = sym
 	return b
 }
 
-func (b *Box) WithTopLeft(sym string) *Box {
-	b.TopLeft = sym
+func (b *Box) TopLeft(sym string) *Box {
+	b.topLeft = sym
 	return b
 }
 
-func (b *Box) WithBottomRight(sym string) *Box {
-	b.BottomRight = sym
+func (b *Box) BottomRight(sym string) *Box {
+	b.bottomRight = sym
 	return b
 }
 
-func (b *Box) WithBottomLeft(sym string) *Box {
-	b.BottomLeft = sym
+func (b *Box) BottomLeft(sym string) *Box {
+	b.bottomLeft = sym
 	return b
 }
 
-func (b *Box) WithHorizontal(sym string) *Box {
-	b.Horizontal = sym
+func (b *Box) Horizontal(sym string) *Box {
+	b.horizontal = sym
 	return b
 }
 
-func (b *Box) WithVertical(sym string) *Box {
-	b.Vertical = sym
+func (b *Box) Vertical(sym string) *Box {
+	b.vertical = sym
 	return b
 }
 
@@ -123,8 +123,14 @@ func (b *Box) TitlePosition(pos TitlePosition) *Box {
 	return b
 }
 
-func (b *Box) AllowWrapping(allow bool) *Box {
+func (b *Box) WrapContent(allow bool) *Box {
 	b.allowWrapping = allow
+	return b
+}
+
+func (b *Box) WrapLimit(limit int) *Box {
+	b.allowWrapping = true
+	b.wrappingLimit = limit
 	return b
 }
 
@@ -137,12 +143,12 @@ func (b *Box) Render(title, content string) (string, error) {
 	style, ok := boxes[b.config.style]
 
 	if ok && b.styleSet {
-		b.WithBottomLeft(style.BottomLeft).
-			WithBottomRight(style.BottomRight).
-			WithTopLeft(style.TopLeft).
-			WithTopRight(style.TopRight).
-			WithHorizontal(style.Horizontal).
-			WithVertical(style.Vertical)
+		b.BottomLeft(style.bottomLeft).
+			BottomRight(style.bottomRight).
+			TopLeft(style.topLeft).
+			TopRight(style.topRight).
+			Horizontal(style.horizontal).
+			Vertical(style.vertical)
 	}
 	if !ok && b.styleSet {
 		return "", fmt.Errorf("invalid Box type")
@@ -159,7 +165,7 @@ func (b *Box) Render(title, content string) (string, error) {
 		} else {
 			width, _, err := term.GetSize(os.Stdout.Fd())
 			if err != nil {
-				return "", fmt.Errorf("cannot get terminal size from the output")
+				return "", fmt.Errorf("cannot get terminal size from the output, provide own wrapping limit using .WrapLimit(limit int) method")
 			}
 			content = ansi.Wrap(content, 2*width/3, "")
 		}
@@ -174,7 +180,7 @@ func (b *Box) Render(title, content string) (string, error) {
 
 	if title != "" {
 		if b.titlePos != Inside && strings.Contains(title, "\n") {
-			return "", fmt.Errorf("multiline titles are only supported inside only")
+			return "", fmt.Errorf("multiline titles are only supported Inside only")
 		}
 		if b.titlePos == Inside {
 			content_ = append(content_, strings.Split(title, "\n")...)
@@ -202,27 +208,27 @@ func (b *Box) Render(title, content string) (string, error) {
 	}
 
 	// Create Top and Bottom Bars (uncolored)
-	Bar := strings.Repeat(b.Horizontal, n-2)
-	TopBar := b.TopLeft + Bar + b.TopRight
-	BottomBar := b.BottomLeft + Bar + b.BottomRight
+	Bar := strings.Repeat(b.horizontal, n-2)
+	TopBar := b.topLeft + Bar + b.topRight
+	BottomBar := b.bottomLeft + Bar + b.bottomRight
 
 	var TitleBar string
 	// If title has tabs then expand them accordingly.
 	if strings.Contains(title, "\t") {
-		TitleBar = repeatWithString(b.Horizontal, n-2, xstrings.ExpandTabs(title, 4))
+		TitleBar = repeatWithString(b.horizontal, n-2, xstrings.ExpandTabs(title, 4))
 	} else {
-		TitleBar = repeatWithString(b.Horizontal, n-2, title)
+		TitleBar = repeatWithString(b.horizontal, n-2, title)
 	}
 
 	// Check b.TitlePos if it is not Inside
 	if b.titlePos != Inside {
 		switch b.titlePos {
 		case Top:
-			TopBar = b.TopLeft + TitleBar + b.TopRight
+			TopBar = b.topLeft + TitleBar + b.topRight
 		case Bottom:
-			BottomBar = b.BottomLeft + TitleBar + b.BottomRight
+			BottomBar = b.bottomLeft + TitleBar + b.bottomRight
 		default:
-			return "", fmt.Errorf("invalid TitlePos provided")
+			return "", fmt.Errorf("invalid TitlePosition provided")
 		}
 	}
 	TopBar, BottomBar = applyColor(TopBar, b.color), applyColor(BottomBar, b.color)
@@ -256,4 +262,12 @@ func (b *Box) Render(title, content string) (string, error) {
 
 	return sb.String(), nil
 
+}
+
+func (b *Box) MustRender(title, content string) string {
+	s, err := b.Render(title, content)
+	if err != nil {
+		panic(err)
+	}
+	return s
 }

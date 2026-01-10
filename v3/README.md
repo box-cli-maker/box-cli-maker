@@ -5,7 +5,7 @@ This is a draft for the new v3 API design of Box CLI Maker which improves the ol
 The API design is inspired from [charmbracelet/huh](https://github.com/charmbracelet/huh), [charmbracelet/glamour](https://github.com/charmbracelet/glamour) and [charmbracelet/lipgloss](https://github.com/charmbracelet/lipgloss).
 
 - User level error handling
-- No more necessary printing errors
+- No more un-necessary printing errors
 - Uses idiomatic Go coding style
 - Easier to use
 - Better support for terminals
@@ -65,19 +65,12 @@ b := box.NewBox().
         Padding(2, 3).
         TitlePosition(box.Inside).
         Color("Green").
-        WithTopRight("*").
-        WithTopLeft("*").
-        WithBottomRight("*").
-        WithBottomLeft("*").
-        WithHorizontal("-").
-        WithVertical("|")
-
-// Even the below will work
-
-b = box.Box{TopRight: "*", TopLeft: "*", BottomRight: "*", BottomLeft: "*", Horizontal: "-", Vertical: "|"}
-b = b.Padding(2, 3).
-        TitlePosition(box.Inside).
-        Color("Green")
+        TopRight("*").
+        TopLeft("*").
+        BottomRight("*").
+        BottomLeft("*").
+        Horizontal("-").
+        Vertical("|")
 
 // Ignore error if Box rendering is possible
 boxStr, _ := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker") 
@@ -113,7 +106,7 @@ b := box.NewBox().
         Style(box.Single).
         Color("Green").
         TitlePosition(box.Inside).
-        AllowWrapping(true).
+        WrapContent(true).
         WrappingLimit(num).
         ContentColor("Red")
 

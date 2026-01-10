@@ -23,7 +23,7 @@ func main() {
 			\/              \/         \/         \/              \/      \/      \/     \/ `)
 	fmt.Println(b1)
 
-	wrap := box.NewBox().Padding(2, 5).Color("Cyan").TitlePosition(box.Top).Style(box.Single).TitleColor("#427ef5").AllowWrapping(true)
+	wrap := box.NewBox().Padding(2, 5).Color("Cyan").TitlePosition(box.Top).Style(box.Single).TitleColor("#427ef5").WrapContent(true)
 	b2, _ := wrap.Render("Wrapping Works", strings.Repeat("Box CLI Maker 盒子製 造商,📦 ", 160))
 	fmt.Println(b2)
 

@@ -8,7 +8,7 @@ import (
 
 func main() {
 	b := box.NewBox().Padding(2, 3).Color("Red").TitlePosition(box.Inside)
-	b.WithTopRight("█").WithTopLeft("█").WithBottomRight("█").WithBottomLeft("█").WithHorizontal("█").WithVertical("█")
+	b.TopRight("█").TopLeft("█").BottomRight("█").BottomLeft("█").Horizontal("█").Vertical("█")
 
 	s, err := b.Render("Box CLI Maker", "Make Highly Customized Terminal Boxes")
 	if err != nil {

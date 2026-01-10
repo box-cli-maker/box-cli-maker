@@ -18,7 +18,7 @@ type expandedLine struct {
 // addVertPadding adds Vertical Padding
 func (b *Box) addVertPadding(len int) []string {
 	padding := strings.Repeat(" ", len-2)
-	vertical := applyColor(b.Vertical, b.color)
+	vertical := applyColor(b.vertical, b.color)
 
 	texts := make([]string, b.py)
 	for i := range texts {
@@ -103,7 +103,7 @@ func (b *Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideM
 			format = AlignType(b.findAlign())
 		}
 
-		sep := applyColor(b.Vertical, b.color)
+		sep := applyColor(b.vertical, b.color)
 
 		formatted := fmt.Sprintf(string(format), sep, spacing, line.line, oddSpace, space, sideMargin)
 		texts = append(texts, formatted)
