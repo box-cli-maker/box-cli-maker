@@ -107,7 +107,7 @@ b := box.NewBox().
         Color("Green").
         TitlePosition(box.Inside).
         WrapContent(true).
-        WrappingLimit(num).
+        WrapLimit(num).
         ContentColor("Red")
 
 
@@ -119,3 +119,16 @@ fmt.Println(boxStr)
 </td>
 </tr>
 </table>
+
+## v2 vs v3 API differences
+
+| Aspect           | v2                                      | v3                                                   |
+|------------------|-----------------------------------------|------------------------------------------------------|
+| Construction     | `New(Config)` with public `Config`/`Box` fields | `NewBox()` with fluent builder methods                      |
+| Styles           | `Type: "Single"` (untyped string)       | `Style(box.Single)` (typed `BoxStyle`)               |
+| Title position   | `TitlePos: "Top"` (string)              | `TitlePosition(box.Top)` (typed `TitlePosition`)     |
+| Custom borders   | Struct literals on `Box` fields         | Builder methods: `TopRight`, `TopLeft`, etc.         |
+| Colors           | Mixed config fields, some `interface{}` | `Color`, `TitleColor`, `ContentColor` (all `string`) |
+| Padding          | `Px`, `Py` fields (ambiguous)           | `Padding`, `HPadding`, `VPadding` methods            |
+| Wrapping         | `AllowWrapping`, `WrappingLimit` fields | `WrapContent`, `WrapLimit` methods                   |
+| Rendering        | `Println`/`Print` with internal printing | `Render`/`MustRender` returning a string (you choose how to print) |
