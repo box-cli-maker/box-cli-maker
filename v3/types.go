@@ -6,6 +6,7 @@ import (
 	"github.com/charmbracelet/colorprofile"
 )
 
+// BoxStyle represents the style of the box.
 type BoxStyle string
 
 const (
@@ -20,6 +21,7 @@ const (
 	Block        BoxStyle = "Block"
 )
 
+// AlignType represents the alignment type for content inside the box.
 type AlignType string
 
 const (
@@ -28,6 +30,7 @@ const (
 	Right  AlignType = "Right"
 )
 
+// TitlePosition represents the position of the title in the box.
 type TitlePosition string
 
 const (
