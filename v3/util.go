@@ -63,7 +63,7 @@ func longestLine(lines []string) (int, []expandedLine) {
 }
 
 // formatLine formats the line according to the information passed
-func (b *Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideMargin, title string, texts []string) []string {
+func (b *Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideMargin, title string, texts []string) ([]string, error) {
 	for i, line := range lines2 {
 		length := line.len
 
@@ -100,7 +100,11 @@ func (b *Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideM
 		case i < titleLen && title != "" && b.titlePos == Inside:
 			format = centerAlign
 		default:
-			format = AlignType(b.findAlign())
+			align, err := b.findAlign()
+			if err != nil {
+				return nil, err
+			}
+			format = AlignType(align)
 		}
 
 		sep := applyColor(b.vertical, b.color)
@@ -108,20 +112,20 @@ func (b *Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideM
 		formatted := fmt.Sprintf(string(format), sep, spacing, line.line, oddSpace, space, sideMargin)
 		texts = append(texts, formatted)
 	}
-	return texts
+	return texts, nil
 }
 
-func (b *Box) findAlign() string {
+func (b *Box) findAlign() (string, error) {
 	switch b.contentAlign {
 	case Center:
-		return centerAlign
+		return centerAlign, nil
 	case Right:
-		return rightAlign
+		return rightAlign, nil
 	case Left, "":
 		// If ContentAlign isn't provided then by default Alignment is Left
-		return leftAlign
+		return leftAlign, nil
 	default:
-		return leftAlign
+		return "", fmt.Errorf("invalid Content Alignment %s", b.contentAlign)
 	}
 }
 
@@ -251,6 +255,7 @@ func (b *Box) applyColorBar(topBar, bottomBar, title string) (string, string) {
 		strippedBar := ansi.Strip(bottomBar)
 		strippedTitle := ansi.Strip(title)
 		if idx := strings.Index(strippedBar, strippedTitle); idx != -1 {
+			// split around first occurrence to preserve any other repeats
 			b0 := applyConvertedColor(strippedBar[:idx], converted)
 			b1 := applyConvertedColor(strippedBar[idx+len(strippedTitle):], converted)
 			bottomBar = b0 + applyColor(title, b.titleColor) + b1

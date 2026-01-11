@@ -192,20 +192,36 @@ func (b *Box) Render(title, content string) (string, error) {
 	titleLen := 0
 	if title != "" {
 		titleLen = len(strings.Split(ansi.Strip(title), "\n"))
-
 	}
 
 	sideMargin := strings.Repeat(" ", b.px)
 	_longestLine, lines2 := longestLine(content_)
 
+	// Compute desired inner width (between the corners, without them)
+	contentInnerWidth := _longestLine + 2*b.px
+	innerWidth := contentInnerWidth
+
+	// Make sure the box is wide enough to fit the title when it's on Top/Bottom.
+	if b.titlePos != Inside && title != "" {
+		titleWidth := runewidth.StringWidth(ansi.Strip(title))
+		minTitleInnerWidth := titleWidth + 2 // title + left/right padding
+
+		if minTitleInnerWidth > innerWidth {
+			innerWidth = minTitleInnerWidth
+		}
+	}
+
+	// If we enlarged the inner width to fit the title, reflect that in longestLine
+	if innerWidth > contentInnerWidth {
+		_longestLine = innerWidth - 2*b.px
+		if _longestLine < 0 {
+			_longestLine = 0
+		}
+	}
+
 	// Get padding on one side
 	paddingCount := b.px
-
 	n := _longestLine + (paddingCount * 2) + 2
-
-	if b.titlePos != Inside && runewidth.StringWidth(ansi.Strip(title)) > n-2 {
-		return "", fmt.Errorf("title must be shorter than the Top and Bottom Bars")
-	}
 
 	// Create Top and Bottom Bars (uncolored)
 	Bar := strings.Repeat(b.horizontal, n-2)
@@ -228,7 +244,7 @@ func (b *Box) Render(title, content string) (string, error) {
 		case Bottom:
 			BottomBar = b.bottomLeft + TitleBar + b.bottomRight
 		default:
-			return "", fmt.Errorf("invalid TitlePosition provided")
+			return "", fmt.Errorf("invalid TitlePosition %s", b.titlePos)
 		}
 	}
 	TopBar, BottomBar = applyColor(TopBar, b.color), applyColor(BottomBar, b.color)
@@ -247,7 +263,10 @@ func (b *Box) Render(title, content string) (string, error) {
 
 	// Create lines to print
 	texts := b.addVertPadding(n)
-	texts = b.formatLine(lines2, _longestLine, titleLen, sideMargin, title, texts)
+	texts, err := b.formatLine(lines2, _longestLine, titleLen, sideMargin, title, texts)
+	if err != nil {
+		return "", err
+	}
 	vertPadding := b.addVertPadding(n)
 	texts = append(texts, vertPadding...)
 
