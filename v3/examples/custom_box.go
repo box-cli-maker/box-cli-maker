@@ -10,7 +10,7 @@ func main() {
 	b := box.NewBox().Padding(2, 3).Color("Red").TitlePosition(box.Inside)
 	b.TopRight("█").TopLeft("█").BottomRight("█").BottomLeft("█").Horizontal("█").Vertical("█")
 
-	s, err := b.Render("Box CLI Maker", "Make Highly Customized Terminal Boxes")
+	s, err := b.Render("Box CLI Maker", "Make Highly Customizable Terminal Boxes")
 	if err != nil {
 		panic(err)
 	}

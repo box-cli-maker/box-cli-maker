@@ -18,7 +18,7 @@ func main() {
 				ContentColor("Cyan").
 				TitleColor("#d73a4a")
 
-			s, err := b.Render("Box CLI Maker 📦", "Highly Customized Terminal\tBox Maker")
+			s, err := b.Render("Box CLI Maker 📦", "Highly Customizable Terminal\tBox Maker")
 			if err != nil {
 				panic(err)
 			}

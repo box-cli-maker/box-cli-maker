@@ -176,7 +176,7 @@ func (b *Box) Render(title, content string) (string, error) {
 			Vertical(style.vertical)
 	}
 	if !ok && b.styleSet {
-		return "", fmt.Errorf("invalid Box type")
+		return "", fmt.Errorf("invalid Box style %s", b.config.style)
 	}
 
 	var content_ []string
@@ -210,7 +210,7 @@ func (b *Box) Render(title, content string) (string, error) {
 
 	if title != "" {
 		if b.titlePos != Inside && strings.Contains(title, "\n") {
-			return "", fmt.Errorf("multiline titles are only supported Inside only")
+			return "", fmt.Errorf("multiline titles are only supported Inside title position only")
 		}
 		if b.titlePos == Inside {
 			content_ = append(content_, strings.Split(title, "\n")...)

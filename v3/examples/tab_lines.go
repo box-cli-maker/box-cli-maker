@@ -13,7 +13,7 @@ func main() {
 	for _, st := range styleCases {
 		for _, c := range colorTypes {
 			b := box.NewBox().Padding(2, 6).Style(st).Color(c)
-			s, err := b.Render("Box \tCLI \tMaker \t📦", "Highly \t\tCustomized \t\t\tTerminal\t Box\t Maker")
+			s, err := b.Render("Box \tCLI \tMaker \t📦", "Highly \t\tCustomizable \t\t\tTerminal\t Box\t Maker")
 			if err != nil {
 				panic(err)
 			}
