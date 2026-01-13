@@ -3,6 +3,9 @@ package box
 import (
 	"strings"
 	"testing"
+
+	"github.com/charmbracelet/x/ansi"
+	"github.com/mattn/go-runewidth"
 )
 
 func TestRenderBasicBox(t *testing.T) {
@@ -121,26 +124,7 @@ func TestRenderMultilineTitleNonInside(t *testing.T) {
 	if err == nil {
 		t.Fatalf("expected error for multiline title at non-Inside position, got nil")
 	}
-	if !strings.Contains(err.Error(), "multiline titles are only supported Inside only") {
-		t.Errorf("unexpected error message: %v", err)
-	}
-}
-
-func TestRenderMismatchedTopBottomBarsInside(t *testing.T) {
-	// Construct a box with mismatched corner widths so the top and bottom
-	// bars end up with different visual widths when TitlePosition is Inside.
-	b := &Box{}
-	b.topLeft = "+"
-	b.topRight = "+"
-	b.bottomLeft = "++" // one extra character
-	b.bottomRight = "+"
-	b.horizontal = "-"
-
-	_, err := b.Render("", "content")
-	if err == nil {
-		t.Fatalf("expected error due to different sizes of Top and Bottom Bars, got nil")
-	}
-	if !strings.Contains(err.Error(), "Top and Bottom Bars") {
+	if !strings.Contains(err.Error(), "multiline titles are only supported Inside title position only") {
 		t.Errorf("unexpected error message: %v", err)
 	}
 }
@@ -178,4 +162,31 @@ func TestMustRenderSuccessAndPanic(t *testing.T) {
 		b := NewBox().Padding(1, 1).Style(BoxStyle("InvalidStyle"))
 		_ = b.MustRender("Title", "Content")
 	})
+}
+
+func TestRenderEmojiBordersHaveConsistentWidth(t *testing.T) {
+	b := NewBox().Padding(2, 1)
+	b.TopLeft("📦").TopRight("📦").BottomLeft("📦").BottomRight("📦").Horizontal("📦").Vertical("📦")
+
+	out, err := b.Render("Emoji Box", "With emoji borders")
+	if err != nil {
+		t.Fatalf("Render with emoji borders returned error: %v", err)
+	}
+
+	lines := strings.Split(strings.TrimRight(out, "\n"), "\n")
+	if len(lines) < 3 {
+		t.Fatalf("expected at least 3 lines in rendered box, got %d", len(lines))
+	}
+
+	top := ansi.Strip(lines[0])
+	interior := ansi.Strip(lines[1])
+	bottom := ansi.Strip(lines[len(lines)-1])
+
+	topW := runewidth.StringWidth(top)
+	interiorW := runewidth.StringWidth(interior)
+	bottomW := runewidth.StringWidth(bottom)
+
+	if topW != interiorW || interiorW != bottomW {
+		t.Fatalf("expected equal visual widths for emoji box borders, got top=%d interior=%d bottom=%d", topW, interiorW, bottomW)
+	}
 }

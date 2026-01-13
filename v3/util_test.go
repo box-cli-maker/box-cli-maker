@@ -6,13 +6,15 @@ import (
 	"testing"
 
 	"github.com/charmbracelet/x/ansi"
+	"github.com/mattn/go-runewidth"
 )
 
 func TestAddVertPadding(t *testing.T) {
 	b := &Box{vertical: "|"}
 	b.py = 2
 
-	got := b.addVertPadding(6)
+	// innerWidth is the visible width between the vertical borders.
+	got := b.addVertPadding(4)
 	if len(got) != 2 {
 		t.Fatalf("expected 2 padding lines, got %d", len(got))
 	}
@@ -281,5 +283,78 @@ func TestApplyColorBar(t *testing.T) {
 	}
 	if !strings.Contains(ansi.Strip(gotBottom), title) {
 		t.Errorf("expected title to remain present in bottom bar, got %q", ansi.Strip(gotBottom))
+	}
+}
+
+func TestCharWidth(t *testing.T) {
+	if w := charWidth("abc"); w != 3 {
+		t.Errorf("expected width 3 for 'abc', got %d", w)
+	}
+
+	colored := "\x1b[31mabc\x1b[0m" // red "abc"
+	if w := charWidth(colored); w != 3 {
+		t.Errorf("expected visible width 3 for colored 'abc', got %d", w)
+	}
+
+	if w := charWidth(""); w != 1 {
+		t.Errorf("expected fallback width 1 for empty string, got %d", w)
+	}
+}
+
+func TestBuildSegment(t *testing.T) {
+	fill := "📦"
+	hw := runewidth.StringWidth(fill)
+
+	seg := buildSegment(fill, hw*3, hw)
+	if runewidth.StringWidth(seg) != hw*3 {
+		t.Fatalf("expected segment visual width %d, got %d", hw*3, runewidth.StringWidth(seg))
+	}
+
+	seg = buildSegment(fill, hw*3+1, hw)
+	if runewidth.StringWidth(seg) != hw*3+1 {
+		t.Fatalf("expected segment visual width %d, got %d", hw*3+1, runewidth.StringWidth(seg))
+	}
+}
+
+func TestBuildPlainBar(t *testing.T) {
+	fill := "📦"
+	hw := runewidth.StringWidth(fill)
+	lineWidth := hw*10 + 2 // 10 emojis + 2 corners
+
+	left := fill
+	right := fill
+	bar := buildPlainBar(left, fill, right, hw, hw, lineWidth, hw)
+	if w := runewidth.StringWidth(bar); w != lineWidth {
+		t.Fatalf("expected bar visual width %d, got %d", lineWidth, w)
+	}
+	if !strings.HasPrefix(bar, fill) || !strings.HasSuffix(bar, fill) {
+		t.Errorf("expected bar to start and end with fill, got %q", bar)
+	}
+}
+
+func TestBuildTitledBar_LeftAlignedWithEmojiFill(t *testing.T) {
+	fill := "📦"
+	hw := runewidth.StringWidth(fill)
+	title := "Box CLI Maker"
+
+	left := fill
+	right := fill
+	leftW := hw
+	rightW := hw
+	lineWidth := hw*20 + leftW + rightW
+
+	bar := buildTitledBar(left, fill, right, leftW, rightW, lineWidth, hw, title)
+	if w := runewidth.StringWidth(ansi.Strip(bar)); w != lineWidth {
+		t.Fatalf("expected bar visual width %d, got %d", lineWidth, w)
+	}
+	plain := ansi.Strip(bar)
+	if !strings.Contains(plain, " "+title+" ") {
+		t.Fatalf("expected bar to contain title with spaces, got %q", plain)
+	}
+	if !strings.HasPrefix(plain, fill+" ") {
+		t.Errorf("expected left corner followed by space then title, got %q", plain)
+	}
+	if !strings.HasSuffix(plain, fill) {
+		t.Errorf("expected bar to end with fill glyph, got %q", plain)
 	}
 }

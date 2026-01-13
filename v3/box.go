@@ -44,7 +44,7 @@ type config struct {
 	color         string        // Box Color
 	allowWrapping bool          // Flag to allow custom Content Wrapping
 	wrappingLimit int           // Wrap the Content upto the Limit
-	styleSet      bool          // Flag to check if Style is set
+	styleSet      bool          // Flag to check if inbuilt-Style is set
 }
 
 // NewBox creates a new Box with default configuration.
@@ -74,6 +74,13 @@ func (b *Box) VPadding(py int) *Box {
 // Style sets the Box Style.
 //
 // Box Styles: box.Single, box.Double, box.Round, box.Bold, box.SingleDouble, box.DoubleSingle, box.Classic, box.Hidden, box.Block
+//
+// To make custom box styles, use the TopRight, TopLeft, BottomRight, BottomLeft, Horizontal, and Vertical methods.
+//
+// Example:
+//
+// b := box.NewBox()
+// b.TopRight("+").TopLeft("+").BottomRight("+").BottomLeft("_").Horizontal("-").Vertical("|")
 func (b *Box) Style(box BoxStyle) *Box {
 	b.config.style = box
 	b.styleSet = true
@@ -143,6 +150,9 @@ func (b *Box) TitlePosition(pos TitlePosition) *Box {
 }
 
 // WrapContent enables or disables content wrapping.
+//
+// When enabled, the content will be wrapped to fit 2/3 width of the terminal by default.
+// You can set a custom wrap limit using the WrapLimit method.
 func (b *Box) WrapContent(allow bool) *Box {
 	b.allowWrapping = allow
 	return b
@@ -155,10 +165,10 @@ func (b *Box) WrapLimit(limit int) *Box {
 	return b
 }
 
-// Align sets the Content Alignment inside the Box.
+// ContentAlign sets the content alignment inside the Box.
 //
 // Alignment Types: box.Left, box.Center, box.Right
-func (b *Box) Align(align AlignType) *Box {
+func (b *Box) ContentAlign(align AlignType) *Box {
 	b.contentAlign = align
 	return b
 }
@@ -227,7 +237,7 @@ func (b *Box) Render(title, content string) (string, error) {
 	sideMargin := strings.Repeat(" ", b.px)
 	_longestLine, lines2 := longestLine(content_)
 
-	// Compute desired inner width (between the corners, without them)
+	// Compute desired inner width (between the vertical borders, excluding them).
 	contentInnerWidth := _longestLine + 2*b.px
 	innerWidth := contentInnerWidth
 
@@ -241,38 +251,40 @@ func (b *Box) Render(title, content string) (string, error) {
 		}
 	}
 
-	// If we enlarged the inner width to fit the title, reflect that in longestLine
+	// If we enlarged the inner width to fit the title, reflect that in longestLine.
 	if innerWidth > contentInnerWidth {
-		_longestLine = innerWidth - 2*b.px
-		if _longestLine < 0 {
-			_longestLine = 0
-		}
+		_longestLine = max(innerWidth-2*b.px, 0)
 	}
 
-	// Get padding on one side
-	paddingCount := b.px
-	n := _longestLine + (paddingCount * 2) + 2
+	// Visible widths of box characters; fall back to 1 so we always make progress.
+	verticalWidth := charWidth(b.vertical)
+	horizontalWidth := charWidth(b.horizontal)
+	topLeftWidth := charWidth(b.topLeft)
+	topRightWidth := charWidth(b.topRight)
+	bottomLeftWidth := charWidth(b.bottomLeft)
+	bottomRightWidth := charWidth(b.bottomRight)
 
-	// Create Top and Bottom Bars (uncolored)
-	Bar := strings.Repeat(b.horizontal, n-2)
-	TopBar := b.topLeft + Bar + b.topRight
-	BottomBar := b.bottomLeft + Bar + b.bottomRight
-
-	var TitleBar string
-	// If title has tabs then expand them accordingly.
-	if strings.Contains(title, "\t") {
-		TitleBar = repeatWithString(b.horizontal, n-2, xstrings.ExpandTabs(title, 4))
-	} else {
-		TitleBar = repeatWithString(b.horizontal, n-2, title)
+	// Ensure the inner width is a multiple of the horizontal glyph width when
+	// drawing horizontal bars (e.g. emoji) so we don't need to pad with extra
+	// spaces before the corner. This keeps the bar visually uniform.
+	if horizontalWidth > 1 && innerWidth%horizontalWidth != 0 {
+		innerWidth += horizontalWidth - (innerWidth % horizontalWidth)
+		_longestLine = max(innerWidth-2*b.px, 0)
 	}
+
+	// Total visible width of a rendered line (including vertical borders).
+	lineWidth := innerWidth + 2*verticalWidth
+
+	TopBar := buildPlainBar(b.topLeft, b.horizontal, b.topRight, topLeftWidth, topRightWidth, lineWidth, horizontalWidth)
+	BottomBar := buildPlainBar(b.bottomLeft, b.horizontal, b.bottomRight, bottomLeftWidth, bottomRightWidth, lineWidth, horizontalWidth)
 
 	// Check b.TitlePos if it is not Inside
 	if b.titlePos != Inside {
 		switch b.titlePos {
 		case Top:
-			TopBar = b.topLeft + TitleBar + b.topRight
+			TopBar = buildTitledBar(b.topLeft, b.horizontal, b.topRight, topLeftWidth, topRightWidth, lineWidth, horizontalWidth, title)
 		case Bottom:
-			BottomBar = b.bottomLeft + TitleBar + b.bottomRight
+			BottomBar = buildTitledBar(b.bottomLeft, b.horizontal, b.bottomRight, bottomLeftWidth, bottomRightWidth, lineWidth, horizontalWidth, title)
 		default:
 			return "", fmt.Errorf("invalid TitlePosition %s", b.titlePos)
 		}
@@ -287,17 +299,13 @@ func (b *Box) Render(title, content string) (string, error) {
 		TopBar, BottomBar = b.applyColorBar(TopBar, BottomBar, title)
 	}
 
-	if b.titlePos == Inside && runewidth.StringWidth(ansi.Strip(TopBar)) != runewidth.StringWidth(ansi.Strip(BottomBar)) {
-		return "", fmt.Errorf("cannot create a Box with different sizes of Top and Bottom Bars")
-	}
-
 	// Create lines to print
-	texts := b.addVertPadding(n)
+	texts := b.addVertPadding(innerWidth)
 	texts, err := b.formatLine(lines2, _longestLine, titleLen, sideMargin, title, texts)
 	if err != nil {
 		return "", err
 	}
-	vertPadding := b.addVertPadding(n)
+	vertPadding := b.addVertPadding(innerWidth)
 	texts = append(texts, vertPadding...)
 
 	var sb strings.Builder

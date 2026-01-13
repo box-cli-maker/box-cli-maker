@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/x/ansi"
+	"github.com/huandu/xstrings"
 	"github.com/mattn/go-runewidth"
 )
 
@@ -15,9 +16,14 @@ type expandedLine struct {
 	len  int    // line's visible length
 }
 
-// addVertPadding adds Vertical Padding
-func (b *Box) addVertPadding(len int) []string {
-	padding := strings.Repeat(" ", len-2)
+// addVertPadding adds vertical padding lines using the given inner width.
+//
+// innerWidth represents the visible width between the vertical borders.
+func (b *Box) addVertPadding(innerWidth int) []string {
+	if innerWidth < 0 {
+		innerWidth = 0
+	}
+	padding := strings.Repeat(" ", innerWidth)
 	vertical := applyColor(b.vertical, b.color)
 
 	texts := make([]string, b.py)
@@ -60,6 +66,78 @@ func longestLine(lines []string) (int, []expandedLine) {
 		}
 	}
 	return longest, expandedLines
+}
+
+// charWidth returns the visible width of a string, treating zero-width
+// results as width 1 so that box calculations always make progress.
+func charWidth(s string) int {
+	w := runewidth.StringWidth(ansi.Strip(s))
+	if w == 0 {
+		w = 1
+	}
+	return w
+}
+
+// buildSegment builds a horizontal segment with the given visual width using
+// the provided fill glyph, padding with spaces if needed to match width.
+func buildSegment(fill string, width, horizontalWidth int) string {
+	if width <= 0 {
+		return ""
+	}
+	fillCount := width / horizontalWidth
+	seg := strings.Repeat(fill, fillCount)
+	padWidth := width - fillCount*horizontalWidth
+	if padWidth > 0 {
+		seg += strings.Repeat(" ", padWidth)
+	}
+	return seg
+}
+
+// buildPlainBar builds a horizontal bar (without title) that matches the
+// specified visual line width.
+func buildPlainBar(left, fill, right string, leftW, rightW, lineWidth, horizontalWidth int) string {
+	inner := lineWidth - leftW - rightW
+	if inner < 0 {
+		inner = 0
+	}
+	bar := buildSegment(fill, inner, horizontalWidth)
+	return left + bar + right
+}
+
+// buildTitledBar builds a top or bottom bar containing a title. It left-aligns
+// the title segment and fills the remaining space on the right with the
+// horizontal glyph. Any leftover width that is not divisible by the glyph's
+// width is emitted as spaces before the emoji sequence so that the last
+// character before the corner is the glyph, not a space.
+func buildTitledBar(left, fill, right string, leftW, rightW, lineWidth, horizontalWidth int, title string) string {
+	if title == "" {
+		return buildPlainBar(left, fill, right, leftW, rightW, lineWidth, horizontalWidth)
+	}
+
+	plainTitle := title
+	if strings.Contains(plainTitle, "\t") {
+		plainTitle = xstrings.ExpandTabs(plainTitle, 4)
+	}
+	titleWidth := runewidth.StringWidth(ansi.Strip(plainTitle))
+	titleSegWidth := titleWidth + 2 // one space padding on each side
+
+	inner := max(lineWidth-leftW-rightW, titleSegWidth)
+	remaining := inner - titleSegWidth
+
+	gapWidth := 0
+	fillWidth := remaining
+	if horizontalWidth > 1 {
+		gapWidth = remaining % horizontalWidth
+		fillWidth = remaining - gapWidth
+	}
+	leftSeg := ""
+	rightSeg := buildSegment(fill, fillWidth, horizontalWidth)
+	gap := ""
+	if gapWidth > 0 {
+		gap = strings.Repeat(" ", gapWidth)
+	}
+
+	return left + leftSeg + " " + plainTitle + " " + gap + rightSeg + right
 }
 
 // formatLine formats the line according to the information passed
