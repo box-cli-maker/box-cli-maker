@@ -96,10 +96,7 @@ func buildSegment(fill string, width, horizontalWidth int) string {
 // buildPlainBar builds a horizontal bar (without title) that matches the
 // specified visual line width.
 func buildPlainBar(left, fill, right string, leftW, rightW, lineWidth, horizontalWidth int) string {
-	inner := lineWidth - leftW - rightW
-	if inner < 0 {
-		inner = 0
-	}
+	inner := max(lineWidth-leftW-rightW, 0)
 	bar := buildSegment(fill, inner, horizontalWidth)
 	return left + bar + right
 }

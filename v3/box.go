@@ -159,6 +159,8 @@ func (b *Box) WrapContent(allow bool) *Box {
 }
 
 // WrapLimit sets the wrapping limit for content.
+//
+// When set wrapping will be done according to the limit provided.
 func (b *Box) WrapLimit(limit int) *Box {
 	b.allowWrapping = true
 	b.wrappingLimit = limit
@@ -191,8 +193,11 @@ func (b *Box) Render(title, content string) (string, error) {
 
 	var content_ []string
 
-	// Allow Wrapping according to the user
+	// Allow wrapping according to the user
 	if b.allowWrapping {
+		if b.wrappingLimit < 0 {
+			return "", fmt.Errorf("wrapping limit cannot be negative")
+		}
 		// If limit not provided then use 2*TermWidth/3 as limit else
 		// use the one provided
 		if b.wrappingLimit != 0 {
@@ -203,10 +208,7 @@ func (b *Box) Render(title, content string) (string, error) {
 				return "", fmt.Errorf("cannot get terminal size from the output, provide own wrapping limit using .WrapLimit(limit int) method")
 			}
 			// Use 2/3 of terminal width as default wrapping limit
-			wrapWidth := 2 * width / defaultWrapDivisor
-			if wrapWidth < minWrapWidth {
-				wrapWidth = minWrapWidth
-			}
+			wrapWidth := max(2*width/defaultWrapDivisor, minWrapWidth)
 			content = ansi.Wrap(content, wrapWidth, "")
 		}
 	}
