@@ -278,6 +278,13 @@ func (b *Box) Render(title, content string) (string, error) {
 		titleLen = len(strings.Split(ansi.Strip(title), "\n"))
 	}
 
+	if b.px < 0 {
+		return "", fmt.Errorf("horizontal padding cannot be negative")
+	}
+	if b.py < 0 {
+		return "", fmt.Errorf("vertical padding cannot be negative")
+	}
+
 	sideMargin := strings.Repeat(" ", b.px)
 	_longestLine, lines2 := longestLine(content_)
 

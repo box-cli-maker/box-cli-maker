@@ -241,6 +241,24 @@ func TestRenderNegativeWrapLimit(t *testing.T) {
 	}
 }
 
+func TestRenderNegativePadding(t *testing.T) {
+	// Horizontal padding < 0.
+	b := NewBox().Padding(-1, 1).Style(Single)
+	if _, err := b.Render("Title", "Content"); err == nil {
+		t.Fatalf("expected error for negative horizontal padding, got nil")
+	} else if !strings.Contains(err.Error(), "horizontal padding cannot be negative") {
+		t.Errorf("unexpected error for negative horizontal padding: %v", err)
+	}
+
+	// Vertical padding < 0.
+	b = NewBox().Padding(1, -1).Style(Single)
+	if _, err := b.Render("Title", "Content"); err == nil {
+		t.Fatalf("expected error for negative vertical padding, got nil")
+	} else if !strings.Contains(err.Error(), "vertical padding cannot be negative") {
+		t.Errorf("unexpected error for negative vertical padding: %v", err)
+	}
+}
+
 func TestRenderWithWrapLimit(t *testing.T) {
 	longContent := strings.Repeat("word ", 20)
 	b := NewBox().Padding(2, 0).Style(Single).Color("Green").WrapContent(true).WrapLimit(10)
