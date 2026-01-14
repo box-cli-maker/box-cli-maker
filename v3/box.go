@@ -21,30 +21,36 @@ const (
 	minWrapWidth       = 20 // Minimum width to wrap content
 )
 
+// Box renders styled borders around text content.
 type Box struct {
-	topRight    string // TopRight Corner Symbols
-	topLeft     string // TopLeft Corner Symbols
-	vertical    string // Vertical Bar Symbols
-	bottomRight string // BottomRight Corner Symbols
-	bottomLeft  string // BottomLeft Corner Symbols
-	horizontal  string // Horizontal Bars Symbols
-	config             // Box Config
-
+	// topRight renders the glyph used in the upper-right corner.
+	topRight string
+	// topLeft renders the glyph used in the upper-left corner.
+	topLeft string
+	// vertical renders the glyph used for the left and right walls.
+	vertical string
+	// bottomRight renders the glyph used in the lower-right corner.
+	bottomRight string
+	// bottomLeft renders the glyph used in the lower-left corner.
+	bottomLeft string
+	// horizontal renders the glyph used for the top and bottom edges.
+	horizontal string
+	config
 }
 
-// Config holds the configuration for the Box
+// config contains configuration options for the Box.
 type config struct {
-	py            int           // Horizontal Padding
-	px            int           // Vertical Padding
-	contentAlign  AlignType     // Content Alignment inside Box
-	style         BoxStyle      // Box Style
-	titlePos      TitlePosition // Title Position
-	titleColor    string        // Title Color
-	contentColor  string        // Content Color
-	color         string        // Box Color
-	allowWrapping bool          // Flag to allow custom Content Wrapping
-	wrappingLimit int           // Wrap the Content upto the Limit
-	styleSet      bool          // Flag to check if inbuilt-Style is set
+	py            int           // Vertical padding.
+	px            int           // Horizontal padding.
+	contentAlign  AlignType     // Alignment for content inside the box.
+	style         BoxStyle      // Active box style preset.
+	titlePos      TitlePosition // Where the title, if any, is rendered.
+	titleColor    string        // ANSI color (or hex code) for the title.
+	contentColor  string        // ANSI color (or hex code) for the content.
+	color         string        // ANSI color (or hex code) for the box chrome.
+	allowWrapping bool          // Whether long content may wrap.
+	wrappingLimit int           // Custom wrap width when wrapping is enabled.
+	styleSet      bool          // Tracks if a style preset has already been applied.
 }
 
 // NewBox creates a new Box with Single box style.
@@ -111,39 +117,39 @@ func (b *Box) Style(box BoxStyle) *Box {
 	return b
 }
 
-// TopRight sets the TopRight Corner Symbols.
-func (b *Box) TopRight(sym string) *Box {
-	b.topRight = sym
+// TopRight sets the glyph used in the upper-right corner.
+func (b *Box) TopRight(glyph string) *Box {
+	b.topRight = glyph
 	return b
 }
 
-// TopLeft sets the TopLeft Corner Symbols.
-func (b *Box) TopLeft(sym string) *Box {
-	b.topLeft = sym
+// TopLeft sets the glyph used in the upper-left corner.
+func (b *Box) TopLeft(glyph string) *Box {
+	b.topLeft = glyph
 	return b
 }
 
-// BottomRight sets the BottomRight Corner Symbols.
-func (b *Box) BottomRight(sym string) *Box {
-	b.bottomRight = sym
+// BottomRight sets the glyph used in the lower-right corner.
+func (b *Box) BottomRight(glyph string) *Box {
+	b.bottomRight = glyph
 	return b
 }
 
-// BottomLeft sets the BottomLeft Corner Symbols.
-func (b *Box) BottomLeft(sym string) *Box {
-	b.bottomLeft = sym
+// BottomLeft sets the glyph used in the lower-left corner.
+func (b *Box) BottomLeft(glyph string) *Box {
+	b.bottomLeft = glyph
 	return b
 }
 
-// Horizontal sets the Horizontal Bar Symbols.
-func (b *Box) Horizontal(sym string) *Box {
-	b.horizontal = sym
+// Horizontal sets the glyph used for the horizontal edges.
+func (b *Box) Horizontal(glyph string) *Box {
+	b.horizontal = glyph
 	return b
 }
 
-// Vertical sets the Vertical Bar Symbols.
-func (b *Box) Vertical(sym string) *Box {
-	b.vertical = sym
+// Vertical sets the glyph used for the vertical edges.
+func (b *Box) Vertical(glyph string) *Box {
+	b.vertical = glyph
 	return b
 }
 
@@ -243,8 +249,14 @@ func (b *Box) Render(title, content string) (string, error) {
 		}
 	}
 
-	title = applyColor(title, b.titleColor)
-	content = applyColor(content, b.contentColor)
+	title, err := applyColor(title, b.titleColor)
+	if err != nil {
+		return "", err
+	}
+	content, err = applyColor(content, b.contentColor)
+	if err != nil {
+		return "", err
+	}
 
 	if b.titlePos == "" {
 		b.titlePos = Inside
@@ -321,23 +333,35 @@ func (b *Box) Render(title, content string) (string, error) {
 			return "", fmt.Errorf("invalid TitlePosition %s", b.titlePos)
 		}
 	}
-	TopBar, BottomBar = applyColor(TopBar, b.color), applyColor(BottomBar, b.color)
+	if TopBar, err = applyColor(TopBar, b.color); err != nil {
+		return "", err
+	}
+	if BottomBar, err = applyColor(BottomBar, b.color); err != nil {
+		return "", err
+	}
 
-	// Check type of b.Color then assign the Colors to TopBar and BottomBar accordingly
-	// If title has tabs then expand them accordingly.
-	if strings.Contains(title, "\t") {
-		TopBar, BottomBar = b.applyColorBar(TopBar, BottomBar, xstrings.ExpandTabs(title, 4))
-	} else {
-		TopBar, BottomBar = b.applyColorBar(TopBar, BottomBar, title)
+	// Apply title coloring to the bars once, expanding tabs in the title if needed.
+	titleForBar := title
+	if strings.Contains(titleForBar, "\t") {
+		titleForBar = xstrings.ExpandTabs(titleForBar, 4)
+	}
+	if TopBar, BottomBar, err = b.applyColorBar(TopBar, BottomBar, titleForBar); err != nil {
+		return "", err
 	}
 
 	// Create lines to print
-	texts := b.addVertPadding(innerWidth)
-	texts, err := b.formatLine(lines2, _longestLine, titleLen, sideMargin, title, texts)
+	texts, err := b.addVertPadding(innerWidth)
 	if err != nil {
 		return "", err
 	}
-	vertPadding := b.addVertPadding(innerWidth)
+	texts, err = b.formatLine(lines2, _longestLine, titleLen, sideMargin, title, texts)
+	if err != nil {
+		return "", err
+	}
+	vertPadding, err := b.addVertPadding(innerWidth)
+	if err != nil {
+		return "", err
+	}
 	texts = append(texts, vertPadding...)
 
 	var sb strings.Builder

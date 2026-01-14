@@ -19,19 +19,22 @@ type expandedLine struct {
 // addVertPadding adds vertical padding lines using the given inner width.
 //
 // innerWidth represents the visible width between the vertical borders.
-func (b *Box) addVertPadding(innerWidth int) []string {
+func (b *Box) addVertPadding(innerWidth int) ([]string, error) {
 	if innerWidth < 0 {
 		innerWidth = 0
 	}
 	padding := strings.Repeat(" ", innerWidth)
-	vertical := applyColor(b.vertical, b.color)
+	vertical, err := applyColor(b.vertical, b.color)
+	if err != nil {
+		return nil, err
+	}
 
 	texts := make([]string, b.py)
 	for i := range texts {
 		texts[i] = vertical + padding + vertical
 	}
 
-	return texts
+	return texts, nil
 }
 
 // longestLine expands tabs in lines and determines longest visible
@@ -182,7 +185,10 @@ func (b *Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideM
 			format = AlignType(align)
 		}
 
-		sep := applyColor(b.vertical, b.color)
+		sep, err := applyColor(b.vertical, b.color)
+		if err != nil {
+			return nil, err
+		}
 
 		formatted := fmt.Sprintf(string(format), sep, spacing, line.line, oddSpace, space, sideMargin)
 		texts = append(texts, formatted)
@@ -206,32 +212,35 @@ func (b *Box) findAlign() (string, error) {
 
 func repeatWithString(c string, n int, str string) string {
 	cstr := ansi.Strip(str)
-	count := n - runewidth.StringWidth(cstr) - 2
-	if count < 0 {
-		count = 0
-	}
+	count := max(n-runewidth.StringWidth(cstr)-2, 0)
 	bar := strings.Repeat(c, count)
 	return " " + str + " " + bar
 }
 
-func getConvertedColor(colorStr string) color.Color {
-	cv := parseColorString(colorStr)
+func getConvertedColor(colorStr string) (color.Color, error) {
+	cv, err := parseColorString(colorStr)
+	if err != nil {
+		return nil, err
+	}
 	// If profile conversion results in nil, fall back to the
 	// parsed color so we always emit color.
 	converted := profile.Convert(cv)
 	if converted == nil {
-		return cv
+		return cv, nil
 	}
-	return converted
+	return converted, nil
 }
 
-func applyColor(str string, colorStr string) string {
+func applyColor(str string, colorStr string) (string, error) {
 	// Empty color string means: do not apply any styling.
 	if colorStr == "" {
-		return str
+		return str, nil
 	}
-	convertedColor := getConvertedColor(colorStr)
-	return applyConvertedColor(str, convertedColor)
+	convertedColor, err := getConvertedColor(colorStr)
+	if err != nil {
+		return str, err
+	}
+	return applyConvertedColor(str, convertedColor), nil
 }
 
 func stringColorToHex(colorName string) string {
@@ -265,7 +274,7 @@ func addStylePreservingOriginalFormat(s string, f func(a string) string) string 
 }
 
 // parseColorString converts a color string to color.Color using stringColorToHex and ansi.XParseColor
-func parseColorString(colorStr string) color.Color {
+func parseColorString(colorStr string) (color.Color, error) {
 	hexColor := stringColorToHex(colorStr)
 
 	if hexColor == "" {
@@ -274,10 +283,9 @@ func parseColorString(colorStr string) color.Color {
 
 	colorValue := ansi.XParseColor(hexColor)
 	if colorValue == nil {
-		// Fallback to white if parsing fails
-		return color.RGBA{R: 255, G: 255, B: 255, A: 255}
+		return nil, fmt.Errorf("unable to parse color: %s", colorStr)
 	}
-	return colorValue
+	return colorValue, nil
 }
 
 func applyConvertedColor(str string, c color.Color) string {
@@ -308,16 +316,19 @@ func applyConvertedColor(str string, c color.Color) string {
 	return sb.String()
 }
 
-func (b *Box) applyColorBar(topBar, bottomBar, title string) (string, string) {
+func (b *Box) applyColorBar(topBar, bottomBar, title string) (string, string, error) {
 	if b.titleColor == "" || title == "" {
-		return topBar, bottomBar
+		return topBar, bottomBar, nil
 	}
 
 	if strings.TrimSpace(b.color) == "" {
-		return topBar, bottomBar
+		return topBar, bottomBar, nil
 	}
 
-	converted := getConvertedColor(b.color)
+	converted, err := getConvertedColor(b.color)
+	if err != nil {
+		return "", "", err
+	}
 
 	if b.titlePos == Top {
 		strippedBar := ansi.Strip(topBar)
@@ -326,7 +337,11 @@ func (b *Box) applyColorBar(topBar, bottomBar, title string) (string, string) {
 			// split around first occurrence to preserve any other repeats
 			b0 := applyConvertedColor(strippedBar[:idx], converted)
 			b1 := applyConvertedColor(strippedBar[idx+len(strippedTitle):], converted)
-			topBar = b0 + applyColor(title, b.titleColor) + b1
+			coloredTitle, err := applyColor(title, b.titleColor)
+			if err != nil {
+				return "", "", err
+			}
+			topBar = b0 + coloredTitle + b1
 		}
 	}
 
@@ -337,9 +352,13 @@ func (b *Box) applyColorBar(topBar, bottomBar, title string) (string, string) {
 			// split around first occurrence to preserve any other repeats
 			b0 := applyConvertedColor(strippedBar[:idx], converted)
 			b1 := applyConvertedColor(strippedBar[idx+len(strippedTitle):], converted)
-			bottomBar = b0 + applyColor(title, b.titleColor) + b1
+			coloredTitle, err := applyColor(title, b.titleColor)
+			if err != nil {
+				return "", "", err
+			}
+			bottomBar = b0 + coloredTitle + b1
 		}
 	}
 
-	return topBar, bottomBar
+	return topBar, bottomBar, nil
 }

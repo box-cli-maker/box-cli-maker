@@ -231,6 +231,16 @@ func TestRenderMultilineTitleNonInside(t *testing.T) {
 	}
 }
 
+func TestRenderNegativeWrapLimit(t *testing.T) {
+	b := NewBox().Padding(1, 1).Style(Single).WrapContent(true).WrapLimit(-1)
+
+	if _, err := b.Render("Title", "Content"); err == nil {
+		t.Fatalf("expected error for negative wrap limit, got nil")
+	} else if !strings.Contains(err.Error(), "wrapping limit cannot be negative") {
+		t.Errorf("unexpected error message for negative wrap limit: %v", err)
+	}
+}
+
 func TestRenderWithWrapLimit(t *testing.T) {
 	longContent := strings.Repeat("word ", 20)
 	b := NewBox().Padding(2, 0).Style(Single).Color("Green").WrapContent(true).WrapLimit(10)
@@ -244,6 +254,98 @@ func TestRenderWithWrapLimit(t *testing.T) {
 	}
 	if !strings.Contains(out, "word") {
 		t.Errorf("expected content to appear in wrapped box output")
+	}
+}
+
+func TestRenderWithVariousColorFormats(t *testing.T) {
+	title := "Color Formats"
+	content := "content"
+
+	tests := []struct {
+		name      string
+		configure func(*Box)
+	}{
+		{
+			name: "short hex #RGB",
+			configure: func(b *Box) {
+				b.TitleColor("#0F0")
+			},
+		},
+		{
+			name: "full hex #RRGGBB",
+			configure: func(b *Box) {
+				b.ContentColor("#00FF00")
+			},
+		},
+		{
+			name: "rgb:RRRR/GGGG/BBBB",
+			configure: func(b *Box) {
+				b.Color("rgb:0000/ffff/0000")
+			},
+		},
+		{
+			name: "rgba:RRRR/GGGG/BBBB/AAAA",
+			configure: func(b *Box) {
+				b.Color("rgba:ffff/0000/0000/ffff")
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			b := NewBox().Padding(1, 1).Style(Single)
+			// Apply specific color configuration.
+			ct := *b
+			box := &ct
+			// Configure colors on the copy so one test's colors don't bleed into another.
+			tc.configure(box)
+
+			out, err := box.Render(title, content)
+			if err != nil {
+				t.Fatalf("Render returned error for %s: %v", tc.name, err)
+			}
+			if out == "" {
+				t.Fatalf("expected non-empty output for %s", tc.name)
+			}
+			if !strings.Contains(out, title) || !strings.Contains(out, content) {
+				t.Fatalf("rendered output for %s missing title or content: %q", tc.name, out)
+			}
+		})
+	}
+}
+
+func TestRenderInvalidColors(t *testing.T) {
+	title := "Title"
+	content := "Content"
+
+	tests := []struct {
+		name string
+		mut  func(*Box)
+	}{
+		{
+			name: "invalid title color",
+			mut:  func(b *Box) { b.TitleColor("NotAColor") },
+		},
+		{
+			name: "invalid content color",
+			mut:  func(b *Box) { b.ContentColor("NotAColor") },
+		},
+		{
+			name: "invalid border color",
+			mut:  func(b *Box) { b.Color("NotAColor") },
+		},
+	}
+
+	for _, tc := range tests {
+		b := NewBox().Padding(1, 1).Style(Single)
+		// Apply the specific invalid color configuration.
+		tc.mut(b)
+
+		if _, err := b.Render(title, content); err == nil {
+			t.Fatalf("%s: expected error for invalid color, got nil", tc.name)
+		} else if !strings.Contains(err.Error(), "unable to parse color") {
+			t.Errorf("%s: unexpected error message: %v", tc.name, err)
+		}
 	}
 }
 

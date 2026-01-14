@@ -6,40 +6,56 @@ import (
 	"github.com/charmbracelet/colorprofile"
 )
 
-// BoxStyle represents the style of the box.
+// BoxStyle defines a built‑in border style for a Box.
 type BoxStyle string
 
 const (
-	Single       BoxStyle = "Single"
-	Double       BoxStyle = "Double"
-	Round        BoxStyle = "Round"
-	Bold         BoxStyle = "Bold"
+	// Single box style with single line borders.
+	Single BoxStyle = "Single"
+	// Double box style with double line borders.
+	Double BoxStyle = "Double"
+	// Round box style with rounded corners.
+	Round BoxStyle = "Round"
+	// Bold box style with bold lines.
+	Bold BoxStyle = "Bold"
+	// SingleDouble box style with single horizontal and double vertical lines.
 	SingleDouble BoxStyle = "SingleDouble"
+	// DoubleSingle box style with double horizontal and single vertical lines.
 	DoubleSingle BoxStyle = "DoubleSingle"
-	Classic      BoxStyle = "Classic"
-	Hidden       BoxStyle = "Hidden"
-	Block        BoxStyle = "Block"
+	// Classic box style with plus and minus signs.
+	Classic BoxStyle = "Classic"
+	// Hidden box style with invisible borders.
+	Hidden BoxStyle = "Hidden"
+	// Block box style with block characters.
+	Block BoxStyle = "Block"
 )
 
-// AlignType represents the alignment type for content inside the box.
+// AlignType represents the horizontal alignment of content inside the box.
 type AlignType string
 
 const (
+	// Center alignment
 	Center AlignType = "Center"
-	Left   AlignType = "Left"
-	Right  AlignType = "Right"
+	// Left alignment
+	Left AlignType = "Left"
+	// Right alignment
+	Right AlignType = "Right"
 )
 
-// TitlePosition represents the position of the title in the box.
+// TitlePosition represents the position of the title relative to the box.
 type TitlePosition string
 
 const (
+	// Inside title position
 	Inside TitlePosition = "Inside"
-	Top    TitlePosition = "Top"
+	// Top title position
+	Top TitlePosition = "Top"
+	// Bottom title position
 	Bottom TitlePosition = "Bottom"
 )
 
 var (
+	// boxes are inbuilt Box styles provided by the module
 	boxes = map[BoxStyle]Box{
 		Single: {
 			topRight:    "┐",
@@ -115,6 +131,8 @@ var (
 		},
 	}
 
+	// colorNameToHex maps color names to their hexadecimal codes.
+	// This includes both standard and bright ANSI colors.
 	colorNameToHex = map[string]string{
 		// Basic ANSI colors (0-7)
 		"Black":   "#000000",
@@ -141,6 +159,7 @@ var (
 		"BrightCyan":    "#00FFFF",
 		"HiCyan":        "#00FFFF",
 		"BrightWhite":   "#FFFFFF",
+		"HiWhite":       "#FFFFFF",
 	}
 
 	profile = colorprofile.Detect(os.Stdout, os.Environ())

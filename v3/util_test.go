@@ -14,7 +14,10 @@ func TestAddVertPadding(t *testing.T) {
 	b.py = 2
 
 	// innerWidth is the visible width between the vertical borders.
-	got := b.addVertPadding(4)
+	got, err := b.addVertPadding(4)
+	if err != nil {
+		t.Fatalf("addVertPadding unexpected error: %v", err)
+	}
 	if len(got) != 2 {
 		t.Fatalf("expected 2 padding lines, got %d", len(got))
 	}
@@ -151,19 +154,33 @@ func TestRepeatWithString(t *testing.T) {
 }
 
 func TestGetConvertedColorAndApplyColor(t *testing.T) {
-	c := getConvertedColor("Green")
+	c, err := getConvertedColor("Green")
+	if err != nil {
+		t.Fatalf("expected non-error from getConvertedColor: %v", err)
+	}
 	if c == nil {
 		t.Fatalf("expected non-nil color from getConvertedColor")
 	}
 
 	text := "hello"
-	if got := applyColor(text, ""); got != text {
+	got, err := applyColor(text, "")
+	if err != nil {
+		t.Fatalf("expected no error when color is empty: %v", err)
+	}
+	if got != text {
 		t.Errorf("expected text unchanged when color is empty, got %q", got)
 	}
 
-	colored := applyColor(text, "Green")
+	colored, err := applyColor(text, "Green")
+	if err != nil {
+		t.Fatalf("unexpected error applying valid color: %v", err)
+	}
 	if ansi.Strip(colored) != text {
 		t.Errorf("expected stripped colored text to equal %q, got %q", text, ansi.Strip(colored))
+	}
+
+	if _, err := applyColor(text, "NotAColor"); err == nil {
+		t.Fatalf("expected error when applying unknown color name")
 	}
 }
 
@@ -196,19 +213,33 @@ func TestAddStylePreservingOriginalFormat(t *testing.T) {
 
 func TestParseColorString(t *testing.T) {
 	// Known color name should result in a non-nil color.
-	c := parseColorString("Green")
+	c, err := parseColorString("Green")
+	if err != nil {
+		t.Fatalf("expected non-error for Green: %v", err)
+	}
 	if c == nil {
 		t.Fatalf("expected non-nil color for Green")
 	}
 
-	// Invalid color string should fall back to white.
-	c = parseColorString("not-a-real-color")
-	rgba, ok := c.(color.RGBA)
-	if !ok {
-		t.Fatalf("expected color.RGBA fallback, got %T", c)
+	// Hex and rgb/rgba forms supported by ansi.XParseColor should also parse.
+	for _, tc := range []string{
+		"#0F0",                    // #RGB short hex
+		"#00FF00",                 // #RRGGBB full hex
+		"rgb:0000/ffff/0000",      // rgb:RRRR/GGGG/BBBB
+		"rgba:ffff/0000/0000/ffff", // rgba:RRRR/GGGG/BBBB/AAAA
+	} {
+		c, err := parseColorString(tc)
+		if err != nil {
+			t.Fatalf("expected non-error for %q: %v", tc, err)
+		}
+		if c == nil {
+			t.Fatalf("expected non-nil color for %q", tc)
+		}
 	}
-	if rgba.R != 255 || rgba.G != 255 || rgba.B != 255 || rgba.A != 255 {
-		t.Errorf("expected white fallback, got %#v", rgba)
+
+	// Invalid color string should return an error.
+	if _, err := parseColorString("not-a-real-color"); err == nil {
+		t.Fatalf("expected error for invalid color string")
 	}
 }
 
@@ -246,7 +277,10 @@ func TestApplyColorBar(t *testing.T) {
 
 	// Early return when titleColor is empty or title is empty.
 	b := &Box{}
-	gotTop, gotBottom := b.applyColorBar(top, bottom, title)
+	gotTop, gotBottom, err := b.applyColorBar(top, bottom, title)
+	if err != nil {
+		t.Fatalf("applyColorBar unexpected error: %v", err)
+	}
 	if gotTop != top || gotBottom != bottom {
 		t.Errorf("expected bars unchanged when titleColor is empty")
 	}
@@ -256,7 +290,10 @@ func TestApplyColorBar(t *testing.T) {
 	b.titleColor = "BrightRed"
 	b.color = "BrightBlue"
 	b.titlePos = Top
-	gotTop, gotBottom = b.applyColorBar(top, bottom, title)
+	gotTop, gotBottom, err = b.applyColorBar(top, bottom, title)
+	if err != nil {
+		t.Fatalf("applyColorBar unexpected error for top title: %v", err)
+	}
 	if ansi.Strip(gotTop) != top {
 		t.Errorf("expected stripped top bar to remain %q, got %q", top, ansi.Strip(gotTop))
 	}
@@ -274,7 +311,10 @@ func TestApplyColorBar(t *testing.T) {
 	b.titleColor = "BrightRed"
 	b.color = "BrightBlue"
 	b.titlePos = Bottom
-	gotTop, gotBottom = b.applyColorBar(topPlain, bottomWithTitle, title)
+	gotTop, gotBottom, err = b.applyColorBar(topPlain, bottomWithTitle, title)
+	if err != nil {
+		t.Fatalf("applyColorBar unexpected error for bottom title: %v", err)
+	}
 	if ansi.Strip(gotTop) != topPlain {
 		t.Errorf("expected stripped top bar to remain %q, got %q", topPlain, ansi.Strip(gotTop))
 	}
@@ -286,13 +326,19 @@ func TestApplyColorBar(t *testing.T) {
 	}
 
 	// No box color set: bars should remain unchanged so existing styling is preserved.
-	coloredTitle := applyColor(title, "BrightRed")
+	coloredTitle, err := applyColor(title, "BrightRed")
+	if err != nil {
+		t.Fatalf("unexpected error coloring title: %v", err)
+	}
 	topWithColoredTitle := strings.Replace(top, title, coloredTitle, 1)
 	b = &Box{}
 	b.titleColor = "BrightRed"
 	b.color = ""
 	b.titlePos = Top
-	gotTop, gotBottom = b.applyColorBar(topWithColoredTitle, bottom, coloredTitle)
+	gotTop, gotBottom, err = b.applyColorBar(topWithColoredTitle, bottom, coloredTitle)
+	if err != nil {
+		t.Fatalf("applyColorBar unexpected error when Color is empty: %v", err)
+	}
 	if gotTop != topWithColoredTitle {
 		t.Errorf("expected top bar unchanged when Color is empty; got %q", gotTop)
 	}
