@@ -124,7 +124,7 @@ fmt.Println(boxStr)
 
 | Aspect           | v2                                      | v3                                                   |
 |------------------|-----------------------------------------|------------------------------------------------------|
-| Construction     | `New(Config)` with public `Config`/`Box` fields | `NewBox()` with fluent builder methods                      |
+| Construction     | `New(Config)` with public `Config`/`Box` fields | `NewBox()` with fluent builder methods       |
 | Styles           | `Type: "Single"` (untyped string)       | `Style(box.Single)` (typed `BoxStyle`)               |
 | Title position   | `TitlePos: "Top"` (string)              | `TitlePosition(box.Top)` (typed `TitlePosition`)     |
 | Custom borders   | Struct literals on `Box` fields         | Builder methods: `TopRight`, `TopLeft`, etc.         |

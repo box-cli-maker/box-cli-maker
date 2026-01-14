@@ -52,6 +52,15 @@ func NewBox() *Box {
 	return &Box{config: config{style: Single}}
 }
 
+// Copy returns a shallow copy of the Box so further mutations do not affect the original.
+func (b *Box) Copy() *Box {
+	if b == nil {
+		return nil
+	}
+	clone := *b
+	return &clone
+}
+
 // Padding sets horizontal (px) and vertical (py) inner padding.
 func (b *Box) Padding(px, py int) *Box {
 	b.px = px
