@@ -41,6 +41,108 @@ func TestRenderBasicBox(t *testing.T) {
 	}
 }
 
+func TestRenderDefaultStyleWithoutExplicitStyle(t *testing.T) {
+	b := NewBox().Padding(1, 1)
+
+	out, err := b.Render("Default", "Content")
+	if err != nil {
+		t.Fatalf("Render returned error: %v", err)
+	}
+	lines := strings.Split(out, "\n")
+	if len(lines) < 3 {
+		t.Fatalf("expected at least 3 lines in rendered box, got %d", len(lines))
+	}
+	top := lines[0]
+	bottom := lines[len(lines)-2]
+
+	if !strings.HasPrefix(top, "┌") || !strings.HasSuffix(top, "┐") {
+		t.Errorf("expected Single style corners by default; top=%q", top)
+	}
+	if !strings.HasPrefix(bottom, "└") || !strings.HasSuffix(bottom, "┘") {
+		t.Errorf("expected Single style corners by default; bottom=%q", bottom)
+	}
+}
+
+func TestManualBorderOverridesAfterStyle(t *testing.T) {
+	b := NewBox().
+		Style(Double).
+		TopLeft("*").
+		TopRight("*").
+		BottomLeft("*").
+		BottomRight("*")
+
+	out, err := b.Render("Title", "Content")
+	if err != nil {
+		t.Fatalf("Render returned error: %v", err)
+	}
+	lines := strings.Split(out, "\n")
+	if len(lines) < 3 {
+		t.Fatalf("expected at least 3 lines in rendered box, got %d", len(lines))
+	}
+	top := lines[0]
+	bottom := lines[len(lines)-2]
+
+	if !strings.HasPrefix(top, "*") || !strings.HasSuffix(top, "*") {
+		t.Errorf("expected custom top corners '*', got %q", top)
+	}
+	if !strings.HasPrefix(bottom, "*") || !strings.HasSuffix(bottom, "*") {
+		t.Errorf("expected custom bottom corners '*', got %q", bottom)
+	}
+
+	if !strings.Contains(top, "═") || !strings.Contains(bottom, "═") {
+		t.Errorf("expected Double style horizontal borders '═', got top=%q bottom=%q", top, bottom)
+	}
+}
+
+func TestBoxCopy(t *testing.T) {
+	t.Run("independent copies", func(t *testing.T) {
+		original := NewBox().
+			Padding(1, 2).
+			Color("Red").
+			TitleColor("Blue").
+			ContentColor("Yellow").
+			TitlePosition(Top).
+			Style(Double).
+			WrapContent(true).
+			WrapLimit(30)
+		original.TopLeft("[").TopRight("]").BottomLeft("{").BottomRight("}").Horizontal("-").Vertical("|")
+
+		clone := original.Copy()
+		if clone == nil {
+			t.Fatalf("expected non-nil copy")
+		}
+		if clone == original {
+			t.Fatalf("Copy should return a distinct pointer")
+		}
+
+		clone.Color("Green").Padding(5, 6).TitlePosition(Bottom).TopLeft("*")
+		if original.color != "Red" {
+			t.Fatalf("expected original color to remain Red, got %q", original.color)
+		}
+		if original.px != 1 || original.py != 2 {
+			t.Fatalf("expected original padding (1,2), got (%d,%d)", original.px, original.py)
+		}
+		if original.titlePos != Top {
+			t.Fatalf("expected original title position to stay Top, got %v", original.titlePos)
+		}
+		if original.topLeft != "[" {
+			t.Fatalf("expected original topLeft to stay '[', got %q", original.topLeft)
+		}
+
+		original.Color("Magenta")
+		if clone.color != "Green" {
+			t.Fatalf("expected clone color to remain Green after mutating original, got %q", clone.color)
+		}
+	})
+
+	t.Run("nil receiver", func(t *testing.T) {
+		var b *Box
+		if copy := b.Copy(); copy != nil {
+			t.Fatalf("expected nil copy from nil receiver, got %#v", copy)
+		}
+	})
+}
+
 func TestRenderTitlePositions(t *testing.T) {
 	title := "My Title"
 	content := "Some content"

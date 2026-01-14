@@ -313,6 +313,10 @@ func (b *Box) applyColorBar(topBar, bottomBar, title string) (string, string) {
 		return topBar, bottomBar
 	}
 
+	if strings.TrimSpace(b.color) == "" {
+		return topBar, bottomBar
+	}
+
 	converted := getConvertedColor(b.color)
 
 	if b.titlePos == Top {

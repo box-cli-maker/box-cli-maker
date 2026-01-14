@@ -284,6 +284,21 @@ func TestApplyColorBar(t *testing.T) {
 	if !strings.Contains(ansi.Strip(gotBottom), title) {
 		t.Errorf("expected title to remain present in bottom bar, got %q", ansi.Strip(gotBottom))
 	}
+
+	// No box color set: bars should remain unchanged so existing styling is preserved.
+	coloredTitle := applyColor(title, "BrightRed")
+	topWithColoredTitle := strings.Replace(top, title, coloredTitle, 1)
+	b = &Box{}
+	b.titleColor = "BrightRed"
+	b.color = ""
+	b.titlePos = Top
+	gotTop, gotBottom = b.applyColorBar(topWithColoredTitle, bottom, coloredTitle)
+	if gotTop != topWithColoredTitle {
+		t.Errorf("expected top bar unchanged when Color is empty; got %q", gotTop)
+	}
+	if gotBottom != bottom {
+		t.Errorf("expected bottom bar unchanged when Color is empty; got %q", gotBottom)
+	}
 }
 
 func TestCharWidth(t *testing.T) {

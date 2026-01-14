@@ -27,4 +27,13 @@ func main() {
 	b2, _ := wrap.Render("Wrapping Works", strings.Repeat("Box CLI Maker 盒子製 造商,📦 ", 160))
 	fmt.Println(b2)
 
+	b3 := box.NewBox().
+		Style(box.Double).
+		TopLeft("*").
+		TopRight("*").
+		BottomLeft("*").
+		BottomRight("*")
+
+	fmt.Println(b3.MustRender("Custom Box", ""))
+
 }

@@ -47,12 +47,16 @@ type config struct {
 	styleSet      bool          // Flag to check if inbuilt-Style is set
 }
 
-// NewBox creates a new Box with default configuration.
+// NewBox creates a new Box with Single box style.
 func NewBox() *Box {
-	return &Box{config: config{style: Single}}
+	b := &Box{}
+	b.Style(Single)
+	return b
 }
 
 // Copy returns a shallow copy of the Box so further mutations do not affect the original.
+//
+// Useful for creating base styles and deriving multiple boxes from them.
 func (b *Box) Copy() *Box {
 	if b == nil {
 		return nil
@@ -93,6 +97,17 @@ func (b *Box) VPadding(py int) *Box {
 func (b *Box) Style(box BoxStyle) *Box {
 	b.config.style = box
 	b.styleSet = true
+	// Set the box style characters from predefined styles
+	// This also allows manual overrides after setting style
+	// and have a standard base.
+	if styleDef, ok := boxes[box]; ok {
+		b.BottomLeft(styleDef.bottomLeft).
+			BottomRight(styleDef.bottomRight).
+			TopLeft(styleDef.topLeft).
+			TopRight(styleDef.topRight).
+			Horizontal(styleDef.horizontal).
+			Vertical(styleDef.vertical)
+	}
 	return b
 }
 
@@ -161,7 +176,10 @@ func (b *Box) TitlePosition(pos TitlePosition) *Box {
 // WrapContent enables or disables content wrapping.
 //
 // When enabled, the content will be wrapped to fit 2/3 width of the terminal by default.
-// You can set a custom wrap limit using the WrapLimit method.
+//
+// Not suitable for non-TTY outputs.
+//
+// For custom wrap limit and non-TTY outputs, use the WrapLimit method.
 func (b *Box) WrapContent(allow bool) *Box {
 	b.allowWrapping = allow
 	return b
@@ -184,20 +202,23 @@ func (b *Box) ContentAlign(align AlignType) *Box {
 	return b
 }
 
+// MustRender is like Render but panics if an error occurs.
+//
+// Useful to generate boxes without having to handle the error.
+func (b *Box) MustRender(title, content string) string {
+	s, err := b.Render(title, content)
+	if err != nil {
+		panic(err)
+	}
+	return s
+}
+
 // Render generates the box with the given title and content.
 func (b *Box) Render(title, content string) (string, error) {
-	style, ok := boxes[b.config.style]
-
-	if ok && b.styleSet {
-		b.BottomLeft(style.bottomLeft).
-			BottomRight(style.bottomRight).
-			TopLeft(style.topLeft).
-			TopRight(style.topRight).
-			Horizontal(style.horizontal).
-			Vertical(style.vertical)
-	}
-	if !ok && b.styleSet {
-		return "", fmt.Errorf("invalid Box style %s", b.config.style)
+	if b.styleSet {
+		if _, ok := boxes[b.config.style]; !ok {
+			return "", fmt.Errorf("invalid Box style %s", b.config.style)
+		}
 	}
 
 	var content_ []string
@@ -330,15 +351,4 @@ func (b *Box) Render(title, content string) (string, error) {
 
 	return sb.String(), nil
 
-}
-
-// MustRender is like Render but panics if an error occurs.
-//
-// Useful to generate boxes without having to handle the error.
-func (b *Box) MustRender(title, content string) string {
-	s, err := b.Render(title, content)
-	if err != nil {
-		panic(err)
-	}
-	return s
 }
