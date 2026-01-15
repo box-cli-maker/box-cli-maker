@@ -13,13 +13,16 @@
 //		ContentAlign(box.Center).
 //		Color(box.Cyan).
 //		TitleColor(box.BrightYellow).
-//		ContentColor(box.White)
 //
 //	out, err := b.Render("Box CLI Maker", "Render highly customizable boxes for terminal")
 //	if err != nil {
 //		log.Fatal(err)
 //	}
 //	fmt.Println(out)
+//
+// # Construction
+//
+// Box must be constructed with NewBox; the zero value is not usable.
 //
 // # Styles
 //
@@ -63,10 +66,9 @@
 // # Colors
 //
 // TitleColor, ContentColor, and Color accept either one of the first 16 ANSI
-// color names (box.Black, box.Red, box.Green, box.Yellow, box.Blue, box.Magenta, box.Cyan, box.White and their
-// bright variants) or a #RGB / #RRGGBB / rgb:RRRR/GGGG/BBBB /
-// rgba:RRRR/GGGG/BBBB/AAAA value. Invalid colors cause Render to return an
-// error.
+// color names (the Color constants, e.g. box.Green, box.BrightRed) or a
+// #RGB / #RRGGBB / rgb:RRRR/GGGG/BBBB / rgba:RRRR/GGGG/BBBB/AAAA value.
+// Invalid colors cause Render to return an error.
 //
 // # Errors
 //
@@ -75,10 +77,6 @@
 // title position, any configured colors are invalid, or the terminal width
 // cannot be determined. MustRender is a convenience wrapper that panics on
 // error.
-//
-// # Construction
-//
-// Box must be constructed with NewBox; the zero value is not usable.
 //
 // # Copying
 //

@@ -16,7 +16,7 @@
 
 # Box CLI Maker
 
-`box-cli-maker` is a Go library for rendering highly customizable boxes in the terminal.
+Box CLI Maker is a Go library for rendering highly customizable boxes in the terminal.
 
 ---
 
@@ -24,13 +24,13 @@
 
 - 9 built‑in styles (Single, Double, Round, Bold, SingleDouble, DoubleSingle, Classic, Hidden, Block)
 - Custom glyphs for all corners and edges
-- Title positions: Inside, Top, Bottom 📏
-- Content alignment: Left, Center, Right  📐
+- Title positions: Inside, Top, Bottom
+- Content alignment: Left, Center, Right
 - Optional content wrapping with `WrapContent` and `WrapLimit`
-- Color support 🎨 with:
+- Color support with:
   - First 16 ANSI color names
   - `#RGB`, `#RRGGBB`, `rgb:RRRR/GGGG/BBBB`, `rgba:RRRR/GGGG/BBBB/AAAA`
-- Unicode and emoji support with proper width handling 😋
+- Unicode and emoji support with proper width handling
 - Explicit errors from `Render`, plus `MustRender` for panic‑on‑error 
 
 ---
