@@ -11,11 +11,11 @@
 //		Padding(2, 1).
 //		TitlePosition(box.Top).
 //		ContentAlign(box.Center).
-//		Color("Cyan").
-//		TitleColor("BrightYellow").
-//		ContentColor("White")
+//		Color(box.Cyan).
+//		TitleColor(box.BrightYellow).
+//		ContentColor(box.White)
 //
-//	out, err := b.Render("Box CLI Maker", "Highly customizable terminal box maker")
+//	out, err := b.Render("Box CLI Maker", "Render highly customizable boxes for terminal")
 //	if err != nil {
 //		log.Fatal(err)
 //	}
@@ -63,7 +63,7 @@
 // # Colors
 //
 // TitleColor, ContentColor, and Color accept either one of the first 16 ANSI
-// color names (Black, Red, Green, Yellow, Blue, Magenta, Cyan, White and their
+// color names (box.Black, box.Red, box.Green, box.Yellow, box.Blue, box.Magenta, box.Cyan, box.White and their
 // bright variants) or a #RGB / #RRGGBB / rgb:RRRR/GGGG/BBBB /
 // rgba:RRRR/GGGG/BBBB/AAAA value. Invalid colors cause Render to return an
 // error.
@@ -86,8 +86,8 @@
 // derive variants without mutating the original:
 //
 //	base := box.NewBox().Style(box.Single).Padding(2, 1)
-//	info := base.Copy().Color("Green")
-//	warn := base.Copy().Color("Yellow")
+//	info := base.Copy().Color(box.Green)
+//	warn := base.Copy().Color(box.Yellow)
 //
 // Each Copy can then be customized and rendered independently.
 package box

@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	b := box.NewBox().Padding(2, 5).
+	b := box.NewBox().Padding(2, 3).
 		Style(box.Single).
-		Color("Cyan").
+		Color(box.Cyan).
 		ContentColor("#d73a4a")
 
 	content := `Lorem ipsum dolor sit amet, 

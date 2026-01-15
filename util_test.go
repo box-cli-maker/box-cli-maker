@@ -154,7 +154,7 @@ func TestRepeatWithString(t *testing.T) {
 }
 
 func TestGetConvertedColorAndApplyColor(t *testing.T) {
-	c, err := getConvertedColor("Green")
+	c, err := getConvertedColor(Green)
 	if err != nil {
 		t.Fatalf("expected non-error from getConvertedColor: %v", err)
 	}
@@ -171,7 +171,7 @@ func TestGetConvertedColorAndApplyColor(t *testing.T) {
 		t.Errorf("expected text unchanged when color is empty, got %q", got)
 	}
 
-	colored, err := applyColor(text, "Green")
+	colored, err := applyColor(text, Green)
 	if err != nil {
 		t.Fatalf("unexpected error applying valid color: %v", err)
 	}
@@ -185,7 +185,7 @@ func TestGetConvertedColorAndApplyColor(t *testing.T) {
 }
 
 func TestStringColorToHex(t *testing.T) {
-	if got := stringColorToHex("Green"); got != "#008000" {
+	if got := stringColorToHex(Green); got != "#008000" {
 		t.Errorf("expected Green -> #008000, got %q", got)
 	}
 	if got := stringColorToHex("UnknownColor"); got != "" {
@@ -213,7 +213,7 @@ func TestAddStylePreservingOriginalFormat(t *testing.T) {
 
 func TestParseColorString(t *testing.T) {
 	// Known color name should result in a non-nil color.
-	c, err := parseColorString("Green")
+	c, err := parseColorString(Green)
 	if err != nil {
 		t.Fatalf("expected non-error for Green: %v", err)
 	}
@@ -223,9 +223,9 @@ func TestParseColorString(t *testing.T) {
 
 	// Hex and rgb/rgba forms supported by ansi.XParseColor should also parse.
 	for _, tc := range []string{
-		"#0F0",                    // #RGB short hex
-		"#00FF00",                 // #RRGGBB full hex
-		"rgb:0000/ffff/0000",      // rgb:RRRR/GGGG/BBBB
+		"#0F0",                     // #RGB short hex
+		"#00FF00",                  // #RRGGBB full hex
+		"rgb:0000/ffff/0000",       // rgb:RRRR/GGGG/BBBB
 		"rgba:ffff/0000/0000/ffff", // rgba:RRRR/GGGG/BBBB/AAAA
 	} {
 		c, err := parseColorString(tc)
@@ -287,8 +287,8 @@ func TestApplyColorBar(t *testing.T) {
 
 	// Title at top: top bar should be recolored but visually unchanged when stripped.
 	b = &Box{}
-	b.titleColor = "BrightRed"
-	b.color = "BrightBlue"
+	b.titleColor = BrightRed
+	b.color = BrightBlue
 	b.titlePos = Top
 	gotTop, gotBottom, err = b.applyColorBar(top, bottom, title)
 	if err != nil {
@@ -308,8 +308,8 @@ func TestApplyColorBar(t *testing.T) {
 	topPlain := "+-----------------+"
 	bottomWithTitle := "+------TITLE------+"
 	b = &Box{}
-	b.titleColor = "BrightRed"
-	b.color = "BrightBlue"
+	b.titleColor = BrightRed
+	b.color = BrightBlue
 	b.titlePos = Bottom
 	gotTop, gotBottom, err = b.applyColorBar(topPlain, bottomWithTitle, title)
 	if err != nil {
@@ -326,13 +326,13 @@ func TestApplyColorBar(t *testing.T) {
 	}
 
 	// No box color set: bars should remain unchanged so existing styling is preserved.
-	coloredTitle, err := applyColor(title, "BrightRed")
+	coloredTitle, err := applyColor(title, BrightRed)
 	if err != nil {
 		t.Fatalf("unexpected error coloring title: %v", err)
 	}
 	topWithColoredTitle := strings.Replace(top, title, coloredTitle, 1)
 	b = &Box{}
-	b.titleColor = "BrightRed"
+	b.titleColor = BrightRed
 	b.color = ""
 	b.titlePos = Top
 	gotTop, gotBottom, err = b.applyColorBar(topWithColoredTitle, bottom, coloredTitle)

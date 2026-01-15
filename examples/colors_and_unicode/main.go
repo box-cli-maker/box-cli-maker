@@ -19,10 +19,10 @@ func main() {
 		box.Classic,
 	}
 
-	colors := []string{
-		"Black", "Blue", "Red", "Green", "Yellow", "Cyan", "Magenta", "White",
-		"BrightBlack", "BrightBlue", "BrightRed", "BrightGreen", "BrightYellow",
-		"BrightCyan", "BrightMagenta", "BrightWhite",
+	colors := []box.Color{
+		box.Black, box.Blue, box.Red, box.Green, box.Yellow, box.Cyan, box.Magenta, box.White,
+		box.BrightBlack, box.BrightBlue, box.BrightRed, box.BrightGreen, box.BrightYellow,
+		box.BrightCyan, box.BrightMagenta, box.BrightWhite,
 	}
 
 	// Color and style combinations (border color only).
@@ -47,9 +47,9 @@ func main() {
 		Padding(2, 5).
 		Style(box.Single).
 		TitlePosition(box.Top).
-		Color("Green").
-		TitleColor("Cyan").
-		ContentColor("Red")
+		Color(box.Green).
+		TitleColor(box.Cyan).
+		ContentColor(box.Red)
 
 	multi := "Make\n\tHighly\n\t\tCustomized\n\t\t\tTerminal\n\t\t\t\tBoxes"
 
@@ -103,12 +103,12 @@ func main() {
 	bw := box.NewBox().
 		Padding(2, 0).
 		Style(box.Single).
-		Color("Green").
+		Color(box.Green).
 		TitlePosition(box.Top).
 		WrapContent(true).
 		WrapLimit(40).
-		ContentColor("Cyan").
-		TitleColor("BrightRed")
+		ContentColor(box.Cyan).
+		TitleColor(box.BrightRed)
 
 	out, err = bw.Render("Box\tCLI\tMaker\t📦", content)
 	if err != nil {

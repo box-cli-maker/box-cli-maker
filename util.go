@@ -243,8 +243,8 @@ func applyColor(str string, colorStr string) (string, error) {
 	return applyConvertedColor(str, convertedColor), nil
 }
 
-func stringColorToHex(colorName string) string {
-	if hex, exists := colorNameToHex[colorName]; exists {
+func stringColorToHex(color string) string {
+	if hex, exists := colorToHex[color]; exists {
 		return hex
 	}
 	// Return empty string for unknown colors to let ansi.XParseColor handle it

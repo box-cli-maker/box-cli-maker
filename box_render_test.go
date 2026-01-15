@@ -154,9 +154,9 @@ func TestBoxCopy(t *testing.T) {
 	t.Run("independent copies", func(t *testing.T) {
 		original := NewBox().
 			Padding(1, 2).
-			Color("Red").
-			TitleColor("Blue").
-			ContentColor("Yellow").
+			Color(Red).
+			TitleColor(Blue).
+			ContentColor(Yellow).
 			TitlePosition(Top).
 			Style(Double).
 			WrapContent(true).
@@ -171,8 +171,8 @@ func TestBoxCopy(t *testing.T) {
 			t.Fatalf("Copy should return a distinct pointer")
 		}
 
-		clone.Color("Green").Padding(5, 6).TitlePosition(Bottom).TopLeft("*")
-		if original.color != "Red" {
+		clone.Color(Green).Padding(5, 6).TitlePosition(Bottom).TopLeft("*")
+		if original.color != Red {
 			t.Fatalf("expected original color to remain Red, got %q", original.color)
 		}
 		if original.px != 1 || original.py != 2 {
@@ -185,8 +185,8 @@ func TestBoxCopy(t *testing.T) {
 			t.Fatalf("expected original topLeft to stay '[', got %q", original.topLeft)
 		}
 
-		original.Color("Magenta")
-		if clone.color != "Green" {
+		original.Color(Magenta)
+		if clone.color != Green {
 			t.Fatalf("expected clone color to remain Green after mutating original, got %q", clone.color)
 		}
 	})
@@ -317,7 +317,7 @@ func TestRenderNegativePadding(t *testing.T) {
 
 func TestRenderWithWrapLimit(t *testing.T) {
 	longContent := strings.Repeat("word ", 20)
-	b := NewBox().Padding(2, 0).Style(Single).Color("Green").WrapContent(true).WrapLimit(10)
+	b := NewBox().Padding(2, 0).Style(Single).Color(Green).WrapContent(true).WrapLimit(10)
 
 	out, err := b.Render("Wrapped", longContent)
 	if err != nil {

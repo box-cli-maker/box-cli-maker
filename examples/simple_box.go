@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	b := box.NewBox().Padding(2, 5).Style(box.Single).Color("Cyan")
+	b := box.NewBox().Padding(2, 5).Style(box.Single).Color(box.Cyan)
 	s, err := b.Render("Box CLI Maker", "Another custom box type")
 	if err != nil {
 		panic(err)

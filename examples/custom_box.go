@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	b := box.NewBox().Padding(2, 3).Color("Red").TitlePosition(box.Top)
+	b := box.NewBox().Padding(2, 3).Color(box.Red).TitlePosition(box.Top)
 	b.TopRight("📦").TopLeft("📦🚀").BottomRight("📦").BottomLeft("📦").Horizontal("📦").Vertical("📦")
 
 	s, err := b.Render("Box CLI 	Maker", "Make Highly Customizable Terminal Boxes")
@@ -16,7 +16,7 @@ func main() {
 	}
 	fmt.Println(s)
 
-	b1 := box.NewBox().Padding(2, 3).Color("Green").TitlePosition(box.Bottom)
+	b1 := box.NewBox().Padding(2, 3).Color(box.Green).TitlePosition(box.Bottom)
 	b1.TopRight("+").TopLeft("+").BottomRight("+").BottomLeft("++").Horizontal("-").Vertical("|")
 
 	s1, err := b1.Render("Box CLI Maker", "Make Highly Customizable Terminal Boxes")

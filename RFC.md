@@ -37,7 +37,7 @@ Box.Print("Box CLI Maker", "Highly Customized Terminal Box Maker")
 b := box.NewBox().
         Padding(2, 5).
         Style(box.Single).
-        Color("Cyan")
+        Color(box.Cyan)
 
 // Ignore error if Box rendering is possible
 boxStr, _ := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker") 
@@ -108,7 +108,7 @@ b := box.NewBox().
         TitlePosition(box.Inside).
         WrapContent(true).
         WrapLimit(num).
-        ContentColor("Red")
+        ContentColor(box.Red)
 
 
 // Ignore error if Box rendering is possible

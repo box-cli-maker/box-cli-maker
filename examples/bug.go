@@ -18,9 +18,9 @@ func main() {
 
 	b := box.NewBox().Padding(px, 2).
 		Style(box.Double).
-		Color("Red").
+		Color(box.Red).
 		TitlePosition(box.Top).
-		TitleColor("Magenta")
+		TitleColor(box.Magenta)
 
 	fmt.Println(b.MustRender(title, lines))
 }

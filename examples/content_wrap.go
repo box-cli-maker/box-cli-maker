@@ -10,7 +10,7 @@ import (
 func main() {
 	b := box.NewBox().Padding(2, 0).
 		Style(box.Single).
-		Color("Green").
+		Color(box.Green).
 		TitlePosition(box.Top).
 		WrapContent(true)
 

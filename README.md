@@ -66,9 +66,9 @@ func main() {
         Padding(2, 1).
         TitlePosition(box.Top).
         ContentAlign(box.Center).
-        Color("Cyan").
-        TitleColor("BrightYellow").
-        ContentColor("White")
+        Color(color.Cyan).
+        TitleColor(color.BrightYellow).
+        ContentColor(color.White)
 
     out, err := b.Render("Box CLI Maker", "Render highly customizable boxes for terminal")
     if err != nil {
@@ -99,8 +99,8 @@ base := box.NewBox().
     Padding(2, 1).
     ContentAlign(box.Left)
 
-info := base.Copy().Color("Green")
-warn := base.Copy().Color("Yellow")
+info := base.Copy().Color(color.Green)
+warn := base.Copy().Color(color.Yellow)
 ```
 
 ### Styles
@@ -185,11 +185,11 @@ Accepted formats:
 
 - First 16 ANSI names:
 
-  `Black, Red, Green, Yellow, Blue, Magenta, Cyan, White` and their bright variants:
-  `BrightBlack, BrightRed, BrightGreen, BrightYellow, BrightBlue, BrightMagenta, BrightCyan, BrightWhite`  
-  (plus a few aliases like `HiRed`, `HiBlue`, etc.)
+  `box.Black, box.Red, box.Green, box.Yellow, box.Blue, box.Magenta, box.Cyan, box.White` and their bright variants:
+  `box.BrightBlack, box.BrightRed, box.BrightGreen, box.BrightYellow, box.BrightBlue, box.BrightMagenta, box.BrightCyan, box.BrightWhite`  
+  (plus a few aliases like `box.HiRed`, `box.HiBlue`, etc.)
 
-- Hex and XParseColor formats:
+- Hex and XParseColor formats (Supports TrueColor and 8-bit):
 
   - `#RGB`
   - `#RRGGBB`
@@ -199,7 +199,7 @@ Accepted formats:
 Example:
 
 ```go
-b.TitleColor("BrightYellow")
+b.TitleColor(color.BrightYellow)
 b.ContentColor("#00FF00")
 b.Color("rgb:0000/ffff/0000")
 ```
@@ -276,7 +276,7 @@ out := b.MustRender("Title", "Content") // panics on error
 - `Hidden`
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="../img/hidden.svg" alt="hidden" width="500"/>
+<img src="img/hidden.svg" alt="hidden" width="500"/>
 </p>
 
 - `Classic`
