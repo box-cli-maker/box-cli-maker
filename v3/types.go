@@ -145,7 +145,7 @@ var (
 		"White":   "#C0C0C0",
 		// Bright ANSI colors (8-15)
 		"BrightBlack":   "#808080",
-		"DarkGray":      "#808080",
+		"HiBlack":       "#808080",
 		"BrightRed":     "#FF0000",
 		"HiRed":         "#FF0000",
 		"BrightGreen":   "#00FF00",

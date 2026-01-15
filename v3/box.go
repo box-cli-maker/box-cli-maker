@@ -153,19 +153,34 @@ func (b *Box) Vertical(glyph string) *Box {
 	return b
 }
 
-// TitleColor sets the Title Color.
+// TitleColor sets the title color.
+//
+// Accepts one of the first 16 ANSI color names or a #RGB / #RRGGBB /
+// rgb:RRRR/GGGG/BBBB / rgba:RRRR/GGGG/BBBB/AAAA value.
+//
+// Invalid colors cause Render to return an error.
 func (b *Box) TitleColor(color string) *Box {
 	b.titleColor = color
 	return b
 }
 
-// ContentColor sets the Content Color.
+// ContentColor sets the content color.
+//
+// Accepts one of the first 16 ANSI color names or a #RGB / #RRGGBB /
+// rgb:RRRR/GGGG/BBBB / rgba:RRRR/GGGG/BBBB/AAAA value.
+//
+// Invalid colors cause Render to return an error.
 func (b *Box) ContentColor(color string) *Box {
 	b.contentColor = color
 	return b
 }
 
-// Color sets the Box Color.
+// Color sets the box color.
+//
+// Accepts one of the first 16 ANSI color names or a #RGB / #RRGGBB /
+// rgb:RRRR/GGGG/BBBB / rgba:RRRR/GGGG/BBBB/AAAA value.
+//
+// Invalid colors cause Render to return an error.
 func (b *Box) Color(color string) *Box {
 	b.color = color
 	return b
@@ -220,6 +235,14 @@ func (b *Box) MustRender(title, content string) string {
 }
 
 // Render generates the box with the given title and content.
+//
+// It returns an error if:
+//   - the BoxStyle is invalid,
+//   - the TitlePosition is invalid,
+//   - the wrapping limit is negative,
+//   - padding is negative,
+//   - a multiline title is used with a non-Inside TitlePosition, or
+//   - any configured colors are invalid.
 func (b *Box) Render(title, content string) (string, error) {
 	if b.styleSet {
 		if _, ok := boxes[b.config.style]; !ok {
