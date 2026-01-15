@@ -66,9 +66,9 @@ func main() {
         Padding(2, 1).
         TitlePosition(box.Top).
         ContentAlign(box.Center).
-        Color(color.Cyan).
-        TitleColor(color.BrightYellow).
-        ContentColor(color.White)
+        Color(box.Cyan).
+        TitleColor(box.BrightYellow).
+        ContentColor(box.White)
 
     out, err := b.Render("Box CLI Maker", "Render highly customizable boxes for terminal")
     if err != nil {
@@ -99,8 +99,8 @@ base := box.NewBox().
     Padding(2, 1).
     ContentAlign(box.Left)
 
-info := base.Copy().Color(color.Green)
-warn := base.Copy().Color(color.Yellow)
+info := base.Copy().Color(box.Green)
+warn := base.Copy().Color(box.Yellow)
 ```
 
 ### Styles
@@ -199,7 +199,7 @@ Accepted formats:
 Example:
 
 ```go
-b.TitleColor(color.BrightYellow)
+b.TitleColor(box.BrightYellow)
 b.ContentColor("#00FF00")
 b.Color("rgb:0000/ffff/0000")
 ```
