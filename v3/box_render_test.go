@@ -40,6 +40,62 @@ func TestRenderBasicBox(t *testing.T) {
 		t.Errorf("bottom bar does not use Single style corners: %q", bottom)
 	}
 }
+func TestRenderInbuiltStylesPorts(t *testing.T) {
+	tests := []BoxStyle{
+		Single,
+		SingleDouble,
+		Double,
+		DoubleSingle,
+		Bold,
+		Round,
+		Hidden,
+		Classic,
+		Block,
+	}
+
+	for _, style := range tests {
+		preset, ok := boxes[style]
+		if !ok {
+			t.Fatalf("no preset found for style %q", style)
+		}
+
+		b := NewBox().Padding(2, 5).Style(style)
+		out, err := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker")
+		if err != nil {
+			t.Fatalf("Render returned error for style %q: %v", style, err)
+		}
+
+		lines := strings.Split(out, "\n")
+		if len(lines) < 3 {
+			t.Fatalf("style %q: expected at least 3 lines, got %d", style, len(lines))
+		}
+
+		// Last element is empty due to trailing newline; bottom bar is at len-2.
+		top := lines[0]
+		bottom := lines[len(lines)-2]
+
+		if !strings.HasPrefix(top, preset.topLeft) || !strings.HasSuffix(top, preset.topRight) {
+			t.Errorf("style %q: unexpected top corners: %q", style, top)
+		}
+		if !strings.HasPrefix(bottom, preset.bottomLeft) || !strings.HasSuffix(bottom, preset.bottomRight) {
+			t.Errorf("style %q: unexpected bottom corners: %q", style, bottom)
+		}
+
+		// Check that interior lines use the expected vertical glyphs (including
+		// the Hidden style, where vertical is a space).
+		if len(lines) > 3 {
+			interior := lines[1 : len(lines)-2]
+			mid := interior[len(interior)/2]
+			if len(mid) == 0 {
+				t.Errorf("style %q: mid interior line unexpectedly empty", style)
+			} else {
+				if !strings.HasPrefix(mid, preset.vertical) || !strings.HasSuffix(mid, preset.vertical) {
+					t.Errorf("style %q: unexpected vertical borders in interior line: %q", style, mid)
+				}
+			}
+		}
+	}
+}
 
 func TestRenderDefaultStyleWithoutExplicitStyle(t *testing.T) {
 	b := NewBox().Padding(1, 1)

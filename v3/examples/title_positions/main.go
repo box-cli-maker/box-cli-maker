@@ -1,0 +1,41 @@
+package main
+
+import (
+	"fmt"
+
+	box "github.com/Delta456/box-cli-maker/v2/v3"
+)
+
+func main() {
+	styles := []box.BoxStyle{
+		box.Single,
+		box.SingleDouble,
+		box.Double,
+		box.DoubleSingle,
+		box.Bold,
+		box.Round,
+		box.Hidden,
+		box.Classic,
+	}
+	positions := []box.TitlePosition{
+		box.Inside,
+		box.Top,
+		box.Bottom,
+	}
+
+	for _, pos := range positions {
+		for _, style := range styles {
+			b := box.NewBox().
+				Padding(2, 5).
+				Style(style).
+				TitlePosition(pos)
+
+			out, err := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker")
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Printf("Style: %s, TitlePosition: %s\n%s\n\n", style, pos, out)
+		}
+	}
+}
