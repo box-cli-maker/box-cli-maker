@@ -1,88 +1,93 @@
-// Package box a.k.a Box CLI Maker is a Highly Customized Terminal Box Creator written in Go.
+// Package box renders styled boxes around text for terminal applications.
 //
-// It provides many styles and options to make Boxes. There are 8 inbuilt styles and has Color support via RGB uint, RGB Array of [3]uint and string (Given).
+// The core type is Box, constructed with NewBox and configured via a fluent API.
+// Boxes support multiple built‑in styles, title positions, alignment, wrapping,
+// and ANSI/truecolor output.
 //
-// Inbuilt Box Styles:
-// Single,
-// Double,
-// Bold,
-// Single Double,
-// Double Single,
-// Round,
-// Hidden and
-// Classic
+// Basic example:
 //
-// Inbuilt Colors:
-// Black,
-// Blue,
-// Red,
-// Yellow,
-// Green,
-// Cyan,
-// Magenta,
-// White,
-// HiBlack,
-// HiBlue,
-// HiRed,
-// HiYellow,
-// HiGreen,
-// HiCyan,
-// HiMagenta and
-// HiWhite
+//	b := box.NewBox().
+//		Style(box.Single).
+//		Padding(2, 1).
+//		TitlePosition(box.Top).
+//		ContentAlign(box.Center).
+//		Color("Cyan").
+//		TitleColor("BrightYellow").
+//		ContentColor("White")
 //
-// It also has Unicode and Emoji support which works across almost all terminals. Unlike other CLI Makers, Box CLI Maker also supports tab, multi-line strings and string wrapping.
+//	out, err := b.Render("Box CLI Maker", "Highly customizable terminal box maker")
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//	fmt.Println(out)
 //
-// Disclaimer: As different terminals have different fonts by default so the right vertical alignment may not be aligned well.
-// You will have to change your font accordingly to make it work.
+// # Styles
 //
-// Basic Example:
+// Box styles are selected with Style and the BoxStyle constants:
 //
-//	Box := box.New(box.Config{Px: 2, Py: 5, Type: "Single", Color: "Cyan"})
-//	Box.Print("Box CLI Maker", "Highly Customized Terminal Box Maker")
+//	box.Single
+//	box.Double
+//	box.Round
+//	box.Bold
+//	box.SingleDouble
+//	box.DoubleSingle
+//	box.Classic
+//	box.Hidden
+//	box.Block
 //
-// You can specify and change the options by changing the below Config struct.
+// You can further customize any style by overriding the corner and edge glyphs
+// using TopRight, TopLeft, BottomRight, BottomLeft, Horizontal, and Vertical.
 //
-//	Box := box.New(box.Config{Px: 2, Py: 5, Type: "Single", TitlePos: "Top", ContentAlign: "Left"})
+// # Titles and alignment
 //
-// TitlePos can be changed to Inside, Top, Bottom and ContentAlign to be Left, Right and Center.
-// By default TitlePos is Inside, ContentAlign is Left and Style is Single.
+// Titles can be placed inside the box, on the top border, or on the bottom
+// border using TitlePosition with the TitlePosition constants:
 //
-// Manual string wrapping is also allowed via a flag Config.AllowWrapping, by the default padding, is
-// 2*TermWidth/3.
+//	box.Inside
+//	box.Top
+//	box.Bottom
 //
-// String() method can be for the string representation of the Box.
+// Content alignment is controlled with ContentAlign and the AlignType
+// constants:
 //
-//	Box := box.New(box.Config{Px: 2, Py: 5, Type: "Single", Color: "Cyan"})
-//	boxStr := Box.String("Box CLI Maker", "Highly Customized Terminal Box Maker")
+//	box.Left
+//	box.Center
+//	box.Right
 //
-// True Color is also supported and it can be by providing an array of [3]uint or uint.
+// # Wrapping
 //
-// There might be some terminals not supporting True Color so in this case, it will detect the terminal's max color capacity
-// then will round off True Color to either 4-bit or 8-bit respectively.
+// WrapContent enables or disables automatic wrapping of the content. By
+// default, when wrapping is enabled, the box width is based on two‑thirds of
+// the terminal width. WrapLimit can be used to set an explicit maximum width.
 //
-// Title and Content can also be colored by passing the colors needed to the fields box.TitleColor and box.ContentColor respectively.
+// # Colors
 //
-// This module also enables True Color and 256 Colors support on Windows Console but you need have at least Windows 10 Version 1511
-// for 256 colors or Windows 10 Version 1607 for True Color Support.
+// TitleColor, ContentColor, and Color accept either one of the first 16 ANSI
+// color names (Black, Red, Green, Yellow, Blue, Magenta, Cyan, White and their
+// bright variants) or a #RGB / #RRGGBB / rgb:RRRR/GGGG/BBBB /
+// rgba:RRRR/GGGG/BBBB/AAAA value. Invalid colors cause Render to return an
+// error.
 //
-// Example of True Color via uint:
+// # Errors
 //
-//	Box := box.New(box.Config{Px: 2, Py: 5, Type: "Single", Color: uint(0x34562f)})
-//	Box.Println("Box CLI Maker", "Highly Customized Terminal Box Maker")
+// Render returns an error if the style or title position is invalid, the wrap
+// limit or padding is negative, a multiline title is used with a non‑Inside
+// title position, any configured colors are invalid, or the terminal width
+// cannot be determined. MustRender is a convenience wrapper that panics on
+// error.
 //
-// Note: uint must be in a range of [0x000000, 0xFFFFFF].
+// # Construction
 //
-// Example of True Color via [3]uint:
+// Box must be constructed with NewBox; the zero value is not usable.
 //
-//	Box := box.New(box.Config{Px: 2, Py: 5, Type: "Single", Color: [3]uint{23, 56, 78}})
-//	Box.Println("Box CLI Maker", "Highly Customized Terminal Box Maker")
+// # Copying
 //
-// Note: [3]uint array elements must be in a range of [0x0, 0xFF].
+// Copy returns a shallow copy of a Box so you can define a base style and
+// derive variants without mutating the original:
 //
-// Custom Box Style can also be by using box.Box:
+//	base := box.NewBox().Style(box.Single).Padding(2, 1)
+//	info := base.Copy().Color("Green")
+//	warn := base.Copy().Color("Yellow")
 //
-//	config := box.Config{Px: 2, Py: 3, Type: "", TitlePos: "Inside"}
-//	boxNew := box.Box{TopRight: "*", TopLeft: "*", BottomRight: "*", BottomLeft: "*", Horizontal: "-", Vertical: "|", Config: config}
-//
-// More info and examples can be found in README.md and examples/ folder
+// Each Copy can then be customized and rendered independently.
 package box

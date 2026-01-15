@@ -1,15 +1,25 @@
 package main
 
-import "github.com/Delta456/box-cli-maker/v2"
+import (
+	"fmt"
+
+	box "github.com/Delta456/box-cli-maker/v3"
+)
 
 func main() {
-	Box := box.New(box.Config{Px: 2, Py: 5, Type: "Single"})
-	// All ANSI Art may not fit inside the box as they can exceed the terminal width
-	Box.Print("", `
+	b := box.NewBox().Padding(2, 5).Style(box.Single)
+
+	art := `
 	__________                 _________  .____     .___     _____            __                   
 	\______   \  ____ ___  ___ \_   ___ \ |    |    |   |   /     \  _____   |  | __  ____ _______ 
 	 |    |  _/ /  _ \\  \/  / /    \  \/ |    |    |   |  /  \ /  \ \__  \  |  |/ /_/ __ \\_  __ \
-	 |    |   \(  <_> )>    <  \     \____|    |___ |   | /    Y    \ / __ \_|    < \  ___/ |  | \/
-	 |______  / \____//__/\_ \  \______  /|_______ \|___| \____|__  /(____  /|__|_ \ \___  >|__|   
-			\/              \/         \/         \/              \/      \/      \/     \/ `)
+	 |    |   \\(  <_> )>    <  \     \____|    |___ |   | /    Y    \ / __ \_|    < \  ___/ |  | \/
+	 |______  / \\____//__/\\_ \\  \\______  /|_______ \\|___| \\____|__  /(____  /|__|_ \\ \\___  >|__|   
+	        \/              \/         \/         \/              \/      \/      \/     \/      `
+
+	s, err := b.Render("", art)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(s)
 }

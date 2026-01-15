@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	box "github.com/Delta456/box-cli-maker/v2/v3"
+	box "github.com/Delta456/box-cli-maker/v3"
 )
 
 func main() {

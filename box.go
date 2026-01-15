@@ -2,439 +2,407 @@ package box
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
-	"github.com/gookit/color"
+	"github.com/charmbracelet/x/ansi"
+	"github.com/charmbracelet/x/term"
 	"github.com/huandu/xstrings"
 	"github.com/mattn/go-runewidth"
-	"github.com/muesli/reflow/wrap"
-	"golang.org/x/term"
 )
 
 const (
-	n1     = "\n"
-	inside = "Inside"
-
 	// 1 = separator, 2 = spacing, 3 = line; 4 = oddSpace; 5 = space; 6 = sideMargin
 	centerAlign = "%[1]s%[2]s%[3]s%[4]s%[2]s%[1]s"
 	leftAlign   = "%[1]s%[6]s%[3]s%[4]s%[2]s%[5]s%[1]s"
 	rightAlign  = "%[1]s%[2]s%[4]s%[5]s%[3]s%[6]s%[1]s"
+
+	defaultWrapDivisor = 3  // 2/3 of terminal width
+	minWrapWidth       = 20 // Minimum width to wrap content
 )
 
-// Box defines the design
+// Box renders styled borders around text content.
 type Box struct {
-	TopRight    string // TopRight Corner Symbols
-	TopLeft     string // TopLeft Corner Symbols
-	Vertical    string // Vertical Bar Symbols
-	BottomRight string // BottomRight Corner Symbols
-	BottomLeft  string // BottomLeft Corner Symbols
-	Horizontal  string // Horizontal Bars Symbols
-	Config             // Box Config
+	// topRight renders the glyph used in the upper-right corner.
+	topRight string
+	// topLeft renders the glyph used in the upper-left corner.
+	topLeft string
+	// vertical renders the glyph used for the left and right walls.
+	vertical string
+	// bottomRight renders the glyph used in the lower-right corner.
+	bottomRight string
+	// bottomLeft renders the glyph used in the lower-left corner.
+	bottomLeft string
+	// horizontal renders the glyph used for the top and bottom edges.
+	horizontal string
+	config
 }
 
-// Config is the configuration needed for the Box to be designed
-type Config struct {
-	Py            int         // Horizontal Padding
-	Px            int         // Vertical Padding
-	ContentAlign  string      // Content Alignment inside Box
-	Type          string      // Box Type
-	TitlePos      string      // Title Position
-	TitleColor    interface{} // Title Color
-	ContentColor  interface{} // Content Color
-	Color         interface{} // Box Color
-	AllowWrapping bool        // Flag to allow custom Content Wrapping
-	WrappingLimit int         // Wrap the Content upto the Limit
+// config contains configuration options for the Box.
+type config struct {
+	py            int           // Vertical padding.
+	px            int           // Horizontal padding.
+	contentAlign  AlignType     // Alignment for content inside the box.
+	style         BoxStyle      // Active box style preset.
+	titlePos      TitlePosition // Where the title, if any, is rendered.
+	titleColor    string        // ANSI color (or hex code) for the title.
+	contentColor  string        // ANSI color (or hex code) for the content.
+	color         string        // ANSI color (or hex code) for the box chrome.
+	allowWrapping bool          // Whether long content may wrap.
+	wrappingLimit int           // Custom wrap width when wrapping is enabled.
+	styleSet      bool          // Tracks if a style preset has already been applied.
 }
 
-// New takes Box Config and returns a Box from the given Config
-func New(config Config) Box {
-	// Default Box Type is Single
-	if config.Type == "" {
-		boxNew := boxes["Single"]
-		boxNew.Config = config
-		return boxNew
-		// Check if the Box Type provided is valid else panic
-	} else if _, ok := boxes[config.Type]; ok {
-		boxNew := boxes[config.Type]
-		boxNew.Config = config
-		return boxNew
+// NewBox creates a new Box with Single box style.
+func NewBox() *Box {
+	b := &Box{}
+	b.Style(Single)
+	return b
+}
+
+// Copy returns a shallow copy of the Box so further mutations do not affect the original.
+//
+// Useful for creating base styles and deriving multiple boxes from them.
+func (b *Box) Copy() *Box {
+	if b == nil {
+		return nil
 	}
-	panic("Invalid Box Type provided")
+	clone := *b
+	return &clone
 }
 
-// String returns the string representation of Box
-func (b Box) String(title, lines string) string {
-	var lines2 []string
+// Padding sets horizontal (px) and vertical (py) inner padding.
+func (b *Box) Padding(px, py int) *Box {
+	b.px = px
+	b.py = py
+	return b
+}
 
-	// Allow Wrapping according to the user
-	if b.AllowWrapping {
+// HPadding sets horizontal padding (left/right).
+func (b *Box) HPadding(px int) *Box {
+	b.px = px
+	return b
+}
+
+// VPadding sets vertical padding (top/bottom).
+func (b *Box) VPadding(py int) *Box {
+	b.py = py
+	return b
+}
+
+// Style sets the Box Style.
+//
+// Box Styles: box.Single, box.Double, box.Round, box.Bold, box.SingleDouble, box.DoubleSingle, box.Classic, box.Hidden, box.Block
+//
+// To make custom box styles, use the TopRight, TopLeft, BottomRight, BottomLeft, Horizontal, and Vertical methods.
+//
+// Example:
+//
+// b := box.NewBox()
+// b.TopRight("+").TopLeft("+").BottomRight("+").BottomLeft("_").Horizontal("-").Vertical("|")
+func (b *Box) Style(box BoxStyle) *Box {
+	b.config.style = box
+	b.styleSet = true
+	// Set the box style characters from predefined styles
+	// This also allows manual overrides after setting style
+	// and have a standard base.
+	if styleDef, ok := boxes[box]; ok {
+		b.BottomLeft(styleDef.bottomLeft).
+			BottomRight(styleDef.bottomRight).
+			TopLeft(styleDef.topLeft).
+			TopRight(styleDef.topRight).
+			Horizontal(styleDef.horizontal).
+			Vertical(styleDef.vertical)
+	}
+	return b
+}
+
+// TopRight sets the glyph used in the upper-right corner.
+func (b *Box) TopRight(glyph string) *Box {
+	b.topRight = glyph
+	return b
+}
+
+// TopLeft sets the glyph used in the upper-left corner.
+func (b *Box) TopLeft(glyph string) *Box {
+	b.topLeft = glyph
+	return b
+}
+
+// BottomRight sets the glyph used in the lower-right corner.
+func (b *Box) BottomRight(glyph string) *Box {
+	b.bottomRight = glyph
+	return b
+}
+
+// BottomLeft sets the glyph used in the lower-left corner.
+func (b *Box) BottomLeft(glyph string) *Box {
+	b.bottomLeft = glyph
+	return b
+}
+
+// Horizontal sets the glyph used for the horizontal edges.
+func (b *Box) Horizontal(glyph string) *Box {
+	b.horizontal = glyph
+	return b
+}
+
+// Vertical sets the glyph used for the vertical edges.
+func (b *Box) Vertical(glyph string) *Box {
+	b.vertical = glyph
+	return b
+}
+
+// TitleColor sets the title color.
+//
+// Accepts one of the first 16 ANSI color names or a #RGB / #RRGGBB /
+// rgb:RRRR/GGGG/BBBB / rgba:RRRR/GGGG/BBBB/AAAA value.
+//
+// Invalid colors cause Render to return an error.
+func (b *Box) TitleColor(color string) *Box {
+	b.titleColor = color
+	return b
+}
+
+// ContentColor sets the content color.
+//
+// Accepts one of the first 16 ANSI color names or a #RGB / #RRGGBB /
+// rgb:RRRR/GGGG/BBBB / rgba:RRRR/GGGG/BBBB/AAAA value.
+//
+// Invalid colors cause Render to return an error.
+func (b *Box) ContentColor(color string) *Box {
+	b.contentColor = color
+	return b
+}
+
+// Color sets the box color.
+//
+// Accepts one of the first 16 ANSI color names or a #RGB / #RRGGBB /
+// rgb:RRRR/GGGG/BBBB / rgba:RRRR/GGGG/BBBB/AAAA value.
+//
+// Invalid colors cause Render to return an error.
+func (b *Box) Color(color string) *Box {
+	b.color = color
+	return b
+}
+
+// TitlePosition sets the Title Position.
+//
+// Title Positions: box.Inside, box.Top, box.Bottom
+func (b *Box) TitlePosition(pos TitlePosition) *Box {
+	b.titlePos = pos
+	return b
+}
+
+// WrapContent enables or disables content wrapping.
+//
+// When enabled, the content will be wrapped to fit 2/3 width of the terminal by default.
+//
+// Not suitable for non-TTY outputs.
+//
+// For custom wrap limit and non-TTY outputs, use the WrapLimit method.
+func (b *Box) WrapContent(allow bool) *Box {
+	b.allowWrapping = allow
+	return b
+}
+
+// WrapLimit sets the wrapping limit for content.
+//
+// When set wrapping will be done according to the limit provided.
+func (b *Box) WrapLimit(limit int) *Box {
+	b.allowWrapping = true
+	b.wrappingLimit = limit
+	return b
+}
+
+// ContentAlign sets the content alignment inside the Box.
+//
+// Alignment Types: box.Left, box.Center, box.Right
+func (b *Box) ContentAlign(align AlignType) *Box {
+	b.contentAlign = align
+	return b
+}
+
+// MustRender is like Render but panics if an error occurs.
+//
+// Useful to generate boxes without having to handle the error.
+func (b *Box) MustRender(title, content string) string {
+	s, err := b.Render(title, content)
+	if err != nil {
+		panic(err)
+	}
+	return s
+}
+
+// Render generates the box with the given title and content.
+//
+// It returns an error if:
+//   - the BoxStyle is invalid,
+//   - the TitlePosition is invalid,
+//   - the wrapping limit is negative,
+//   - padding is negative,
+//   - a multiline title is used with a non-Inside TitlePosition, or
+//   - any configured colors are invalid.
+func (b *Box) Render(title, content string) (string, error) {
+	if b.styleSet {
+		if _, ok := boxes[b.config.style]; !ok {
+			return "", fmt.Errorf("invalid Box style %s", b.config.style)
+		}
+	}
+
+	var content_ []string
+
+	// Allow wrapping according to the user
+	if b.allowWrapping {
+		if b.wrappingLimit < 0 {
+			return "", fmt.Errorf("wrapping limit cannot be negative")
+		}
 		// If limit not provided then use 2*TermWidth/3 as limit else
 		// use the one provided
-		if b.WrappingLimit != 0 {
-			lines = wrap.String(lines, b.WrappingLimit)
+		if b.wrappingLimit != 0 {
+			content = ansi.Wrap(content, b.wrappingLimit, "")
 		} else {
-			width, _, err := term.GetSize(int(os.Stdout.Fd()))
+			width, _, err := term.GetSize(os.Stdout.Fd())
 			if err != nil {
-				log.Fatal(err)
+				return "", fmt.Errorf("cannot get terminal size from the output, provide own wrapping limit using .WrapLimit(limit int) method")
 			}
-			lines = wrap.String(lines, 2*width/3)
+			// Use 2/3 of terminal width as default wrapping limit
+			wrapWidth := max(2*width/defaultWrapDivisor, minWrapWidth)
+			content = ansi.Wrap(content, wrapWidth, "")
 		}
 	}
 
-	// Obtain Title and Content color
-	title = b.obtainTitleColor(title)
-	lines = b.obtainContentColor(lines)
-
-	// Default Position is Inside, no warning for invalid TitlePos as it is done
-	// in toString() method
-	if b.TitlePos == "" {
-		b.TitlePos = inside
+	title, err := applyColor(title, b.titleColor)
+	if err != nil {
+		return "", err
 	}
-	// if Title is empty then TitlePos should be Inside
+	content, err = applyColor(content, b.contentColor)
+	if err != nil {
+		return "", err
+	}
+
+	if b.titlePos == "" {
+		b.titlePos = Inside
+	}
+
 	if title != "" {
-		if b.TitlePos != inside && strings.Contains(title, "\n") {
-			panic("Multilines are only supported inside only")
+		if b.titlePos != Inside && strings.Contains(title, "\n") {
+			return "", fmt.Errorf("multiline titles are only supported Inside title position only")
 		}
-		if b.TitlePos == inside {
-			lines2 = append(lines2, strings.Split(title, n1)...)
-			lines2 = append(lines2, []string{""}...) // for empty line between title and content
+		if b.titlePos == Inside {
+			content_ = append(content_, strings.Split(title, "\n")...)
+			content_ = append(content_, []string{""}...) // for empty line between title and content
 		}
 	}
-	lines2 = append(lines2, strings.Split(lines, n1)...)
-	return b.toString(title, lines2)
-}
+	content_ = append(content_, strings.Split(content, "\n")...)
 
-// toString is an internal method and same as String method except that the main Box generation is done here
-func (b Box) toString(title string, lines []string) string {
-	titleLen := len(strings.Split(color.ClearCode(title), n1))
-	sideMargin := strings.Repeat(" ", b.Px)
-	_longestLine, lines2 := longestLine(lines)
-
-	// Get padding on one side
-	paddingCount := b.Px
-
-	n := _longestLine + (paddingCount * 2) + 2
-
-	if b.TitlePos != inside && runewidth.StringWidth(color.ClearCode(title)) > n-2 {
-		panic("Title must be shorter than the Top & Bottom Bars")
+	titleLen := 0
+	if title != "" {
+		titleLen = len(strings.Split(ansi.Strip(title), "\n"))
 	}
 
-	// Create Top and Bottom Bars
-	Bar := strings.Repeat(b.Horizontal, n-2)
-	TopBar := b.TopLeft + Bar + b.TopRight
-	BottomBar := b.BottomLeft + Bar + b.BottomRight
-
-	var TitleBar string
-	// If title has tabs then expand them accordingly.
-	if strings.Contains(title, "\t") {
-		TitleBar = repeatWithString(b.Horizontal, n-2, xstrings.ExpandTabs(title, 4))
-	} else {
-		TitleBar = repeatWithString(b.Horizontal, n-2, title)
+	if b.px < 0 {
+		return "", fmt.Errorf("horizontal padding cannot be negative")
 	}
+	if b.py < 0 {
+		return "", fmt.Errorf("vertical padding cannot be negative")
+	}
+
+	sideMargin := strings.Repeat(" ", b.px)
+	_longestLine, lines2 := longestLine(content_)
+
+	// Compute desired inner width (between the vertical borders, excluding them).
+	contentInnerWidth := _longestLine + 2*b.px
+	innerWidth := contentInnerWidth
+
+	// Make sure the box is wide enough to fit the title when it's on Top/Bottom.
+	if b.titlePos != Inside && title != "" {
+		titleWidth := runewidth.StringWidth(ansi.Strip(title))
+		minTitleInnerWidth := titleWidth + 2 // title + left/right padding
+
+		if minTitleInnerWidth > innerWidth {
+			innerWidth = minTitleInnerWidth
+		}
+	}
+
+	// If we enlarged the inner width to fit the title, reflect that in longestLine.
+	if innerWidth > contentInnerWidth {
+		_longestLine = max(innerWidth-2*b.px, 0)
+	}
+
+	// Visible widths of box characters; fall back to 1 so we always make progress.
+	verticalWidth := charWidth(b.vertical)
+	horizontalWidth := charWidth(b.horizontal)
+	topLeftWidth := charWidth(b.topLeft)
+	topRightWidth := charWidth(b.topRight)
+	bottomLeftWidth := charWidth(b.bottomLeft)
+	bottomRightWidth := charWidth(b.bottomRight)
+
+	// Ensure the inner width is a multiple of the horizontal glyph width when
+	// drawing horizontal bars (e.g. emoji) so we don't need to pad with extra
+	// spaces before the corner. This keeps the bar visually uniform.
+	if horizontalWidth > 1 && innerWidth%horizontalWidth != 0 {
+		innerWidth += horizontalWidth - (innerWidth % horizontalWidth)
+		_longestLine = max(innerWidth-2*b.px, 0)
+	}
+
+	// Total visible width of a rendered line (including vertical borders).
+	lineWidth := innerWidth + 2*verticalWidth
+
+	TopBar := buildPlainBar(b.topLeft, b.horizontal, b.topRight, topLeftWidth, topRightWidth, lineWidth, horizontalWidth)
+	BottomBar := buildPlainBar(b.bottomLeft, b.horizontal, b.bottomRight, bottomLeftWidth, bottomRightWidth, lineWidth, horizontalWidth)
 
 	// Check b.TitlePos if it is not Inside
-	if b.TitlePos != inside {
-		switch b.TitlePos {
-		case "Top":
-			TopBar = b.TopLeft + TitleBar + b.TopRight
-			//fmt.Println(TopBar)
-		case "Bottom":
-			BottomBar = b.BottomLeft + TitleBar + b.BottomRight
+	if b.titlePos != Inside {
+		switch b.titlePos {
+		case Top:
+			TopBar = buildTitledBar(b.topLeft, b.horizontal, b.topRight, topLeftWidth, topRightWidth, lineWidth, horizontalWidth, title)
+		case Bottom:
+			BottomBar = buildTitledBar(b.bottomLeft, b.horizontal, b.bottomRight, bottomLeftWidth, bottomRightWidth, lineWidth, horizontalWidth, title)
 		default:
-			// Duplicate warning done here if the String() method is used
-			// instead of using Print() and Println() methods
-			errorMsg("[warning]: invalid value provided for TitlePos, using default")
-			// Using goto here to inorder to exit the current if branch
-			goto inside
+			return "", fmt.Errorf("invalid TitlePosition %s", b.titlePos)
 		}
 	}
-inside:
-	// Check type of b.Color then assign the Colors to TopBar and BottomBar accordingly
-	// If title has tabs then expand them accordingly.
-	if strings.Contains(title, "\t") {
-		TopBar, BottomBar = b.checkColorType(TopBar, BottomBar, xstrings.ExpandTabs(title, 4))
-	} else {
-		TopBar, BottomBar = b.checkColorType(TopBar, BottomBar, title)
+	if TopBar, err = applyColor(TopBar, b.color); err != nil {
+		return "", err
+	}
+	if BottomBar, err = applyColor(BottomBar, b.color); err != nil {
+		return "", err
 	}
 
-	if b.TitlePos == inside && runewidth.StringWidth(TopBar) != runewidth.StringWidth(BottomBar) {
-		panic("cannot create a Box with different sizes of Top and Bottom Bars")
+	// Apply title coloring to the bars once, expanding tabs in the title if needed.
+	titleForBar := title
+	if strings.Contains(titleForBar, "\t") {
+		titleForBar = xstrings.ExpandTabs(titleForBar, 4)
+	}
+	if TopBar, BottomBar, err = b.applyColorBar(TopBar, BottomBar, titleForBar); err != nil {
+		return "", err
 	}
 
 	// Create lines to print
-	texts := b.addVertPadding(n)
-	texts = b.formatLine(lines2, _longestLine, titleLen, sideMargin, title, texts)
-	vertpadding := b.addVertPadding(n)
-	texts = append(texts, vertpadding...)
+	texts, err := b.addVertPadding(innerWidth)
+	if err != nil {
+		return "", err
+	}
+	texts, err = b.formatLine(lines2, _longestLine, titleLen, sideMargin, title, texts)
+	if err != nil {
+		return "", err
+	}
+	vertPadding, err := b.addVertPadding(innerWidth)
+	if err != nil {
+		return "", err
+	}
+	texts = append(texts, vertPadding...)
 
-	// Using strings.Builder is more efficient and faster
-	// than concatenating 6 times
 	var sb strings.Builder
 
 	sb.WriteString(TopBar)
-	sb.WriteString(n1)
-	sb.WriteString(strings.Join(texts, n1))
-	sb.WriteString(n1)
+	sb.WriteString("\n")
+	sb.WriteString(strings.Join(texts, "\n"))
+	sb.WriteString("\n")
 	sb.WriteString(BottomBar)
-	sb.WriteString(n1)
+	sb.WriteString("\n")
 
-	return sb.String()
-}
+	return sb.String(), nil
 
-// obtainTitleColor obtains TitleColor from types string, uint and [3]uint respectively
-func (b Box) obtainTitleColor(title string) string {
-	if b.TitleColor == nil { // if nil then just return the string
-		return title
-	}
-
-	titleContainsNewLine := strings.Contains(title, "\n")
-
-	// check for the type of b.TitleColor
-	// v is the value of b.TitleColor
-	switch v := b.TitleColor.(type) {
-	case string:
-		colorMap := fgColors // set default colorMap to fgColors
-
-		// is it high intensity color?
-		if strings.HasPrefix(v, "Hi") {
-			colorMap = fgHiColors
-		}
-
-		// check if the color is valid
-		if colorFunc, ok := colorMap[v]; ok {
-			// If title has newlines in it then splitting would be needed
-			// as color won't be applied on all
-			if titleContainsNewLine {
-				return b.applyColorToAll(title, v, color.RGBColor{}, false)
-			}
-			return addStylePreservingOriginalFormat(title, colorFunc.Sprint)
-		}
-
-		// Return a warning as TitleColor provided as a string is unknown and
-		// return without the color effect
-		errorMsg("[warning]: invalid value provided to Color, using default")
-		return title
-
-	case uint:
-		// Break down the hex into R, G and B respectively
-		hexArray := [3]uint{v >> 16, v >> 8 & 0xff, v & 0xff}
-		col := color.RGB(uint8(hexArray[0]), uint8(hexArray[1]), uint8(hexArray[2]))
-
-		// If title has newlines in it then splitting would be needed
-		// as color won't be applied on all
-		if titleContainsNewLine {
-			return b.applyColorToAll(title, "", col, true)
-		}
-		return addStylePreservingOriginalFormat(title, col.Sprint)
-
-	case [3]uint:
-		col := color.RGB(uint8(v[0]), uint8(v[1]), uint8(v[2]))
-
-		// If title has newlines in it then splitting would be needed
-		// as color won't be applied on all
-		if titleContainsNewLine {
-			return b.applyColorToAll(title, "", col, true)
-		}
-		return b.roundOffTitleColor(col, addStylePreservingOriginalFormat(title, col.Sprint))
-
-	default:
-		// Panic if b.TitleColor is an unexpected type
-		panic(fmt.Sprintf("expected string, [3]uint or uint not %T", b.TitleColor))
-	}
-}
-
-// obtainContentColor obtains ContentColor from types string, uint and [3]uint respectively
-func (b Box) obtainContentColor(content string) string {
-	if b.ContentColor == nil { // if nil then just return the string
-		return content
-	}
-
-	contentContainsNewLine := strings.Contains(content, "\n")
-
-	// check for the type of b.ContentColor
-	// v is the value of b.ContentColor
-	switch v := b.ContentColor.(type) {
-	case string:
-		colorMap := fgColors // set default colorMap to fgColors
-
-		// is it high intensity color?
-		if strings.HasPrefix(v, "Hi") {
-			colorMap = fgHiColors
-		}
-
-		// check if the color is valid
-		if colorFunc, ok := colorMap[v]; ok {
-			// If Content has newlines in it then splitting would be needed
-			// as color won't be applied on all
-			if contentContainsNewLine {
-				return b.applyColorToAll(content, v, color.RGBColor{}, false)
-			}
-			return addStylePreservingOriginalFormat(content, colorFunc.Sprint)
-		}
-
-		// Return a warning as ContentColor provided as a string is unknown and
-		// return without the color effect
-		errorMsg("[warning]: invalid value provided to Color, using default")
-		return content
-
-	case uint:
-		hexArray := [3]uint{v >> 16, v >> 8 & 0xff, v & 0xff}
-		col := color.RGB(uint8(hexArray[0]), uint8(hexArray[1]), uint8(hexArray[2]))
-
-		// If content has newlines in it then splitting would be needed
-		// as color won't be applied on all
-		if contentContainsNewLine {
-			return b.applyColorToAll(content, "", col, true)
-		}
-		return b.roundOffTitleColor(col, content)
-
-	case [3]uint:
-		col := color.RGB(uint8(v[0]), uint8(v[1]), uint8(v[2]))
-
-		// If content has newlines in it then splitting would be needed
-		// as color won't be applied on all
-		if contentContainsNewLine {
-			return b.applyColorToAll(content, "", col, true)
-		}
-		return b.roundOffTitleColor(col, content)
-
-	default:
-		// Panic if b.ContentColor is an unexpected type
-		panic(fmt.Sprintf("expected string, [3]uint or uint not %T", b.ContentColor))
-	}
-}
-
-// obtainColor obtains BoxColor from types string, uint and [3]uint respectively
-func (b Box) obtainBoxColor() string {
-	if b.Color == nil { // if nil then just return the string
-		return b.Vertical
-	}
-
-	// check for type of b.Color
-	// v is the value of b.Color
-	switch v := b.Color.(type) {
-	case string:
-		colorMap := fgColors // set default colorMap to fgColors
-
-		// is it high intensity color?
-		if strings.HasPrefix(v, "Hi") {
-			colorMap = fgHiColors
-		}
-
-		// check if the color is valid
-		if colorFunc, ok := colorMap[v]; ok {
-			return colorFunc.Sprint(b.Vertical)
-		}
-
-		// Return a warning as Color provided as a string is unknown and
-		// return without the color effect
-		errorMsg("[warning]: invalid value provided to Color, using default")
-		return b.Vertical
-
-	case uint:
-		// Break down the hex into r, g and b respectively
-		hexArray := [3]uint{v >> 16, v >> 8 & 0xff, v & 0xff}
-		col := color.RGB(uint8(hexArray[0]), uint8(hexArray[1]), uint8(hexArray[2]))
-		return b.roundOffColorVertical(col)
-
-	case [3]uint:
-		col := color.RGB(uint8(v[0]), uint8(v[1]), uint8(v[2]))
-		return b.roundOffColorVertical(col)
-
-	default:
-		// Panic if b.Color is an unexpected type
-		panic(fmt.Sprintf("expected string, [3]uint or uint not %T", b.Color))
-	}
-}
-
-// Print prints the Box
-func (b Box) Print(title, lines string) {
-	var lines2 []string
-
-	// Allow Wrapping according to the user
-	if b.AllowWrapping {
-		// If limit not provided then use 2*TermWidth/3 as limit else
-		// use the one provided
-		if b.WrappingLimit != 0 {
-			lines = wrap.String(lines, b.WrappingLimit)
-		} else {
-			width, _, err := term.GetSize(int(os.Stdout.Fd()))
-			if err != nil {
-				log.Fatal(err)
-			}
-			lines = wrap.String(lines, 2*width/3)
-		}
-	}
-
-	// Obtain Title and Content color
-	title = b.obtainTitleColor(title)
-	lines = b.obtainContentColor(lines)
-
-	// Default Position is Inside, if invalid position is given then just raise a warning
-	// then use Default Position which is Inside
-	if b.TitlePos == "" {
-		b.TitlePos = inside
-	} else if b.TitlePos != inside && b.TitlePos != "Bottom" && b.TitlePos != "Top" {
-		errorMsg("[warning]: invalid value provided for TitlePos, using default")
-		b.TitlePos = inside
-	}
-	// if Title is empty then TitlePos should be Inside
-	if title != "" {
-		if b.TitlePos != inside && strings.Contains(title, "\n") {
-			panic("Multilines are only supported inside only")
-		}
-		if b.TitlePos == inside {
-			lines2 = append(lines2, strings.Split(title, n1)...)
-			lines2 = append(lines2, []string{""}...) // for empty line between title and content
-		}
-	}
-	lines2 = append(lines2, strings.Split(lines, n1)...)
-	color.Print(b.toString(title, lines2))
-}
-
-// Println adds a newline before and after printing the Box
-func (b Box) Println(title, lines string) {
-	var lines2 []string
-
-	// Allow Wrapping according to the user
-	if b.AllowWrapping {
-		// If limit not provided then use 2*TermWidth/3 as limit else
-		// use the one provided
-		if b.WrappingLimit != 0 {
-			lines = wrap.String(lines, b.WrappingLimit)
-		} else {
-			width, _, err := term.GetSize(int(os.Stdout.Fd()))
-			if err != nil {
-				log.Fatal(err)
-			}
-			lines = wrap.String(lines, 2*width/3)
-		}
-	}
-
-	// Obtain Title and Content color
-	title = b.obtainTitleColor(title)
-	lines = b.obtainContentColor(lines)
-
-	// Default Position is Inside, if invalid position is given then just raise a warning
-	// then use Default Position which is Inside
-	if b.TitlePos == "" {
-		b.TitlePos = inside
-	} else if b.TitlePos != inside && b.TitlePos != "Bottom" && b.TitlePos != "Top" {
-		errorMsg("[warning]: invalid value provided for TitlePos, using default")
-		b.TitlePos = inside
-	}
-	// if Title is empty then TitlePos should be Inside
-	if title != "" {
-		if b.TitlePos != inside && strings.Contains(title, "\n") {
-			panic("Multilines are only supported inside only")
-		}
-		if b.TitlePos == inside {
-			lines2 = append(lines2, strings.Split(title, n1)...)
-			lines2 = append(lines2, []string{""}...) // for empty line between title and content
-		}
-	}
-	lines2 = append(lines2, strings.Split(lines, n1)...)
-	color.Printf("\n%s\n", b.toString(title, lines2))
 }

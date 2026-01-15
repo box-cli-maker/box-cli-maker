@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	box "github.com/Delta456/box-cli-maker/v2/v3"
+	box "github.com/Delta456/box-cli-maker/v3"
 )
 
 // This example mirrors the old TestInbuiltStyles by rendering all built-in
@@ -18,6 +18,7 @@ func main() {
 		box.Round,
 		box.Hidden,
 		box.Classic,
+		box.Block,
 	}
 
 	for _, style := range styles {

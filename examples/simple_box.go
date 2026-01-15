@@ -1,8 +1,16 @@
 package main
 
-import "github.com/Delta456/box-cli-maker/v2"
+import (
+	"fmt"
+
+	box "github.com/Delta456/box-cli-maker/v3"
+)
 
 func main() {
-	Box := box.New(box.Config{Px: 2, Py: 5, Type: "Single", Color: "Cyan"})
-	Box.Print("Box CLI Maker", "Another custom box type")
+	b := box.NewBox().Padding(2, 5).Style(box.Single).Color("Cyan")
+	s, err := b.Render("Box CLI Maker", "Another custom box type")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(s)
 }

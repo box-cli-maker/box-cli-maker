@@ -2,10 +2,11 @@ package box
 
 import (
 	"fmt"
-
+	"image/color"
 	"strings"
 
-	"github.com/gookit/color"
+	"github.com/charmbracelet/x/ansi"
+	"github.com/huandu/xstrings"
 	"github.com/mattn/go-runewidth"
 )
 
@@ -15,33 +16,25 @@ type expandedLine struct {
 	len  int    // line's visible length
 }
 
-// addVertPadding adds Vertical Padding
-func (b Box) addVertPadding(len int) []string {
-	padding := strings.Repeat(" ", len-2)
-	vertical := b.obtainBoxColor()
+// addVertPadding adds vertical padding lines using the given inner width.
+//
+// innerWidth represents the visible width between the vertical borders.
+func (b *Box) addVertPadding(innerWidth int) ([]string, error) {
+	if innerWidth < 0 {
+		innerWidth = 0
+	}
+	padding := strings.Repeat(" ", innerWidth)
+	vertical, err := applyColor(b.vertical, b.color)
+	if err != nil {
+		return nil, err
+	}
 
-	texts := make([]string, b.Py)
+	texts := make([]string, b.py)
 	for i := range texts {
 		texts[i] = vertical + padding + vertical
 	}
-	return texts
-}
 
-// findAlign checks current Box.ContentAlign and returns Alignment
-func (b Box) findAlign() string {
-	switch b.ContentAlign {
-	case "Center":
-		return centerAlign
-	case "Right":
-		return rightAlign
-	case "Left", "":
-		// If ContentAlign isn't provided then by default Alignment is Left
-		return leftAlign
-	default:
-		// Raise a warning if the ContentAlign isn't invalid
-		errorMsg("[warning]: invalid value provided to Alignment, using default")
-		return leftAlign
-	}
+	return texts, nil
 }
 
 // longestLine expands tabs in lines and determines longest visible
@@ -67,8 +60,8 @@ func longestLine(lines []string) (int, []expandedLine) {
 		expandedLines = append(expandedLines, expandedLine{tmpLine.String(), lineLen})
 
 		// Check if each line has ANSI Color Code then decrease the length accordingly
-		if runewidth.StringWidth(color.ClearCode(tmpLine.String())) < runewidth.StringWidth(tmpLine.String()) {
-			lineLen = runewidth.StringWidth(color.ClearCode(tmpLine.String()))
+		if runewidth.StringWidth(ansi.Strip(tmpLine.String())) < runewidth.StringWidth(tmpLine.String()) {
+			lineLen = runewidth.StringWidth(ansi.Strip(tmpLine.String()))
 		}
 
 		if lineLen > longest {
@@ -78,103 +71,87 @@ func longestLine(lines []string) (int, []expandedLine) {
 	return longest, expandedLines
 }
 
-func repeatWithString(c string, n int, str string) string {
-	cstr := color.ClearCode(str)
-	count := n - runewidth.StringWidth(cstr) - 2
-	bar := strings.Repeat(c, count)
-	return fmt.Sprintf(" %s %s", str, bar)
+// charWidth returns the visible width of a string, treating zero-width
+// results as width 1 so that box calculations always make progress.
+func charWidth(s string) int {
+	w := runewidth.StringWidth(ansi.Strip(s))
+	if w == 0 {
+		w = 1
+	}
+	return w
 }
 
-// checkColorType checks type of b.Color then from the preferences and options
-func (b Box) checkColorType(topBar, bottomBar, title string) (string, string) {
-	var col color.RGBColor
-	if b.Color != nil {
-		// Check if type of b.Color is string
-		if str, ok := b.Color.(string); ok {
-			Style := fgHiColors[str].Sprint
-			// Hi Intensity Colors
-			if strings.HasPrefix(str, "Hi") {
-				if _, ok := fgHiColors[str]; ok {
-					Style = fgHiColors[str].Sprint
-					topBar = addStylePreservingOriginalFormat(topBar, Style)
-					bottomBar = addStylePreservingOriginalFormat(bottomBar, Style)
-				}
-			} else if _, ok := fgColors[str]; ok {
-				Style = fgColors[str].Sprint
-				topBar = addStylePreservingOriginalFormat(topBar, Style)
-				bottomBar = addStylePreservingOriginalFormat(bottomBar, Style)
-			} else {
-				// Return TopBar and BottomBar with a warning as Color provided as a string is unknown
-				errorMsg("[warning]: invalid value provided to Color, using default")
-				return topBar, bottomBar
-			}
-
-			// If TitlePos isn't Inside and TitleColor isn't nil then clear Color Code and then split out Title from Top/Bottom Bars
-			// then concatenate them again with the colors provided. This is done so that the color of Vertical after Title
-			// won't be in effect.
-			// TLDR: color.Red("Hello") + color.Yellow("World") + color.Red("!") != color.Red("Hello" + color.Yellow("World") + "!")
-			if b.TitleColor != nil {
-				if b.TitlePos == "Top" {
-					bar := strings.Split(color.ClearCode(topBar), color.ClearCode(title))
-					topBar = Style(bar[0]) + b.obtainTitleColor(title) + Style(bar[1])
-				} else if b.TitlePos == "Bottom" {
-					bar := strings.Split(color.ClearCode(bottomBar), color.ClearCode(title))
-					bottomBar = Style(bar[0]) + b.obtainTitleColor(title) + Style(bar[1])
-				}
-			}
-			return topBar, bottomBar
-
-			// Check if type of b.Color is uint
-		} else if hex, ok := b.Color.(uint); ok {
-			// Break down the hex into r, g and b respectively
-			hexArray := [3]uint{hex >> 16, hex >> 8 & 0xff, hex & 0xff}
-			col = color.RGB(uint8(hexArray[0]), uint8(hexArray[1]), uint8(hexArray[2]))
-			topBar, bottomBar = roundOffColor(col, topBar, bottomBar)
-			// Check if type of b.Color is uint
-		} else if rgb, ok := b.Color.([3]uint); ok {
-			col = color.RGB(uint8(rgb[0]), uint8(rgb[1]), uint8(rgb[2]))
-			topBar, bottomBar = roundOffColor(col, topBar, bottomBar)
-		} else {
-			// Panic if b.Color is an unexpected type
-			panic(fmt.Sprintf("expected string, [3]uint or uint not %T", b.Color))
-		}
-		// Same purpose as written in L114-L117
-		if b.TitleColor != nil {
-			if b.TitlePos == "Top" {
-				bar := strings.Split(color.ClearCode(topBar), color.ClearCode(title))
-				topBar = b.roundOffTitleColor(col, bar[0]) + b.obtainTitleColor(title) + b.roundOffTitleColor(col, bar[1])
-			} else if b.TitlePos == "Bottom" {
-				bar := strings.Split(color.ClearCode(bottomBar), color.ClearCode(title))
-				bottomBar = b.roundOffTitleColor(col, bar[0]) + b.obtainTitleColor(title) + b.roundOffTitleColor(col, bar[1])
-			}
-		}
-		return topBar, bottomBar
+// buildSegment builds a horizontal segment with the given visual width using
+// the provided fill glyph, padding with spaces if needed to match width.
+func buildSegment(fill string, width, horizontalWidth int) string {
+	if width <= 0 {
+		return ""
 	}
-	// As b.Color is nil then apply no color effect and return
-	return topBar, bottomBar
+	fillCount := width / horizontalWidth
+	seg := strings.Repeat(fill, fillCount)
+	padWidth := width - fillCount*horizontalWidth
+	if padWidth > 0 {
+		seg += strings.Repeat(" ", padWidth)
+	}
+	return seg
 }
 
-// addStylePreservingOriginalFormat allows to add style around the orginal formating
-func addStylePreservingOriginalFormat(s string, f func(a ...interface{}) string) string {
-	bars := strings.Split(s, "\033[0m") // split by the exit tag code
-	var tmpBar strings.Builder
-	for _, t := range bars {
-		tmpBar.WriteString(f(t)) // add the style after each exit code to restart the style around the initial formating
+// buildPlainBar builds a horizontal bar (without title) that matches the
+// specified visual line width.
+func buildPlainBar(left, fill, right string, leftW, rightW, lineWidth, horizontalWidth int) string {
+	inner := max(lineWidth-leftW-rightW, 0)
+	bar := buildSegment(fill, inner, horizontalWidth)
+	return left + bar + right
+}
+
+// buildTitledBar builds a top or bottom bar containing a title. It left-aligns
+// the title segment and fills the remaining space on the right with the
+// horizontal glyph. Any leftover width that is not divisible by the glyph's
+// width is emitted as spaces before the emoji sequence so that the last
+// character before the corner is the glyph, not a space.
+func buildTitledBar(left, fill, right string, leftW, rightW, lineWidth, horizontalWidth int, title string) string {
+	if title == "" {
+		return buildPlainBar(left, fill, right, leftW, rightW, lineWidth, horizontalWidth)
 	}
-	return tmpBar.String()
+
+	plainTitle := title
+	if strings.Contains(plainTitle, "\t") {
+		plainTitle = xstrings.ExpandTabs(plainTitle, 4)
+	}
+	titleWidth := runewidth.StringWidth(ansi.Strip(plainTitle))
+	titleSegWidth := titleWidth + 2 // one space padding on each side
+
+	inner := max(lineWidth-leftW-rightW, titleSegWidth)
+	remaining := inner - titleSegWidth
+
+	gapWidth := 0
+	fillWidth := remaining
+	if horizontalWidth > 1 {
+		gapWidth = remaining % horizontalWidth
+		fillWidth = remaining - gapWidth
+	}
+	leftSeg := ""
+	rightSeg := buildSegment(fill, fillWidth, horizontalWidth)
+	gap := ""
+	if gapWidth > 0 {
+		gap = strings.Repeat(" ", gapWidth)
+	}
+
+	return left + leftSeg + " " + plainTitle + " " + gap + rightSeg + right
 }
 
 // formatLine formats the line according to the information passed
-func (b Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideMargin, title string, texts []string) []string {
+func (b *Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideMargin, title string, texts []string) ([]string, error) {
 	for i, line := range lines2 {
 		length := line.len
 
 		// Use later
 		var space, oddSpace string
 
-		// Check if line.line has ANSI Color Code then decrease length accordingly
-		if runewidth.StringWidth(color.ClearCode(line.line)) < runewidth.StringWidth(line.line) {
-			length = runewidth.StringWidth(color.ClearCode(line.line))
+		// compute stripped width once
+		strippedWidth := runewidth.StringWidth(ansi.Strip(line.line))
+		if strippedWidth < runewidth.StringWidth(line.line) {
+			length = strippedWidth
 		}
 
 		// If current text is shorter than the longest one
@@ -194,42 +171,194 @@ func (b Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideMa
 			}
 		}
 
-		spacing := strings.Join([]string{space, sideMargin}, "")
-		var format string
+		spacing := space + sideMargin
+		var format AlignType
 
 		switch {
-		case i < titleLen && title != "" && b.TitlePos == inside:
+		case i < titleLen && title != "" && b.titlePos == Inside:
 			format = centerAlign
 		default:
-			format = b.findAlign()
+			align, err := b.findAlign()
+			if err != nil {
+				return nil, err
+			}
+			format = AlignType(align)
 		}
 
-		// Obtain color
-		sep := b.obtainBoxColor()
+		sep, err := applyColor(b.vertical, b.color)
+		if err != nil {
+			return nil, err
+		}
 
-		formatted := fmt.Sprintf(format, sep, spacing, line.line, oddSpace, space, sideMargin)
+		formatted := fmt.Sprintf(string(format), sep, spacing, line.line, oddSpace, space, sideMargin)
 		texts = append(texts, formatted)
 	}
-	return texts
+	return texts, nil
 }
 
-// applyColorToAll applies Color to lines even if they have newlines in it
-func (b Box) applyColorToAll(lines, color string, col color.RGBColor, isCustom bool) string {
-	// Check if Color provided is Custom i.e. [3]uint or uint type
-	if isCustom {
-		contents := strings.Split(lines, "\n")
-		var line []string
-		for _, str1 := range contents {
-			styleLine := addStylePreservingOriginalFormat(str1, col.Sprint)
-			line = append(line, b.roundOffTitleColor(col, styleLine))
+func (b *Box) findAlign() (string, error) {
+	switch b.contentAlign {
+	case Center:
+		return centerAlign, nil
+	case Right:
+		return rightAlign, nil
+	case Left, "":
+		// If ContentAlign isn't provided then by default Alignment is Left
+		return leftAlign, nil
+	default:
+		return "", fmt.Errorf("invalid Content Alignment %s", b.contentAlign)
+	}
+}
+
+func repeatWithString(c string, n int, str string) string {
+	cstr := ansi.Strip(str)
+	count := max(n-runewidth.StringWidth(cstr)-2, 0)
+	bar := strings.Repeat(c, count)
+	return " " + str + " " + bar
+}
+
+func getConvertedColor(colorStr string) (color.Color, error) {
+	cv, err := parseColorString(colorStr)
+	if err != nil {
+		return nil, err
+	}
+	// If profile conversion results in nil, fall back to the
+	// parsed color so we always emit color.
+	converted := profile.Convert(cv)
+	if converted == nil {
+		return cv, nil
+	}
+	return converted, nil
+}
+
+func applyColor(str string, colorStr string) (string, error) {
+	// Empty color string means: do not apply any styling.
+	if colorStr == "" {
+		return str, nil
+	}
+	convertedColor, err := getConvertedColor(colorStr)
+	if err != nil {
+		return str, err
+	}
+	return applyConvertedColor(str, convertedColor), nil
+}
+
+func stringColorToHex(colorName string) string {
+	if hex, exists := colorNameToHex[colorName]; exists {
+		return hex
+	}
+	// Return empty string for unknown colors to let ansi.XParseColor handle it
+	return ""
+}
+
+// addStylePreservingOriginalFormat allows to add style around the orginal formating
+func addStylePreservingOriginalFormat(s string, f func(a string) string) string {
+	const reset = "\033[0m"
+	if !strings.Contains(s, reset) {
+		return f(s)
+	}
+
+	var sb strings.Builder
+	start := 0
+	for {
+		idx := strings.Index(s[start:], reset)
+		if idx == -1 {
+			sb.WriteString(f(s[start:]))
+			break
 		}
-		return strings.Join(line, "\n")
+		sb.WriteString(f(s[start : start+idx]))
+		// skip the reset sequence (preserve original behavior of removing it)
+		start += idx + len(reset)
 	}
-	contents := strings.Split(lines, "\n")
-	var line []string
-	for _, str1 := range contents {
-		styleLine := addStylePreservingOriginalFormat(str1, fgColors[color].Sprint)
-		line = append(line, styleLine)
+	return sb.String()
+}
+
+// parseColorString converts a color string to color.Color using stringColorToHex and ansi.XParseColor
+func parseColorString(colorStr string) (color.Color, error) {
+	hexColor := stringColorToHex(colorStr)
+
+	if hexColor == "" {
+		hexColor = colorStr
 	}
-	return strings.Join(line, "\n")
+
+	colorValue := ansi.XParseColor(hexColor)
+	if colorValue == nil {
+		return nil, fmt.Errorf("unable to parse color: %s", colorStr)
+	}
+	return colorValue, nil
+}
+
+func applyConvertedColor(str string, c color.Color) string {
+	if c == nil {
+		return str
+	}
+
+	style := ansi.Style{}.ForegroundColor(c)
+	styled := style.Styled
+
+	// Fast path: no newlines
+	if !strings.Contains(str, "\n") {
+		return addStylePreservingOriginalFormat(str, styled)
+	}
+
+	var sb strings.Builder
+	start := 0
+	for {
+		idx := strings.IndexByte(str[start:], '\n')
+		if idx == -1 {
+			sb.WriteString(addStylePreservingOriginalFormat(str[start:], styled))
+			break
+		}
+		sb.WriteString(addStylePreservingOriginalFormat(str[start:start+idx], styled))
+		sb.WriteByte('\n')
+		start += idx + 1
+	}
+	return sb.String()
+}
+
+func (b *Box) applyColorBar(topBar, bottomBar, title string) (string, string, error) {
+	if b.titleColor == "" || title == "" {
+		return topBar, bottomBar, nil
+	}
+
+	if strings.TrimSpace(b.color) == "" {
+		return topBar, bottomBar, nil
+	}
+
+	converted, err := getConvertedColor(b.color)
+	if err != nil {
+		return "", "", err
+	}
+
+	if b.titlePos == Top {
+		strippedBar := ansi.Strip(topBar)
+		strippedTitle := ansi.Strip(title)
+		if idx := strings.Index(strippedBar, strippedTitle); idx != -1 {
+			// split around first occurrence to preserve any other repeats
+			b0 := applyConvertedColor(strippedBar[:idx], converted)
+			b1 := applyConvertedColor(strippedBar[idx+len(strippedTitle):], converted)
+			coloredTitle, err := applyColor(title, b.titleColor)
+			if err != nil {
+				return "", "", err
+			}
+			topBar = b0 + coloredTitle + b1
+		}
+	}
+
+	if b.titlePos == Bottom {
+		strippedBar := ansi.Strip(bottomBar)
+		strippedTitle := ansi.Strip(title)
+		if idx := strings.Index(strippedBar, strippedTitle); idx != -1 {
+			// split around first occurrence to preserve any other repeats
+			b0 := applyConvertedColor(strippedBar[:idx], converted)
+			b1 := applyConvertedColor(strippedBar[idx+len(strippedTitle):], converted)
+			coloredTitle, err := applyColor(title, b.titleColor)
+			if err != nil {
+				return "", "", err
+			}
+			bottomBar = b0 + coloredTitle + b1
+		}
+	}
+
+	return topBar, bottomBar, nil
 }

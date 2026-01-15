@@ -1,6 +1,6 @@
 <hr/>
 <div align="center">
-<img src="../img/lib_logo.png" alt="logo">
+<img src="img/lib_logo.png" alt="logo">
 </div>
 <hr/>
 <br/>
@@ -240,37 +240,37 @@ out := b.MustRender("Title", "Content") // panics on error
 - `Single`
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="../img/single.svg" alt="single" width="500"/>
+<img src="img/single.svg" alt="single" width="500"/>
 </p>
 
 - `Single Double`
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="../img/single_double.svg" alt="single_double" width="500"/>
+<img src="img/single_double.svg" alt="single_double" width="500"/>
 </p>
 
 - `Double`
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="../img/double.svg" alt="double" width="500"/>
+<img src="img/double.svg" alt="double" width="500"/>
 </p>
 
 - `Double Single`
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="../img/double_single.svg" alt="double_single" width="500"/>
+<img src="img/double_single.svg" alt="double_single" width="500"/>
 </p>
 
 - `Bold`
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="../img/bold.svg" alt="bold" width="500"/>
+<img src="img/bold.svg" alt="bold" width="500"/>
 </p>
 
 - `Round`
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="../img/round.svg" alt="round" width="500"/>
+<img src="img/round.svg" alt="round" width="500"/>
 </p>
 
 - `Hidden`
@@ -282,7 +282,7 @@ out := b.MustRender("Title", "Content") // panics on error
 - `Classic`
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="../img/classic.svg" alt="classic" width="500"/>
+<img src="img/classic.svg" alt="classic" width="500"/>
 </p>
 
 `Block` is also available as `box.Block` (no image here).
@@ -345,7 +345,7 @@ but is no longer actively developed.
 
 ## Projects Using Box CLI Maker
 
-- <img src="../img/k8s_logo.png" alt="kubernetes logo" width="20"> [kubernetes/minikube](https://github.com/kubernetes/minikube): Run Kubernetes locally.
+- <img src="img/k8s_logo.png" alt="kubernetes logo" width="20"> [kubernetes/minikube](https://github.com/kubernetes/minikube): Run Kubernetes locally.
 - And others listed on [pkg.go.dev](https://pkg.go.dev/github.com/Delta456/box-cli-maker/v3?tab=importedby).
 
 ---

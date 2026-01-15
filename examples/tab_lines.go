@@ -1,17 +1,23 @@
 package main
 
 import (
-	"github.com/Delta456/box-cli-maker/v2"
+	"fmt"
+
+	box "github.com/Delta456/box-cli-maker/v3"
 )
 
 func main() {
-	StyleCases := []string{"Single", "Double", "Single Double", "Double Single", "Bold", "Round", "Hidden", "Classic"}
-	ColorTypes := []string{"Black", "Blue", "Red", "Green", "Yellow", "Cyan", "Magenta", "White", "HiBlack", "HiBlue", "HiRed", "HiGreen", "HiYellow", "HiCyan", "HiMagenta", "HiWhite"}
+	styleCases := []box.BoxStyle{box.Single, box.Double, box.SingleDouble, box.DoubleSingle, box.Bold, box.Round, box.Hidden, box.Classic}
+	colorTypes := []string{"Black", "Blue", "Red", "Green", "Yellow", "Cyan", "Magenta", "White", "HiBlue", "HiRed", "HiGreen", "HiYellow", "HiCyan", "HiMagenta", "HiWhite"}
 
-	for i := 0; i < len(StyleCases); i++ {
-		for j := 0; j < len(ColorTypes); j++ {
-			Box := box.New(box.Config{Px: 2, Py: 6, Type: StyleCases[i], Color: ColorTypes[j]})
-			Box.Println("Box 	CLI 	Maker 	📦", "Highly 		Customized 			Terminal	 Box	 Maker")
+	for _, st := range styleCases {
+		for _, c := range colorTypes {
+			b := box.NewBox().Padding(2, 6).Style(st).Color(c)
+			s, err := b.Render("Box \tCLI \tMaker \t📦", "Highly \t\tCustomizable \t\t\tTerminal\t Box\t Maker")
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(s)
 		}
 	}
 }

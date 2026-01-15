@@ -1,97 +1,166 @@
 package box
 
 import (
-	"github.com/gookit/color"
+	"os"
+
+	"github.com/charmbracelet/colorprofile"
+)
+
+// BoxStyle defines a built‑in border style for a Box.
+type BoxStyle string
+
+const (
+	// Single box style with single line borders.
+	Single BoxStyle = "Single"
+	// Double box style with double line borders.
+	Double BoxStyle = "Double"
+	// Round box style with rounded corners.
+	Round BoxStyle = "Round"
+	// Bold box style with bold lines.
+	Bold BoxStyle = "Bold"
+	// SingleDouble box style with single horizontal and double vertical lines.
+	SingleDouble BoxStyle = "SingleDouble"
+	// DoubleSingle box style with double horizontal and single vertical lines.
+	DoubleSingle BoxStyle = "DoubleSingle"
+	// Classic box style with plus and minus signs.
+	Classic BoxStyle = "Classic"
+	// Hidden box style with invisible borders.
+	Hidden BoxStyle = "Hidden"
+	// Block box style with block characters.
+	Block BoxStyle = "Block"
+)
+
+// AlignType represents the horizontal alignment of content inside the box.
+type AlignType string
+
+const (
+	// Center alignment
+	Center AlignType = "Center"
+	// Left alignment
+	Left AlignType = "Left"
+	// Right alignment
+	Right AlignType = "Right"
+)
+
+// TitlePosition represents the position of the title relative to the box.
+type TitlePosition string
+
+const (
+	// Inside title position
+	Inside TitlePosition = "Inside"
+	// Top title position
+	Top TitlePosition = "Top"
+	// Bottom title position
+	Bottom TitlePosition = "Bottom"
 )
 
 var (
 	// boxes are inbuilt Box styles provided by the module
-	boxes map[string]Box = map[string]Box{
-		"Single": {
-			TopRight:    "┐",
-			TopLeft:     "┌",
-			BottomRight: "┘",
-			BottomLeft:  "└",
-			Horizontal:  "─",
-			Vertical:    "│",
+	boxes = map[BoxStyle]Box{
+		Single: {
+			topRight:    "┐",
+			topLeft:     "┌",
+			bottomRight: "┘",
+			bottomLeft:  "└",
+			horizontal:  "─",
+			vertical:    "│",
 		},
-		"Double": {
-			TopRight:    "╗",
-			TopLeft:     "╔",
-			BottomRight: "╝",
-			BottomLeft:  "╚",
-			Horizontal:  "═",
-			Vertical:    "║",
+		Double: {
+			topRight:    "╗",
+			topLeft:     "╔",
+			bottomRight: "╝",
+			bottomLeft:  "╚",
+			horizontal:  "═",
+			vertical:    "║",
 		},
-		"Round": {
-			TopRight:    "╮",
-			TopLeft:     "╭",
-			BottomRight: "╯",
-			BottomLeft:  "╰",
-			Horizontal:  "─",
-			Vertical:    "│",
+		Round: {
+			topRight:    "╮",
+			topLeft:     "╭",
+			bottomRight: "╯",
+			bottomLeft:  "╰",
+			horizontal:  "─",
+			vertical:    "│",
 		},
-		"Bold": {
-			TopRight:    "┓",
-			TopLeft:     "┏",
-			BottomRight: "┛",
-			BottomLeft:  "┗",
-			Horizontal:  "━",
-			Vertical:    "┃",
+		Bold: {
+			topRight:    "┓",
+			topLeft:     "┏",
+			bottomRight: "┛",
+			bottomLeft:  "┗",
+			horizontal:  "━",
+			vertical:    "┃",
 		},
-		"Single Double": {
-			TopRight:    "╖",
-			TopLeft:     "╓",
-			BottomRight: "╜",
-			BottomLeft:  "╙",
-			Horizontal:  "─",
-			Vertical:    "║",
+		SingleDouble: {
+			topRight:    "╖",
+			topLeft:     "╓",
+			bottomRight: "╜",
+			bottomLeft:  "╙",
+			horizontal:  "─",
+			vertical:    "║",
 		},
-		"Double Single": {
-			TopRight:    "╕",
-			TopLeft:     "╒",
-			BottomRight: "╛",
-			BottomLeft:  "╘",
-			Horizontal:  "═",
-			Vertical:    "│",
+		DoubleSingle: {
+			topRight:    "╕",
+			topLeft:     "╒",
+			bottomRight: "╛",
+			bottomLeft:  "╘",
+			horizontal:  "═",
+			vertical:    "│",
 		},
-		"Classic": {
-			TopRight:    "+",
-			TopLeft:     "+",
-			BottomRight: "+",
-			BottomLeft:  "+",
-			Horizontal:  "-",
-			Vertical:    "|",
+		Classic: {
+			topRight:    "+",
+			topLeft:     "+",
+			bottomRight: "+",
+			bottomLeft:  "+",
+			horizontal:  "-",
+			vertical:    "|",
 		},
-		"Hidden": {
-			TopRight:    "+",
-			TopLeft:     "+",
-			BottomRight: "+",
-			BottomLeft:  "+",
-			Horizontal:  " ",
-			Vertical:    " ",
+		Hidden: {
+			topRight:    "+",
+			topLeft:     "+",
+			bottomRight: "+",
+			bottomLeft:  "+",
+			horizontal:  " ",
+			vertical:    " ",
+		},
+		Block: {
+			topRight:    "█",
+			topLeft:     "█",
+			bottomRight: "█",
+			bottomLeft:  "█",
+			horizontal:  "█",
+			vertical:    "█",
 		},
 	}
-	// fgColors are inbuilt Foreground Colors provided by the module
-	fgColors map[string]color.Color = map[string]color.Color{
-		"Black":   color.FgBlack,
-		"Blue":    color.FgBlue,
-		"Red":     color.FgRed,
-		"Green":   color.FgGreen,
-		"Yellow":  color.FgYellow,
-		"Cyan":    color.FgCyan,
-		"Magenta": color.FgMagenta,
-		"White":   color.FgWhite,
+
+	// colorNameToHex maps color names to their hexadecimal codes.
+	// This includes both standard and bright ANSI colors.
+	colorNameToHex = map[string]string{
+		// Basic ANSI colors (0-7)
+		"Black":   "#000000",
+		"Red":     "#800000",
+		"Green":   "#008000",
+		"Yellow":  "#808000",
+		"Blue":    "#000080",
+		"Magenta": "#800080",
+		"Cyan":    "#008080",
+		"White":   "#C0C0C0",
+		// Bright ANSI colors (8-15)
+		"BrightBlack":   "#808080",
+		"HiBlack":       "#808080",
+		"BrightRed":     "#FF0000",
+		"HiRed":         "#FF0000",
+		"BrightGreen":   "#00FF00",
+		"HiGreen":       "#00FF00",
+		"BrightYellow":  "#FFFF00",
+		"HiYellow":      "#FFFF00",
+		"BrightBlue":    "#0000FF",
+		"HiBlue":        "#0000FF",
+		"BrightMagenta": "#FF00FF",
+		"HiMagenta":     "#FF00FF",
+		"BrightCyan":    "#00FFFF",
+		"HiCyan":        "#00FFFF",
+		"BrightWhite":   "#FFFFFF",
+		"HiWhite":       "#FFFFFF",
 	}
-	// fgHiColors are inbuilt Hi-intensity Foreground Colors provided by the module
-	fgHiColors map[string]color.Color = map[string]color.Color{
-		"HiBlack":   color.FgDarkGray,
-		"HiBlue":    color.FgLightBlue,
-		"HiRed":     color.FgLightRed,
-		"HiGreen":   color.FgLightGreen,
-		"HiYellow":  color.FgLightYellow,
-		"HiCyan":    color.FgLightCyan,
-		"HiMagenta": color.FgLightMagenta,
-		"HiWhite":   color.FgLightWhite,
-	}
+
+	profile = colorprofile.Detect(os.Stdout, os.Environ())
 )
