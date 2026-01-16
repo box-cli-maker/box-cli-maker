@@ -239,53 +239,110 @@ out := b.MustRender("Title", "Content") // panics on error
 
 - `Single`
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/single.svg" alt="single" width="500"/>
-</p>
+```text
+┌────────────────────────────────────────────────┐
+│                                                │
+│                  Box CLI Maker                 │
+│                                                │
+│    Render highly customizable terminal boxes   │
+│                                                │
+└────────────────────────────────────────────────┘
+```
 
 - `Single Double`
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/single_double.svg" alt="single_double" width="500"/>
-</p>
+```text
+╒════════════════════════════════════════════════╕
+│                                                │
+│                  Box CLI Maker                 │
+│                                                │
+│    Render highly customizable terminal boxes   │
+│                                                │
+╘════════════════════════════════════════════════╛
+```
 
 - `Double`
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/double.svg" alt="double" width="500"/>
-</p>
+```text
+╔════════════════════════════════════════════════╗
+║                                                ║
+║                  Box CLI Maker                 ║
+║                                                ║
+║    Render highly customizable terminal boxes   ║
+║                                                ║
+╚════════════════════════════════════════════════╝
+```
 
 - `Double Single`
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/double_single.svg" alt="double_single" width="500"/>
-</p>
+```text
+┍━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┑
+│                                                │
+│                  Box CLI Maker                 │
+│                                                │
+│    Render highly customizable terminal boxes   │
+│                                                │
+┕━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┙
+```
 
 - `Bold`
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/bold.svg" alt="bold" width="500"/>
-</p>
+```text
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                                                ┃
+┃                  Box CLI Maker                 ┃
+┃                                                ┃
+┃    Render highly customizable terminal boxes   ┃
+┃                                                ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+```
 
 - `Round`
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/round.svg" alt="round" width="500"/>
-</p>
+```text
+╭────────────────────────────────────────────────╮
+│                                                │
+│                  Box CLI Maker                 │
+│                                                │
+│    Render highly customizable terminal boxes   │
+│                                                │
+╰────────────────────────────────────────────────╯
+```
+
 
 - `Hidden`
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/hidden.svg" alt="hidden" width="500"/>
-</p>
+```text
+    
+                    Box CLI Maker                
+    
+      Render highly customizable terminal boxes   
+    
+```
 
 - `Classic`
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/classic.svg" alt="classic" width="500"/>
-</p>
+```text
++------------------------------------------------+
+|                                                |
+|                  Box CLI Maker                 |
+|                                                |
+|    Render highly customizable terminal boxes   |
+|                                                |
++------------------------------------------------+
+```
 
-`Block` is also available as `box.Block` (no image here).
+- `Block`
+
+```text
+████████████████████████████████████████████████
+█                                              █
+█                  Box CLI Maker               █
+█                                              █
+█   Render highly customizable terminal boxes  █
+█                                              █
+████████████████████████████████████████████████
+```
 
 ---
 
