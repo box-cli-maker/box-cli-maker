@@ -110,18 +110,89 @@ Select a built‑in style:
 ```go
 b.Style(box.Double)
 ```
+#### Styles Showcase
 
-Available styles:
+<details>
+<summary><code>Single</code></summary>
 
-- `box.Single`
-- `box.Double`
-- `box.Round`
-- `box.Bold`
-- `box.SingleDouble`
-- `box.DoubleSingle`
-- `box.Classic`
-- `box.Hidden`
-- `box.Block`
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/single.png" alt="single" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>Single Double</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/double_single.png" alt="double single" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>Double</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/double.png" alt="double" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>Double Single</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/double_single.png" alt="double single" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>Bold</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/bold.png" alt="bold" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>Round</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/round.png" alt="round" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>Hidden</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/hidden.png" alt="hidden" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>Classic</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/classic.png" alt="classic" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>Block</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/block.png" alt="block" width="500"/>
+</p>
+
+</details>
+
 
 You can override any glyph after choosing a style:
 
@@ -232,65 +303,6 @@ For convenience:
 ```go
 out := b.MustRender("Title", "Content") // panics on error
 ```
-
----
-
-## Styles Showcase
-
-- `Single`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/single.png" alt="single" width=500/>
-</p>
-
-- `Single Double`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/double_single.png" alt="double single" width=500/>
-</p>
-
-- `Double`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/double.png" alt="double" width=500/>
-</p>
-
-- `Double Single`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/double_single.png" alt="double single" width=500/>
-</p>
-
-- `Bold`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/bold.png" alt="bold.png" width=500/>
-</p>
-
-- `Round`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/round.png" alt="round" width=500/>
-</p>
-
-
-- `Hidden`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/hidden.png" alt="hidden" width=500/>
-</p>
-
-- `Classic`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/classic.png" alt="classic" width=500/>
-</p>
-
-- `Block`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/block.png" alt="block" width=500/>
-</p>
 
 ---
 
