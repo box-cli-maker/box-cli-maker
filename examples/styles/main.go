@@ -2,12 +2,23 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	box "github.com/Delta456/box-cli-maker/v3"
 )
 
-// This example mirrors the old TestInbuiltStyles by rendering all built-in
-// styles with the same padding, title, and content.
+func indentBox(s string, spaces int) string {
+	pad := strings.Repeat(" ", spaces)
+	lines := strings.Split(s, "\n")
+	for i, l := range lines {
+		if len(l) == 0 {
+			continue
+		}
+		lines[i] = pad + l
+	}
+	return strings.Join(lines, "\n")
+}
+
 func main() {
 	styles := []box.BoxStyle{
 		box.Single,
@@ -23,14 +34,18 @@ func main() {
 
 	for _, style := range styles {
 		b := box.NewBox().
-			Padding(2, 5).
-			Style(style)
+			Padding(4, 3).
+			Style(style).
+			TitleColor("#00ffb2").
+			Color("#8B75FF").
+			ContentColor("#12c78f").ContentAlign(box.Center)
 
-		out, err := b.Render("Box CLI Maker", "Render highly customizable boxes for terminal")
+		out, err := b.Render("Box CLI Maker",
+			"Render highly customizable boxes\nin the terminal")
 		if err != nil {
 			panic(err)
 		}
 
-		fmt.Printf("\n%s\n\n", out)
+		fmt.Printf("\n%s", indentBox(out, 4))
 	}
 }
