@@ -468,3 +468,35 @@ func TestRenderEmojiBordersHaveConsistentWidth(t *testing.T) {
 		t.Fatalf("expected equal visual widths for emoji box borders, got top=%d interior=%d bottom=%d", topW, interiorW, bottomW)
 	}
 }
+
+func TestRenderBoxCustomGlyphsWithoutNewBoxMethod(t *testing.T) {
+	b := new(Box)
+	b = b.TopLeft("+").TopRight("+").BottomLeft("+").BottomRight("+").Horizontal("-").Vertical("|")
+
+	out, err := b.Render("Custom Glyphs", "Using custom border glyphs")
+	if err != nil {
+		t.Fatalf("Render with custom glyphs returned error: %v", err)
+	}
+
+	lines := strings.Split(out, "\n")
+	if len(lines) < 3 {
+		t.Fatalf("expected at least 3 lines in rendered box, got %d", len(lines))
+	}
+
+	top := lines[0]
+	bottom := lines[len(lines)-2]
+	interior := lines[1 : len(lines)-2]
+
+	if !strings.HasPrefix(top, "+") || !strings.HasSuffix(top, "+") {
+		t.Errorf("top border does not use custom corners: %q", top)
+	}
+	if !strings.HasPrefix(bottom, "+") || !strings.HasSuffix(bottom, "+") {
+		t.Errorf("bottom border does not use custom corners: %q", bottom)
+	}
+
+	for _, line := range interior {
+		if !strings.HasPrefix(line, "|") || !strings.HasSuffix(line, "|") {
+			t.Errorf("interior line does not use custom vertical borders: %q", line)
+		}
+	}
+}

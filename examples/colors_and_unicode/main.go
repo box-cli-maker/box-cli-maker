@@ -31,7 +31,7 @@ func main() {
 		box.Classic,
 	}
 
-	colors := []box.Color{
+	colors := []string{
 		box.Black, box.Blue, box.Red, box.Green, box.Yellow, box.Cyan, box.Magenta, box.White,
 		box.BrightBlack, box.BrightBlue, box.BrightRed, box.BrightGreen, box.BrightYellow,
 		box.BrightCyan, box.BrightMagenta, box.BrightWhite,

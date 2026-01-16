@@ -155,9 +155,9 @@ func (b *Box) Vertical(glyph string) *Box {
 
 // TitleColor sets the title color.
 //
-// Accepts one of the first 16 ANSI color names (using the Color
-// constants, e.g. box.Green, box.BrightRed) or a #RGB / #RRGGBB /
-// rgb:RRRR/GGGG/BBBB / rgba:RRRR/GGGG/BBBB/AAAA value.
+// Accepts one of the first 16 ANSI color name constants (e.g. box.Green,
+// box.BrightRed) or a #RGB / #RRGGBB / rgb:RRRR/GGGG/BBBB /
+// rgba:RRRR/GGGG/BBBB/AAAA value.
 //
 // Invalid colors cause Render to return an error.
 func (b *Box) TitleColor(color string) *Box {
@@ -167,9 +167,9 @@ func (b *Box) TitleColor(color string) *Box {
 
 // ContentColor sets the content color.
 //
-// Accepts one of the first 16 ANSI color names (using the Color
-// constants, e.g. box.Green, box.BrightRed) or a #RGB / #RRGGBB /
-// rgb:RRRR/GGGG/BBBB / rgba:RRRR/GGGG/BBBB/AAAA value.
+// Accepts one of the first 16 ANSI color name constants (e.g. box.Green,
+// box.BrightRed) or a #RGB / #RRGGBB / rgb:RRRR/GGGG/BBBB /
+// rgba:RRRR/GGGG/BBBB/AAAA value.
 //
 // Invalid colors cause Render to return an error.
 func (b *Box) ContentColor(color string) *Box {
@@ -179,9 +179,9 @@ func (b *Box) ContentColor(color string) *Box {
 
 // Color sets the box color.
 //
-// Accepts one of the first 16 ANSI color names (using the Color
-// constants, e.g. box.Green, box.BrightRed) or a #RGB / #RRGGBB /
-// rgb:RRRR/GGGG/BBBB / rgba:RRRR/GGGG/BBBB/AAAA value.
+// Accepts one of the first 16 ANSI color name constants (e.g. box.Green,
+// box.BrightRed) or a #RGB / #RRGGBB / rgb:RRRR/GGGG/BBBB /
+// rgba:RRRR/GGGG/BBBB/AAAA value.
 //
 // Invalid colors cause Render to return an error.
 func (b *Box) Color(color string) *Box {

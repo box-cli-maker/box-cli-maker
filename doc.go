@@ -22,7 +22,13 @@
 //
 // # Construction
 //
-// Box must be constructed with NewBox; the zero value is not usable.
+// It is recommended to create boxes using NewBox, which returns a Box with
+// sensible defaults. The returned Box can then be configured using the various
+//
+// The zero value of Box is not intended to be used directly with Render.
+// If you construct a Box manually (e.g. with &box.Box{} or new(box.Box)),
+// you must fully initialize all required fields (style, padding, glyphs,
+// colors, etc.) yourself before calling Render.
 //
 // # Styles
 //
@@ -66,7 +72,7 @@
 // # Colors
 //
 // TitleColor, ContentColor, and Color accept either one of the first 16 ANSI
-// color names (the Color constants, e.g. box.Green, box.BrightRed) or a
+// color name constants (e.g. box.Green, box.BrightRed) or a
 // #RGB / #RRGGBB / rgb:RRRR/GGGG/BBBB / rgba:RRRR/GGGG/BBBB/AAAA value.
 // Invalid colors cause Render to return an error.
 //

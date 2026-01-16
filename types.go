@@ -54,35 +54,32 @@ const (
 	Bottom TitlePosition = "Bottom"
 )
 
-// Color to support basic ANSI and bright ANSI colors.
-type Color = string
-
 const (
-	Black   Color = "Black"
-	Red     Color = "Red"
-	Green   Color = "Green"
-	Yellow  Color = "Yellow"
-	Blue    Color = "Blue"
-	Magenta Color = "Magenta"
-	Cyan    Color = "Cyan"
-	White   Color = "White"
+	Black   = "Black"
+	Red     = "Red"
+	Green   = "Green"
+	Yellow  = "Yellow"
+	Blue    = "Blue"
+	Magenta = "Magenta"
+	Cyan    = "Cyan"
+	White   = "White"
 
-	BrightBlack   Color = "BrightBlack"
-	HiBlack       Color = "HiBlack"
-	BrightRed     Color = "BrightRed"
-	HiRed         Color = "HiRed"
-	BrightGreen   Color = "BrightGreen"
-	HiGreen       Color = "HiGreen"
-	BrightYellow  Color = "BrightYellow"
-	HiYellow      Color = "HiYellow"
-	BrightBlue    Color = "BrightBlue"
-	HiBlue        Color = "HiBlue"
-	BrightMagenta Color = "BrightMagenta"
-	HiMagenta     Color = "HiMagenta"
-	BrightCyan    Color = "BrightCyan"
-	HiCyan        Color = "HiCyan"
-	BrightWhite   Color = "BrightWhite"
-	HiWhite       Color = "HiWhite"
+	BrightBlack   = "BrightBlack"
+	HiBlack       = "HiBlack"
+	BrightRed     = "BrightRed"
+	HiRed         = "HiRed"
+	BrightGreen   = "BrightGreen"
+	HiGreen       = "HiGreen"
+	BrightYellow  = "BrightYellow"
+	HiYellow      = "HiYellow"
+	BrightBlue    = "BrightBlue"
+	HiBlue        = "HiBlue"
+	BrightMagenta = "BrightMagenta"
+	HiMagenta     = "HiMagenta"
+	BrightCyan    = "BrightCyan"
+	HiCyan        = "HiCyan"
+	BrightWhite   = "BrightWhite"
+	HiWhite       = "HiWhite"
 )
 
 var (
@@ -165,7 +162,7 @@ var (
 var (
 	// colorToHex maps color names to their hexadecimal codes.
 	// This includes both standard and bright ANSI colors.
-	colorToHex = map[Color]string{
+	colorToHex = map[string]string{
 		// Basic ANSI colors (0-7)
 		Black:   "#000000",
 		Red:     "#800000",

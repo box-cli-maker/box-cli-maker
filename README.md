@@ -88,7 +88,7 @@ Configure it via fluent methods, then call `Render` (or `MustRender`) to get the
 ### Construction
 
 ```go
-b := box.NewBox() // zero value Box is not usable; always use NewBox
+b := box.NewBox() // recommended
 ```
 
 You can clone a configured box and tweak it:
