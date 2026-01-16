@@ -113,7 +113,7 @@ b.Style(box.Double)
 #### Styles Showcase
 
 <details>
-<summary><code>Single</code></summary>
+<summary><code>box.Single</code></summary>
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
 <img src="img/single.png" alt="single" width="500"/>
@@ -122,7 +122,7 @@ b.Style(box.Double)
 </details>
 
 <details>
-<summary><code>Single Double</code></summary>
+<summary><code>box.SingleDouble</code></summary>
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
 <img src="img/double_single.png" alt="double single" width="500"/>
@@ -131,7 +131,7 @@ b.Style(box.Double)
 </details>
 
 <details>
-<summary><code>Double</code></summary>
+<summary><code>box.Double</code></summary>
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
 <img src="img/double.png" alt="double" width="500"/>
@@ -140,7 +140,7 @@ b.Style(box.Double)
 </details>
 
 <details>
-<summary><code>Double Single</code></summary>
+<summary><code>box.DoubleSingle</code></summary>
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
 <img src="img/double_single.png" alt="double single" width="500"/>
@@ -149,7 +149,7 @@ b.Style(box.Double)
 </details>
 
 <details>
-<summary><code>Bold</code></summary>
+<summary><code>box.Bold</code></summary>
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
 <img src="img/bold.png" alt="bold" width="500"/>
@@ -158,7 +158,7 @@ b.Style(box.Double)
 </details>
 
 <details>
-<summary><code>Round</code></summary>
+<summary><code>box.Round</code></summary>
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
 <img src="img/round.png" alt="round" width="500"/>
@@ -167,7 +167,7 @@ b.Style(box.Double)
 </details>
 
 <details>
-<summary><code>Hidden</code></summary>
+<summary><code>box.Hidden</code></summary>
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
 <img src="img/hidden.png" alt="hidden" width="500"/>
@@ -176,7 +176,7 @@ b.Style(box.Double)
 </details>
 
 <details>
-<summary><code>Classic</code></summary>
+<summary><code>box.Classic</code></summary>
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
 <img src="img/classic.png" alt="classic" width="500"/>
@@ -185,7 +185,7 @@ b.Style(box.Double)
 </details>
 
 <details>
-<summary><code>Block</code></summary>
+<summary><code>box.Block</code></summary>
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
 <img src="img/block.png" alt="block" width="500"/>
@@ -198,12 +198,12 @@ You can override any glyph after choosing a style:
 
 ```go
 b.Style(box.Single).
-    TopLeft("+").
-    TopRight("+").
-    BottomLeft("+").
-    BottomRight("+").
-    Horizontal("-").
-    Vertical("|")
+  TopLeft("+").
+  TopRight("+").
+  BottomLeft("+").
+  BottomRight("+").
+  Horizontal("-").
+  Vertical("|")
 ```
 
 ### Titles and Alignment
@@ -215,6 +215,35 @@ b.TitlePosition(box.Inside) // default
 b.TitlePosition(box.Top)
 b.TitlePosition(box.Bottom)
 ```
+
+#### Title position showcase
+
+<details>
+<summary><code>box.Inside</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/single.png" alt="single" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>box.Top</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/top.png" alt="top" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>box.Bottom</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/bottom.png" alt="bottom" width="500"/>
+</p>
+
+</details>
 
 Content alignment:
 
