@@ -70,7 +70,7 @@ func main() {
         TitleColor(box.BrightYellow).
         ContentColor(box.White)
 
-    out, err := b.Render("Box CLI Maker", "Render highly customizable boxes for terminal")
+    out, err := b.Render("Box CLI Maker", "Render highly customizable\n in the terminal")
     if err != nil {
         panic(err)
     }
@@ -253,6 +253,36 @@ b.ContentAlign(box.Center)
 b.ContentAlign(box.Right)
 ```
 
+#### Content Alignment showcase
+
+<details>
+<summary><code>box.Left</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/left.png" alt="left" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>box.Center</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/single.png" alt="center" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>box.Bottom</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/right.png" alt="right" width="500"/>
+</p>
+
+</details>
+
+
 ### Padding
 
 ```go
@@ -260,6 +290,8 @@ b.Padding(px, py) // horizontal (px) and vertical (py) padding
 b.HPadding(px)    // horizontal only
 b.VPadding(py)    // vertical only
 ```
+
+
 
 Negative padding values are allowed to be set but cause `Render` to return an error.
 

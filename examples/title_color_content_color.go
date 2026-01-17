@@ -8,7 +8,7 @@ import (
 
 func main() {
 	styleCases := []box.BoxStyle{box.Single, box.Double, box.SingleDouble, box.DoubleSingle, box.Bold, box.Round, box.Hidden, box.Classic}
-	colorTypes := []box.Color{
+	colorTypes := []string{
 		box.Black, box.Blue, box.Red, box.Green, box.Yellow, box.Cyan, box.Magenta, box.White,
 		box.HiBlue, box.HiRed, box.HiGreen, box.HiYellow, box.HiCyan, box.HiMagenta, box.HiWhite,
 	}
