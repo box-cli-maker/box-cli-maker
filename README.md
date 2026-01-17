@@ -1,12 +1,7 @@
 # Box CLI Maker
 
-<hr/>
 <div align="left">
 <img src="img/lib_logo.png" alt="logo">
-</div>
-<hr/>
-<br/>
-<div align="left">
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/Delta456/box-cli-maker/v3.svg)](https://pkg.go.dev/github.com/Delta456/box-cli-maker/v3)
 [![CI](https://github.com/Delta456/box-cli-maker/workflows/Box%20CLI%20Maker/badge.svg)](https://github.com/Delta456/box-cli-maker/actions?query=workflow%3A"Box+CLI+Maker")
@@ -16,9 +11,11 @@
 
 Box CLI Maker is a Go library for rendering highly customizable boxes in the terminal.
 
+<img src="img/readme.png" alt="readme" width="500"/>
+
+
 </div>
 
-<img src="img/readme.png" alt="readme" width="500"/>
 
 
 ## Features
