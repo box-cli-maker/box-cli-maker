@@ -274,7 +274,7 @@ b.ContentAlign(box.Right)
 </details>
 
 <details>
-<summary><code>box.Bottom</code></summary>
+<summary><code>box.Right</code></summary>
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
 <img src="img/right.png" alt="right" width="500"/>
