@@ -16,6 +16,8 @@
 
 # Box CLI Maker
 
+<img src="img/readme.png" alt="readme" width="500"/>
+
 Box CLI Maker is a Go library for rendering highly customizable boxes in the terminal.
 
 ---
