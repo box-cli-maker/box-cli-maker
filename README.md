@@ -1,10 +1,12 @@
+# Box CLI Maker
+
 <hr/>
-<div align="center">
+<div align="left">
 <img src="img/lib_logo.png" alt="logo">
 </div>
 <hr/>
 <br/>
-<div align="center">
+<div align="left">
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/Delta456/box-cli-maker/v3.svg)](https://pkg.go.dev/github.com/Delta456/box-cli-maker/v3)
 [![CI](https://github.com/Delta456/box-cli-maker/workflows/Box%20CLI%20Maker/badge.svg)](https://github.com/Delta456/box-cli-maker/actions?query=workflow%3A"Box+CLI+Maker")
@@ -12,15 +14,12 @@
 [![GitHub release](https://img.shields.io/github/release/Delta456/box-cli-maker.svg)](https://github.com/Delta456/box-cli-maker/releases)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 
-</div>
+Box CLI Maker is a Go library for rendering highly customizable boxes in the terminal.
 
-# Box CLI Maker
+</div>
 
 <img src="img/readme.png" alt="readme" width="500"/>
 
-Box CLI Maker is a Go library for rendering highly customizable boxes in the terminal.
-
----
 
 ## Features
 
@@ -34,8 +33,6 @@ Box CLI Maker is a Go library for rendering highly customizable boxes in the ter
   - `#RGB`, `#RRGGBB`, `rgb:RRRR/GGGG/BBBB`, `rgba:RRRR/GGGG/BBBB/AAAA`
 - Unicode and emoji support with proper width handling
 - Explicit errors from `Render`, plus `MustRender` for panic‑on‑error 
-
----
 
 ## Installation
 
@@ -82,8 +79,6 @@ func main() {
 
 `NewBox` constructs a box with the default `Single` style.  
 Configure it via fluent methods, then call `Render` (or `MustRender`) to get the box as a string.
-
----
 
 ## API Overview
 
@@ -293,8 +288,6 @@ b.HPadding(px)    // horizontal only
 b.VPadding(py)    // vertical only
 ```
 
-
-
 Negative padding values are allowed to be set but cause `Render` to return an error.
 
 ### Wrapping
@@ -383,8 +376,6 @@ Notes:
 2. Indic scripts and complex text may not display correctly in most terminals.
 3. Online playgrounds and many CI environments often use basic fonts and may not render Unicode/emoji correctly; widths might be misreported.
 
----
-
 ## Migration from v2
 
 v3 is a new major version with a redesigned API.
@@ -421,14 +412,10 @@ go get github.com/Delta456/box-cli-maker/v2
 
 but is no longer actively developed.
 
----
-
 ## Projects Using Box CLI Maker
 
 - <img src="img/k8s_logo.png" alt="kubernetes logo" width="20"> [kubernetes/minikube](https://github.com/kubernetes/minikube): Run Kubernetes locally.
 - And others listed on [pkg.go.dev](https://pkg.go.dev/github.com/Delta456/box-cli-maker/v3?tab=importedby).
-
----
 
 ## Acknowledgements
 
@@ -439,8 +426,6 @@ Thanks to:
 - [sindreorhus/cli-boxes](https://github.com/sindresorhus/cli-boxes)
 
 for inspiration, and to all contributors who have improved this library over time.
-
----
 
 ## License
 
