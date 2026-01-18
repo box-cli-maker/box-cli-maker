@@ -140,7 +140,7 @@ func buildTitledBar(left, fill, right string, leftW, rightW, lineWidth, horizont
 	return left + leftSeg + " " + plainTitle + " " + gap + rightSeg + right
 }
 
-// formatLine formats the line according to the information passed
+// formatLine formats the line according to the information passed.
 func (b *Box) formatLine(lines2 []expandedLine, longestLine, titleLen int, sideMargin, title string, texts []string) ([]string, error) {
 	for i, line := range lines2 {
 		length := line.len

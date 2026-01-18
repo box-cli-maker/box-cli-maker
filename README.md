@@ -37,14 +37,6 @@ Box CLI Maker is a Go library for rendering highly customizable boxes in the ter
 go get github.com/Delta456/box-cli-maker/v3
 ```
 
-Import:
-
-```go
-import "github.com/Delta456/box-cli-maker/v3"
-```
-
----
-
 ## Quick Start
 
 ```go
@@ -58,8 +50,8 @@ import (
 
 func main() {
     b := box.NewBox().
-        Style(box.Single).
-        Padding(2, 1).
+        Style(box.Single).  // single-lime border
+        Padding(2, 1).      // inner-padding x, y
         TitlePosition(box.Top).
         ContentAlign(box.Center).
         Color(box.Cyan).
