@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
 	box "github.com/Delta456/box-cli-maker/v3"
 )
@@ -17,6 +16,7 @@ func main() {
 		box.Round,
 		box.Hidden,
 		box.Classic,
+		box.Block,
 	}
 
 	colors := []string{
@@ -72,48 +72,32 @@ func main() {
 		"Κουτί CLI Maker",
 	}
 	lines := []string{
-		"Make Highly Customized Terminal Boxes",
-		"高度にカスタマイズされた端子ボックスを作成する",
-		"製作高度定制的接線盒",
-		"고도로 맞춤화 된 터미널 박스 만들기",
-		"Créez des boîtes à bornes hautement personnalisées",
-		"Haga cajas de terminales altamente personalizadas",
-		"Fac multum Customized Terminal Pyxidas",
-		"Δημιουργήστε πολύ προσαρμοσμένα τερματικά κουτιά",
+		"Render highly customizable boxes\n in the terminal",
+		"端末で高度にカスタマイズ可能なボックスを\nターミナルでレンダリングする",
+		"在终端中渲染高度可定制的盒子\n",
+		"터미널에서 고도로 커스터마이즈 가능한 박스를\n렌더링하기",
+		"Rendre des boîtes hautement personnalisables\n dans le terminal",
+		"Renderiza cajas de cajas altamente personalizables\n en el terminal",
+		"Pyxides terminales maxime configurabiles\n in terminali redde",
+		"Απόδωσε εξαιρετικά προσαρμόσιμα κουτιά\n στο τερματικό",
 	}
 
 	for i := range titles {
 		for _, style := range styles {
 			b := box.NewBox().
 				Padding(2, 5).
-				Style(style)
+				Style(style).
+				TitleColor("#00ffb2").
+				Color("#8B75FF").
+				ContentColor("#12c78f").
+				ContentAlign(box.Center)
 
 			out, err := b.Render(titles[i], lines[i])
 			if err != nil {
 				panic(err)
 			}
 
-			fmt.Printf("Unicode style: %s\n%s\n\n", style, out)
+			fmt.Printf("Box style: %s\n%s\n\n", style, out)
 		}
 	}
-
-	// Wrapping + emoji demo.
-	content := strings.Repeat(" Box CLI Maker 盒子製 造商,📦 ", 10)
-
-	bw := box.NewBox().
-		Padding(2, 0).
-		Style(box.Single).
-		Color(box.Green).
-		TitlePosition(box.Top).
-		WrapContent(true).
-		WrapLimit(40).
-		ContentColor(box.Cyan).
-		TitleColor(box.BrightRed)
-
-	out, err = bw.Render("Box\tCLI\tMaker\t📦", content)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Wrapped with tabs + emoji:")
-	fmt.Println(out)
 }

@@ -13,7 +13,7 @@ func main() {
 	greenBox := baseBox.Copy().Color(box.Green)
 	redBox := baseBox.Copy().Color(box.Red)
 
-	fmt.Println(baseBox.MustRender("Base box", "content"))
+	fmt.Println(baseBox.MustRender("Base box", "this is the base box"))
 
 	fmt.Println(greenBox.MustRender("Green Box", "This is a green box"))
 

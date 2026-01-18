@@ -15,7 +15,7 @@ func main() {
 		WrapContent(true)
 		// Provide your limit with WrapLimit if needed
 
-	s, err := b.Render("Content Wrappingg works!", strings.Repeat("\tBox CLI Maker 盒子製 造商,📦 ", 160))
+	s, err := b.Render("Content Wrap!", strings.Repeat("\tBox CLI Maker 盒子製 造商,📦 ", 160))
 	if err != nil {
 		panic(err)
 	}

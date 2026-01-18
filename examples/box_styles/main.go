@@ -38,7 +38,8 @@ func main() {
 			Style(style).
 			TitleColor("#00ffb2").
 			Color("#8B75FF").
-			ContentColor("#12c78f").ContentAlign(box.Center)
+			ContentColor("#12c78f").
+			ContentAlign(box.Center)
 
 		out, err := b.Render("Box CLI Maker",
 			"Render highly customizable boxes\nin the terminal")

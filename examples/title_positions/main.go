@@ -30,7 +30,7 @@ func main() {
 				Style(style).
 				TitlePosition(pos)
 
-			out, err := b.Render("Box CLI Maker", "Render highly customizable\n in the terminal")
+			out, err := b.Render("Box CLI Maker", "Render highly customizable boxes\n in the terminal")
 			if err != nil {
 				panic(err)
 			}
