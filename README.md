@@ -358,11 +358,11 @@ The [examples](examples) directory contains small, focused programs that showcas
 - `custom_box` – build boxes using fully custom corner/edge glyphs.
 - `ansi_styles_and_links` – use bold/underline/blink/strikethrough and OSC 8 hyperlinks.
 - `colors_and_unicode` – mix hex/ANSI colors with CJK, emoji, and wrapping.
-- `ansi_art` – render more decorative/“artistic” boxes.
- - `shared_styles` – derive multiple boxes from a shared base style with `Copy`.
- - `ksctl` – real‑world example from ksctl showing wide titles vs narrow content.
- - `lolcat` – rainbow color demo using custom ANSI styling helpers.
- - `readme` – code used to generate the screenshot at the top of this README.
+- `ansi_art` – render more decorative/"artistic" boxes.
+- `shared_styles` – derive multiple boxes from a shared base style with `Copy`.
+- `ksctl` – real‑world example from ksctl showing wide titles vs narrow content.
+- `lolcat` – rainbow color demo using custom ANSI styling helpers.
+- `readme` – code used to generate the screenshot at the top of this README.
 
 Run any example with:
 
