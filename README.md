@@ -13,10 +13,7 @@ Box CLI Maker is a Go library for rendering highly customizable boxes in the ter
 
 <img src="img/readme.png" alt="readme" width="500"/>
 
-
 </div>
-
-
 
 ## Features
 
@@ -347,6 +344,31 @@ For convenience:
 
 ```go
 out := b.MustRender("Title", "Content") // panics on error
+```
+
+## Examples
+
+The [examples](examples) directory contains small, focused programs that showcase different features:
+
+- `simple_box` – minimal single box with title and content.
+- `content_align` – compare `Left`, `Center`, and `Right` content alignment.
+- `content_wrap` – demonstrate `WrapContent` / `WrapLimit` with long text.
+- `title_positions` – show `Inside`, `Top`, and `Bottom` title placement.
+- `box_styles` – render all built‑in border styles and colors.
+- `custom_box` – build boxes using fully custom corner/edge glyphs.
+- `ansi_styles_and_links` – use bold/underline/blink/strikethrough and OSC 8 hyperlinks.
+- `colors_and_unicode` – mix hex/ANSI colors with CJK, emoji, and wrapping.
+- `ansi_art` – render more decorative/“artistic” boxes.
+ - `shared_styles` – derive multiple boxes from a shared base style with `Copy`.
+ - `ksctl` – real‑world example from ksctl showing wide titles vs narrow content.
+ - `lolcat` – rainbow color demo using custom ANSI styling helpers.
+ - `readme` – code used to generate the screenshot at the top of this README.
+
+Run any example with:
+
+```bash
+go run ./examples/simple_box
+go run ./examples/content_align
 ```
 
 ---
