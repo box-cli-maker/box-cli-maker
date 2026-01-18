@@ -14,7 +14,7 @@
 //		Color(box.Cyan).
 //		TitleColor(box.BrightYellow).
 //
-//	out, err := b.Render("Box CLI Maker", "Render highly customizable boxes for terminal")
+//	out, err := b.Render("Box CLI Maker", "Render highly customizable boxes in the terminal")
 //	if err != nil {
 //		log.Fatal(err)
 //	}
@@ -23,7 +23,8 @@
 // # Construction
 //
 // It is recommended to create boxes using NewBox, which returns a Box with
-// sensible defaults. The returned Box can then be configured using the various
+// sensible defaults. The returned Box can then be configured using methods
+// such as Style, Padding, ContentAlign, Color, TitleColor, and TitlePosition.
 //
 // The zero value of Box is not intended to be used directly with Render.
 // If you construct a Box manually (e.g. with &box.Box{} or new(box.Box)),

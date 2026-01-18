@@ -53,7 +53,7 @@ type config struct {
 	styleSet      bool          // Tracks if a style preset has already been applied.
 }
 
-// NewBox creates a new Box with Single box style.
+// NewBox creates a new Box with the box.Single style preset applied.
 func NewBox() *Box {
 	b := &Box{}
 	b.Style(Single)
@@ -78,28 +78,30 @@ func (b *Box) Padding(px, py int) *Box {
 	return b
 }
 
-// HPadding sets horizontal padding (left/right).
+// HPadding sets horizontal padding (left and right).
 func (b *Box) HPadding(px int) *Box {
 	b.px = px
 	return b
 }
 
-// VPadding sets vertical padding (top/bottom).
+// VPadding sets vertical padding (top and bottom).
 func (b *Box) VPadding(py int) *Box {
 	b.py = py
 	return b
 }
 
-// Style sets the Box Style.
+// Style selects one of the built-in BoxStyle presets.
 //
-// Box Styles: box.Single, box.Double, box.Round, box.Bold, box.SingleDouble, box.DoubleSingle, box.Classic, box.Hidden, box.Block
+// Common styles include box.Single, box.Double, box.Round, box.Bold,
+// box.SingleDouble, box.DoubleSingle, box.Classic, box.Hidden, and box.Block.
 //
-// To make custom box styles, use the TopRight, TopLeft, BottomRight, BottomLeft, Horizontal, and Vertical methods.
+// To make custom styles, call TopRight, TopLeft, BottomRight, BottomLeft,
+// Horizontal, and Vertical after Style to override individual glyphs.
 //
 // Example:
 //
-// b := box.NewBox()
-// b.TopRight("+").TopLeft("+").BottomRight("+").BottomLeft("_").Horizontal("-").Vertical("|")
+//	b := box.NewBox()
+//	b.TopRight("+").TopLeft("+").BottomRight("+").BottomLeft("_").Horizontal("-").Vertical("|")
 func (b *Box) Style(box BoxStyle) *Box {
 	b.config.style = box
 	b.styleSet = true
@@ -153,7 +155,7 @@ func (b *Box) Vertical(glyph string) *Box {
 	return b
 }
 
-// TitleColor sets the title color.
+// TitleColor sets the color used for the title text.
 //
 // Accepts one of the first 16 ANSI color name constants (e.g. box.Green,
 // box.BrightRed) or a #RGB / #RRGGBB / rgb:RRRR/GGGG/BBBB /
@@ -165,7 +167,7 @@ func (b *Box) TitleColor(color string) *Box {
 	return b
 }
 
-// ContentColor sets the content color.
+// ContentColor sets the color used for the content text.
 //
 // Accepts one of the first 16 ANSI color name constants (e.g. box.Green,
 // box.BrightRed) or a #RGB / #RRGGBB / rgb:RRRR/GGGG/BBBB /
@@ -177,7 +179,7 @@ func (b *Box) ContentColor(color string) *Box {
 	return b
 }
 
-// Color sets the box color.
+// Color sets the color used for the box border (chrome).
 //
 // Accepts one of the first 16 ANSI color name constants (e.g. box.Green,
 // box.BrightRed) or a #RGB / #RRGGBB / rgb:RRRR/GGGG/BBBB /
@@ -189,38 +191,34 @@ func (b *Box) Color(color string) *Box {
 	return b
 }
 
-// TitlePosition sets the Title Position.
+// TitlePosition sets where the title is rendered relative to the box.
 //
-// Title Positions: box.Inside, box.Top, box.Bottom
+// Valid positions are box.Inside, box.Top, and box.Bottom.
 func (b *Box) TitlePosition(pos TitlePosition) *Box {
 	b.titlePos = pos
 	return b
 }
 
-// WrapContent enables or disables content wrapping.
+// WrapContent enables or disables automatic wrapping of content.
 //
-// When enabled, the content will be wrapped to fit 2/3 width of the terminal by default.
-//
-// Not suitable for non-TTY outputs.
-//
-// For custom wrap limit and non-TTY outputs, use the WrapLimit method.
+// When enabled, content is wrapped to fit roughly two-thirds of the terminal
+// width by default. For custom limits or non-TTY outputs, use WrapLimit
+// instead.
 func (b *Box) WrapContent(allow bool) *Box {
 	b.allowWrapping = allow
 	return b
 }
 
-// WrapLimit sets the wrapping limit for content.
-//
-// When set wrapping will be done according to the limit provided.
+// WrapLimit enables wrapping and sets an explicit maximum width for content.
 func (b *Box) WrapLimit(limit int) *Box {
 	b.allowWrapping = true
 	b.wrappingLimit = limit
 	return b
 }
 
-// ContentAlign sets the content alignment inside the Box.
+// ContentAlign sets the horizontal alignment of content inside the box.
 //
-// Alignment Types: box.Left, box.Center, box.Right
+// Supported values are box.Left, box.Center, and box.Right.
 func (b *Box) ContentAlign(align AlignType) *Box {
 	b.contentAlign = align
 	return b
@@ -228,7 +226,8 @@ func (b *Box) ContentAlign(align AlignType) *Box {
 
 // MustRender is like Render but panics if an error occurs.
 //
-// Useful to generate boxes without having to handle the error.
+// Use MustRender in examples or CLIs where failures should abort execution
+// instead of being handled explicitly.
 func (b *Box) MustRender(title, content string) string {
 	s, err := b.Render(title, content)
 	if err != nil {

@@ -47,8 +47,8 @@ import (
 
 func main() {
     b := box.NewBox().
-        Style(box.Single).  // single-lime border
-        Padding(2, 1).      // inner-padding x, y
+    Style(box.Single).  // single-line border
+    Padding(2, 1).      // inner padding: x (horizontal), y (vertical)
         TitlePosition(box.Top).
         ContentAlign(box.Center).
         Color(box.Cyan).

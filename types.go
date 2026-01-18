@@ -10,23 +10,23 @@ import (
 type BoxStyle string
 
 const (
-	// Single box style with single line borders.
+	// Single is a box style with single-line borders.
 	Single BoxStyle = "Single"
-	// Double box style with double line borders.
+	// Double is a box style with double-line borders.
 	Double BoxStyle = "Double"
-	// Round box style with rounded corners.
+	// Round is a box style with rounded corners.
 	Round BoxStyle = "Round"
-	// Bold box style with bold lines.
+	// Bold is a box style with heavy lines.
 	Bold BoxStyle = "Bold"
-	// SingleDouble box style with single horizontal and double vertical lines.
+	// SingleDouble is a box style with single horizontal and double vertical lines.
 	SingleDouble BoxStyle = "SingleDouble"
-	// DoubleSingle box style with double horizontal and single vertical lines.
+	// DoubleSingle is a box style with double horizontal and single vertical lines.
 	DoubleSingle BoxStyle = "DoubleSingle"
-	// Classic box style with plus and minus signs.
+	// Classic is a box style using plus and minus characters.
 	Classic BoxStyle = "Classic"
-	// Hidden box style with invisible borders.
+	// Hidden is a box style with invisible borders.
 	Hidden BoxStyle = "Hidden"
-	// Block box style with block characters.
+	// Block is a box style with solid block characters.
 	Block BoxStyle = "Block"
 )
 
@@ -34,11 +34,11 @@ const (
 type AlignType string
 
 const (
-	// Center alignment
+	// Center represents centered content alignment.
 	Center AlignType = "Center"
-	// Left alignment
+	// Left represents left-aligned content.
 	Left AlignType = "Left"
-	// Right alignment
+	// Right represents right-aligned content.
 	Right AlignType = "Right"
 )
 
@@ -46,14 +46,16 @@ const (
 type TitlePosition string
 
 const (
-	// Inside title position
+	// Inside places the title as the first lines inside the box.
 	Inside TitlePosition = "Inside"
-	// Top title position
+	// Top places the title on the top border of the box.
 	Top TitlePosition = "Top"
-	// Bottom title position
+	// Bottom places the title on the bottom border of the box.
 	Bottom TitlePosition = "Bottom"
 )
 
+// Standard and bright ANSI color name constants usable with Color,
+// TitleColor, and ContentColor.
 const (
 	Black   = "Black"
 	Red     = "Red"
