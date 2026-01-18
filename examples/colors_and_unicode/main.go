@@ -7,18 +7,6 @@ import (
 	box "github.com/Delta456/box-cli-maker/v3"
 )
 
-func indentBox(s string, spaces int) string {
-	pad := strings.Repeat(" ", spaces)
-	lines := strings.Split(s, "\n")
-	for i, l := range lines {
-		if len(l) == 0 {
-			continue
-		}
-		lines[i] = pad + l
-	}
-	return strings.Join(lines, "\n")
-}
-
 func main() {
 	styles := []box.BoxStyle{
 		box.Single,
@@ -127,5 +115,5 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Wrapped with tabs + emoji:")
-	fmt.Println(indentBox(out, 4))
+	fmt.Println(out)
 }

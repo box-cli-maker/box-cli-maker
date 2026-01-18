@@ -13,6 +13,7 @@ func main() {
 		Color(box.Green).
 		TitlePosition(box.Top).
 		WrapContent(true)
+		// Provide your limit with WrapLimit if needed
 
 	s, err := b.Render("Content Wrappingg works!", strings.Repeat("\tBox CLI Maker 盒子製 造商,📦 ", 160))
 	if err != nil {
