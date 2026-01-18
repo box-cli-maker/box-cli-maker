@@ -78,9 +78,9 @@ You can clone a configured box and tweak it:
 
 ```go
 base := box.NewBox().
-    Style(box.Single).
-    Padding(2, 1).
-    ContentAlign(box.Left)
+        Style(box.Single).
+        Padding(2, 1).
+        ContentAlign(box.Left)
 
 info := base.Copy().Color(box.Green)
 warn := base.Copy().Color(box.Yellow)
