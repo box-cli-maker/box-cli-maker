@@ -266,7 +266,7 @@ func (b *Box) Render(title, content string) (string, error) {
 		} else {
 			width, _, err := term.GetSize(os.Stdout.Fd())
 			if err != nil {
-				return "", fmt.Errorf("cannot get terminal size from the output, provide own wrapping limit using .WrapLimit(limit int) method")
+				return "", fmt.Errorf("cannot determine terminal width; use WrapLimit to set an explicit wrap limit when wrapping on non-TTY outputs")
 			}
 			// Use 2/3 of terminal width as default wrapping limit
 			wrapWidth := max(2*width/defaultWrapDivisor, minWrapWidth)

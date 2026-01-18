@@ -199,6 +199,30 @@ func TestBoxCopy(t *testing.T) {
 	})
 }
 
+func TestHPaddingAndVPadding(t *testing.T) {
+	b := NewBox().Padding(1, 2)
+
+	if b.px != 1 || b.py != 2 {
+		t.Fatalf("expected initial padding (1,2), got (%d,%d)", b.px, b.py)
+	}
+
+	b.HPadding(5)
+	if b.px != 5 {
+		t.Errorf("expected HPadding to set horizontal padding to 5, got %d", b.px)
+	}
+	if b.py != 2 {
+		t.Errorf("expected HPadding to leave vertical padding unchanged at 2, got %d", b.py)
+	}
+
+	b.VPadding(7)
+	if b.py != 7 {
+		t.Errorf("expected VPadding to set vertical padding to 7, got %d", b.py)
+	}
+	if b.px != 5 {
+		t.Errorf("expected VPadding to leave horizontal padding unchanged at 5, got %d", b.px)
+	}
+}
+
 func TestRenderTitlePositions(t *testing.T) {
 	title := "My Title"
 	content := "Some content"
@@ -297,6 +321,16 @@ func TestRenderNegativeWrapLimit(t *testing.T) {
 	}
 }
 
+func TestRenderNonTTYLWrapContent(t *testing.T) {
+	b := NewBox().Padding(1, 1).Style(Single).WrapContent(true)
+
+	if _, err := b.Render("Title", "Content"); err == nil {
+		t.Fatalf("expected error for non TTY output with wrapping enabled, got nil")
+	} else if !strings.Contains(err.Error(), "cannot determine terminal width") {
+		t.Errorf("unexpected error message for non TTY wrap content: %v", err)
+	}
+}
+
 func TestRenderNegativePadding(t *testing.T) {
 	// Horizontal padding < 0.
 	b := NewBox().Padding(-1, 1).Style(Single)
@@ -312,6 +346,16 @@ func TestRenderNegativePadding(t *testing.T) {
 		t.Fatalf("expected error for negative vertical padding, got nil")
 	} else if !strings.Contains(err.Error(), "vertical padding cannot be negative") {
 		t.Errorf("unexpected error for negative vertical padding: %v", err)
+	}
+}
+
+func TestRenderInvalidContentAlign(t *testing.T) {
+	b := NewBox().Padding(1, 1).Style(Single).ContentAlign(AlignType("Weird"))
+
+	if _, err := b.Render("Title", "Content"); err == nil {
+		t.Fatalf("expected error for invalid content alignment, got nil")
+	} else if !strings.Contains(err.Error(), "invalid Content Alignment") {
+		t.Errorf("unexpected error message for invalid content alignment: %v", err)
 	}
 }
 
