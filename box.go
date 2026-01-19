@@ -264,9 +264,12 @@ func (b *Box) Render(title, content string) (string, error) {
 		if b.wrappingLimit != 0 {
 			content = ansi.Wrap(content, b.wrappingLimit, "")
 		} else {
+			if !isTTY(os.Stdout.Fd()) {
+				return "", fmt.Errorf("cannot determine terminal width; use WrapLimit to set an explicit wrap limit when wrapping on non-TTY outputs")
+			}
 			width, _, err := term.GetSize(os.Stdout.Fd())
 			if err != nil {
-				return "", fmt.Errorf("cannot determine terminal width; use WrapLimit to set an explicit wrap limit when wrapping on non-TTY outputs")
+				return "", fmt.Errorf("cannot determine terminal width: %v", err)
 			}
 			// Use 2/3 of terminal width as default wrapping limit
 			wrapWidth := max(2*width/defaultWrapDivisor, minWrapWidth)

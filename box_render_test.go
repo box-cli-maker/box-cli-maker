@@ -322,6 +322,10 @@ func TestRenderNegativeWrapLimit(t *testing.T) {
 }
 
 func TestRenderNonTTYLWrapContent(t *testing.T) {
+	oldIsTTY := isTTY
+	defer func() { isTTY = oldIsTTY }() // restore after test
+
+	isTTY = func(fd uintptr) bool { return false } // mock as non-TTY
 	b := NewBox().Padding(1, 1).Style(Single).WrapContent(true)
 
 	if _, err := b.Render("Title", "Content"); err == nil {

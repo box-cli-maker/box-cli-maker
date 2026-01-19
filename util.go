@@ -6,9 +6,14 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/x/ansi"
+	"github.com/charmbracelet/x/term"
 	"github.com/huandu/xstrings"
 	"github.com/mattn/go-runewidth"
 )
+
+// isTTY points to the function used to determine if a file descriptor is a terminal.
+// It is defined as a variable to allow mocking in tests.
+var isTTY = term.IsTerminal
 
 // expandedLine stores a tab-expanded line, and its visible length.
 type expandedLine struct {
