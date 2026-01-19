@@ -33,7 +33,7 @@ func main() {
 				Style(style).
 				Color(c)
 
-			out, err := b.Render("Box CLI Maker", "Highly Customized Terminal Box Maker")
+			out, err := b.Render("Box CLI Maker", "Render highly customizable boxes\nin the terminal")
 			if err != nil {
 				panic(err)
 			}
@@ -51,7 +51,7 @@ func main() {
 		TitleColor(box.Cyan).
 		ContentColor(box.Red)
 
-	multi := "Make\n\tHighly\n\t\tCustomized\n\t\t\tTerminal\n\t\t\t\tBoxes"
+	multi := "Render\n\thighly\n\t\tcustomizable\n\t\t\tboxes\n\t\t\t\tin the\n\t\t\t\t\tterminal"
 
 	out, err := b.Render("Box CLI Maker", multi)
 	if err != nil {

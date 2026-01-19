@@ -52,8 +52,7 @@ func main() {
     TitlePosition(box.Top).
     ContentAlign(box.Center).
     Color(box.Cyan).
-    TitleColor(box.BrightYellow).
-    ContentColor(box.White)
+    TitleColor(box.BrightYellow)
 
     out, err := b.Render("Box CLI Maker", "Render highly customizable boxes\n in the terminal")
     if err != nil {

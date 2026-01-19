@@ -7,13 +7,13 @@ import (
 )
 
 func main() {
-	b := box.NewBox().Padding(2, 3).Color(box.Red).TitlePosition(box.Top)
-	b.TopRight("📦").TopLeft("📦🚀").BottomRight("📦").BottomLeft("📦").Horizontal("📦").Vertical("📦")
+	emojiBorderBox := box.NewBox().Padding(2, 3).Color(box.HiRed).TitlePosition(box.Top)
+	emojiBorderBox.TopRight("📦").TopLeft("📦🚀").BottomRight("📦").BottomLeft("📦").Horizontal("📦").Vertical("📦")
 
-	fmt.Println(b.MustRender("Box CLI Maker", "Make Highly Customizable Terminal Boxes"))
+	fmt.Println(emojiBorderBox.MustRender("Box CLI Maker", "Render highly customizable boxes\nin the terminal"))
 
-	b1 := box.NewBox().Padding(2, 3).Color(box.Green).TitlePosition(box.Bottom).TitleColor("#00ffb2").Color("#8B75FF").ContentColor("#12c78f")
-	b1.TopRight("+").TopLeft("+").BottomRight("+").BottomLeft("++").Horizontal("-").Vertical("||")
+	unequalBorderBox := box.NewBox().Padding(2, 3).Color(box.Green).TitlePosition(box.Bottom).TitleColor("#00ffb2").Color("#8B75FF").ContentColor("#12c78f")
+	unequalBorderBox.TopRight("+").TopLeft("+").BottomRight("+").BottomLeft("++").Horizontal("-").Vertical("||")
 
-	fmt.Println(b1.MustRender("Box CLI Maker", "Make Highly Customizable Terminal Boxes"))
+	fmt.Println(unequalBorderBox.MustRender("Box CLI Maker", "Render highly customizable boxes\nin the terminal"))
 }

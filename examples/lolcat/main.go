@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	b := box.NewBox().Padding(2, 5).Style(box.Single).Color(box.Cyan)
+	b := box.NewBox().Padding(2, 5).Style(box.Single).Color(box.Cyan).ContentAlign(box.Center)
 	s, err := b.Render(lolcat("Box CLI Maker"), lolcat("Render highly customizable boxes\n in the terminal"))
 	if err != nil {
 		panic(err)
