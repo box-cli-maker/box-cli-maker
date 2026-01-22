@@ -2,8 +2,6 @@
 
 This guide will help you migrate your projects from v2 to v3 of `box-cli-maker`, and highlights the benefits, new features, and breaking changes.
 
----
-
 ## Why Migrate?
 
 - **v3 is the latest, actively maintained version** under the new organization:  
@@ -14,8 +12,6 @@ This guide will help you migrate your projects from v2 to v3 of `box-cli-maker`,
 - **Better color support:** Consistent handling of ANSI, hex, and XParseColor formats.
 - **Cleaner codebase:** Deprecated and confusing features from v2 have been removed for maintainability.
 - **Active development:** All new features, bug fixes, and improvements will be in v3.
-
----
 
 ## New Features in v3 (Not in v2)
 
@@ -29,9 +25,6 @@ This guide will help you migrate your projects from v2 to v3 of `box-cli-maker`,
 - **Cleaner API surface:** Deprecated methods and fields removed for a more focused experience.
 - **Accurate rendering of emoji and custom borders:** v3 ensures correct box layout even when using emojis or custom borders (where border symbols may be different for each side or corner), especially when the title is longer than the content and the title position is set to `Top` or `Bottom`.
 - **New Block Box style**: Render boxes with a brand new inbuilt `block` box style.
-
----
-
 
 ## Breaking Changes (v2 → v3)
 
@@ -49,8 +42,6 @@ This guide will help you migrate your projects from v2 to v3 of `box-cli-maker`,
 | **Custom Glyphs**   | Config struct fields (e.g., `TopLeft: "+"`)                                        | Methods (e.g., `.TopLeft("+")`)                                                    |
 | **Cloning/Copying** | Assignment or manual copy                                                            | `.Copy()` method                                                                     |
 | **Deprecated/Removed** | `Config` struct, string-based config, undocumented color formats, Print methods, etc. | All replaced by new API; only documented color formats and methods remain            |
-
----
 
 ## Example Migration
 
@@ -86,8 +77,6 @@ b := box.NewBox().
 fmt.Println(b.MustRender("Box CLI Maker", "Render highly customizable boxes\n in the terminal"))
 ```
 
----
-
 ## How to Upgrade
 
 1. **Change your import path:**
@@ -107,20 +96,10 @@ fmt.Println(b.MustRender("Box CLI Maker", "Render highly customizable boxes\n in
 	 go mod tidy
 	 ```
 
----
-
 ## Troubleshooting
 
 - Check for any remaining v2 import paths.
 - Review the [v3 documentation](https://pkg.go.dev/github.com/box-cli-maker/box-cli-maker/v3) for new features and API changes.
 - If you encounter issues, open an [issue](https://github.com/box-cli-maker/box-cli-maker/issues).
 
----
-
-For more details and advanced usage, see the [v3 README](https://github.com/box-cli-maker/box-cli-maker#quick-start) and [examples](https://github.com/box-cli-maker/box-cli-maker/tree/master/examples).
-
-
-
-
-
-
+For more details and advanced usage, see the [v3 README](https://github.com/box-cli-maker/box-cli-maker) and [examples](https://github.com/box-cli-maker/box-cli-maker/tree/master/examples).
