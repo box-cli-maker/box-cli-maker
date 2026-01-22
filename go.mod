@@ -1,4 +1,4 @@
-module github.com/Delta456/box-cli-maker/v3
+module github.com/box-cli-maker/box-cli-maker/v3
 
 go 1.24.2
 

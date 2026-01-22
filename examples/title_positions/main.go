@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	box "github.com/Delta456/box-cli-maker/v3"
+	box "github.com/box-cli-maker/box-cli-maker/v3"
 )
 
 func main() {
@@ -16,6 +16,7 @@ func main() {
 		box.Round,
 		box.Hidden,
 		box.Classic,
+		box.Block,
 	}
 	positions := []box.TitlePosition{
 		box.Inside,

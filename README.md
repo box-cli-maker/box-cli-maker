@@ -3,10 +3,10 @@
 <div align="left">
 <img src="img/lib_logo.png" alt="logo">
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/Delta456/box-cli-maker/v3.svg)](https://pkg.go.dev/github.com/Delta456/box-cli-maker/v3)
-[![Go](https://github.com/Delta456/box-cli-maker/actions/workflows/go.yml/badge.svg)](https://github.com/Delta456/box-cli-maker/actions/workflows/go.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/Delta456/box-cli-maker)](https://goreportcard.com/report/github.com/Delta456/box-cli-maker)
-[![GitHub release](https://img.shields.io/github/release/Delta456/box-cli-maker.svg)](https://github.com/Delta456/box-cli-maker/releases)
+[![Go Reference](https://pkg.go.dev/badge/github.com/box-cli-maker/box-cli-maker/v3.svg)](https://pkg.go.dev/github.com/Delta456/box-cli-maker/v3)
+[![Go](https://github.com/box-cli-maker/box-cli-maker/actions/workflows/go.yml/badge.svg)](https://github.com/Delta456/box-cli-maker/actions/workflows/go.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/box-cli-maker/box-cli-maker)](https://goreportcard.com/report/github.com/Delta456/box-cli-maker)
+[![GitHub release](https://img.shields.io/github/release/box-cli-maker/box-cli-maker.svg)](https://github.com/Delta456/box-cli-maker/releases)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 
 Box CLI Maker is a Go library for rendering highly customizable boxes in the terminal.
@@ -31,7 +31,7 @@ Box CLI Maker is a Go library for rendering highly customizable boxes in the ter
 ## Installation
 
 ```bash
-go get github.com/Delta456/box-cli-maker/v3
+go get github.com/box-cli-maker/box-cli-maker/v3
 ```
 
 ## Quick Start
@@ -42,7 +42,7 @@ package main
 import (
     "fmt"
 
-    box "github.com/Delta456/box-cli-maker/v3"
+    box "github.com/box-cli-maker/box-cli-maker/v3"
 )
 
 func main() {
@@ -380,7 +380,7 @@ This library uses [`mattn/go-runewidth`](https://github.com/mattn/go-runewidth) 
 - Emojis and other multi‑cell glyphs
 - Stripping ANSI sequences when measuring widths
 
-Notes:
+Note:
 
 1. Rendering quality depends on the terminal emulator and font. Some combinations may misalign visually.
 2. Indic scripts and complex text may not display correctly in most terminals.
@@ -414,6 +414,8 @@ Key changes:
 
 - `Print` / `Println` behavior can be replicated by `fmt.Println(b.MustRender(...))` or your own helper.
 
+Read more at [Migration guide](./MIGRATION.md).
+
 The old v2 API remains available at:
 
 ```bash
@@ -425,7 +427,7 @@ but is no longer actively developed.
 ## Projects Using Box CLI Maker
 
 - <img src="img/k8s_logo.png" alt="kubernetes logo" width="20"> [kubernetes/minikube](https://github.com/kubernetes/minikube): Run Kubernetes locally.
-- And others listed on [pkg.go.dev](https://pkg.go.dev/github.com/Delta456/box-cli-maker/v3?tab=importedby).
+- And others listed on [pkg.go.dev](https://pkg.go.dev/github.com/box-cli-maker/box-cli-maker/v3?tab=importedby).
 
 ## Acknowledgements
 
