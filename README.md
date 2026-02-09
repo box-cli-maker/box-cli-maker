@@ -4,11 +4,10 @@
 </div>
 <hr/>
 
-> [!WARNING]
-> **This version (v2) is deprecated.** Please migrate to [v3](https://github.com/box-cli-maker/box-cli-maker) for the latest features, improvements, and active maintenance.
-> 
+> **⚠️ DEPRECATED:** This version (v2) is no longer maintained. Please migrate to [v3](https://github.com/box-cli-maker/box-cli-maker) for the latest features, improvements, and active development.
+>
 > **New module path:** `github.com/box-cli-maker/box-cli-maker/v3`
-> 
+>
 > See the [Migration Guide](https://github.com/box-cli-maker/box-cli-maker/blob/master/MIGRATION.md) for upgrading from v2 to v3.
 
 <br/>
