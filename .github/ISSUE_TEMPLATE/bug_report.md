@@ -25,9 +25,9 @@ If applicable, add screenshots or logs to help explain your problem.
 
 **Versions (please complete the following information, if relevant):**
 
-- Software version: [e.g. v1.2.3, latest, building from sources]
+- Software version: [e.g. v2.2.1, latest, building from sources]
 - OS: [e.g. Ubuntu, Mac, iOS, ...]
-- Golang version: [e.g. v1.15]
+- Golang version: [e.g. v1.20]
 - Terminal using and Version: [e.g. Windows Terminal v1.4]
 
 **Additional context**

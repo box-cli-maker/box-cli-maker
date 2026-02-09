@@ -1,318 +1,435 @@
-<hr/>
+# Box CLI Maker
+
 <div align="center">
 <img src="img/lib_logo.png" alt="logo">
-</div>
-<hr/>
 
-> **⚠️ DEPRECATED:** This version (v2) is no longer maintained. Please migrate to [v3](https://github.com/box-cli-maker/box-cli-maker) for the latest features, improvements, and active development.
->
-> **New module path:** `github.com/box-cli-maker/box-cli-maker/v3`
->
-> See the [Migration Guide](https://github.com/box-cli-maker/box-cli-maker/blob/master/MIGRATION.md) for upgrading from v2 to v3.
-
-<br/>
-<div align="center">
-
-[![Go Reference](https://pkg.go.dev/badge/github.com/Delta456/box-cli-maker/v2.svg)](https://pkg.go.dev/github.com/Delta456/box-cli-maker/v2)
-[![godocs.io](http://godocs.io/github.com/Delta456/box-cli-maker?status.svg)](https://godocs.io/github.com/Delta456/box-cli-maker/v2)
-[![CI](https://github.com/Delta456/box-cli-maker/workflows/Box%20CLI%20Maker/badge.svg)](https://github.com/Delta456/box-cli-maker/actions?query=workflow%3A"Box+CLI+Maker")
-[![Go Report Card](https://goreportcard.com/badge/github.com/Delta456/box-cli-maker)](https://goreportcard.com/report/github.com/Delta456/box-cli-maker)
-[![GolangCI](https://golangci.com/badges/github.com/moul/golang-repo-template.svg)](https://golangci.com/r/github.com/Delta456/box-cli-maker)
-[![GitHub release](https://img.shields.io/github/release/Delta456/box-cli-maker.svg)](https://github.com/Delta456/box-cli-maker/releases)
+[![Go Reference](https://pkg.go.dev/badge/github.com/box-cli-maker/box-cli-maker/v3.svg)](https://pkg.go.dev/github.com/box-cli-maker/box-cli-maker/v3)
+[![Go](https://github.com/box-cli-maker/box-cli-maker/actions/workflows/go.yml/badge.svg)](https://github.com/box-cli-maker/box-cli-maker/actions/workflows/go.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/box-cli-maker/box-cli-maker)](https://goreportcard.com/report/github.com/box-cli-maker/box-cli-maker)
+[![GitHub release](https://img.shields.io/github/release/box-cli-maker/box-cli-maker.svg)](https://github.com/box-cli-maker/box-cli-maker/releases)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
+
+Box CLI Maker is a Go library for rendering highly customizable boxes in the terminal.
+
+<img src="img/readme.png" alt="readme" width="500"/>
 
 </div>
 
 ## Features
 
-- Make a Terminal Box in 8️⃣ inbuilt different styles
-- 16 Inbuilt Colors and True Color Support 🎨
-- Custom Title Positions 📏
-- Make your Terminal Box style 📦
-- Support for ANSI, Tabbed, Multi-line and Line Wrapping boxes 📑
-- Align the text according to your needs 📐
-- Unicode, Emoji and [Windows Console](https://en.wikipedia.org/wiki/Windows_Console) Support 😋
-- Written in 🇬 🇴
+- 9 built‑in styles (Single, Double, Round, Bold, SingleDouble, DoubleSingle, Classic, Hidden, Block)
+- Custom glyphs for all corners and edges
+- Title positions: Inside, Top, Bottom
+- Content alignment: Left, Center, Right
+- Optional content wrapping with `WrapContent` and `WrapLimit`
+- Color support with:
+  - First 16 ANSI color names
+  - `#RGB`, `#RRGGBB`, `rgb:RRRR/GGGG/BBBB`, `rgba:RRRR/GGGG/BBBB/AAAA`
+- Unicode and emoji support with proper width handling
+- Explicit errors from `Render`, plus `MustRender` for panic‑on‑error 
 
 ## Installation
 
-```terminal
- go get github.com/Delta456/box-cli-maker/v2
+```bash
+go get github.com/box-cli-maker/box-cli-maker/v3
 ```
 
-## Usage Tutorial
-
-In `main.go`
+## Quick Start
 
 ```go
 package main
 
-import "github.com/Delta456/box-cli-maker/v2"
+import (
+    "fmt"
+
+    box "github.com/box-cli-maker/box-cli-maker/v3"
+)
 
 func main() {
- Box := box.New(box.Config{Px: 2, Py: 5, Type: "Single", Color: "Cyan"})
- Box.Print("Box CLI Maker", "Highly Customized Terminal Box Maker")
+    b := box.NewBox().
+    Style(box.Single).  // single-line border
+    Padding(2, 1).      // inner padding: x (horizontal), y (vertical)
+    TitlePosition(box.Top).
+    ContentAlign(box.Center).
+    Color(box.Cyan).
+    TitleColor(box.BrightYellow)
+
+    out, err := b.Render("Box CLI Maker", "Render highly customizable boxes\n in the terminal")
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println(out)
 }
 ```
 
-`box.New(config Config)` takes Box `Config` and returns a `Box` from the given `Config`.
+`NewBox` constructs a box with the default `Single` style.  
+Configure it via fluent methods, then call `Render` (or `MustRender`) to get the box as a string.
 
-- Parameters
-  - `Px` : Horizontal Padding
-  - `Py` : Vertical Padding
-  - `ContentAlign` : Content Alignment inside Box i.e. `Center`, `Left` and `Right`
-  - `Type`: Box Type
-  - `TitlePos` : Title Position of Box i.e. `Inside`, `Top` and `Bottom`
-  - `Color` : Box Color
-  - `TitleColor` : Title Color
-  - `ContentColor` : Content Color
-  - `AllowWrapping`: Flag to allow custom `Content` wrapping
-  - `WrappingLimit`: Wrap the `Content` up to the Limit
+## API Overview
 
-### `Box` Methods
-
-`Box.Print(title, lines string)` prints Box from the specified arguments.
-
-- Parameters
-  - `title` : Box Title
-  - `lines` : Box Content
-
-`Box.Println(title, lines string)` prints Box in a newline from the specified arguments.
-
-- Parameters
-  - `title` : Box Title
-  - `lines` : Box Content
-
-`Box.String(title, lines string) string` returns `string` representation of Box.
-
-- Parameters
-  - `title` : Box Title
-  - `lines` : Box Content
-
-### Box Types
-
-- `Single`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/single.svg" alt="single" width=500/>
-</p>
-
-- `Single Double`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/single_double.svg" alt="single_double" width="500"/>
-</p>
-
-- `Double`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/double.svg" alt="double" width="500"/>
-</p>
-
-- `Double Single`
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/double_single.svg" alt="double_single" width="500"/>
-</p>
-
-- `Bold`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/bold.svg" alt="bold" width="500"/>
-</p>
-
-- `Round`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/round.svg" alt="round" width="500"/>
-</p>
-
-- `Hidden`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/hidden.svg" alt="hidden" width="500"/>
-</p>
-
-- `Classic`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/classic.svg" alt="classic" width="500"/>
-</p>
-
-### Title Positions
-
-- `Inside`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/single.svg" alt="single" width=500/>
-</p>
-
-- `Top`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/top.svg" alt="top" width=500/>
-</p>
-
-- `Bottom`
-
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/bottom.svg" alt="bottom" width=500/>
-</p>
-
-### Custom Box
-
-A Custom Box can be created by using the built-in Box struct provided by the module.
+### Construction
 
 ```go
-type Box struct {
-  TopRight    string // TopRight Corner Symbols
-  TopLeft     string // TopLeft Corner Symbols
-  Vertical    string // Vertical Bar Symbols
-  BottomRight string // BottomRight Corner Symbols
-  BottomLeft  string // BottomLeft Corner Symbols
-  Horizontal  string // Horizontal Bar Symbols
-  Config             // Box Config
-}
+b := box.NewBox() // recommended
 ```
 
-#### Usage
-
-In `main.go`:
+You can clone a configured box and tweak it:
 
 ```go
-package main
+base := box.NewBox().
+        Style(box.Single).
+        Padding(2, 1).
+        ContentAlign(box.Left)
 
-import "github.com/Delta456/box-cli-maker/v2"
-
-func main() {
-    config := box.Config{Px: 2, Py: 3, Type: "", TitlePos: "Inside"}
-    boxNew := box.Box{TopRight: "*", TopLeft: "*", BottomRight: "*", BottomLeft: "*", Horizontal: "-", Vertical: "|", Config: config}
-    boxNew.Println("Box CLI Maker", "Make Highly Customized Terminal Boxes")
-}
+info := base.Copy().Color(box.Green)
+warn := base.Copy().Color(box.Yellow)
 ```
+
+### Styles
+
+Select a built‑in style:
+
+```go
+b.Style(box.Double)
+```
+#### Styles Showcase
+
+<details>
+<summary><code>box.Single</code></summary>
 
 <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-<img src="img/custom.svg" alt="custom" width=500/>
+<img src="img/single.png" alt="single" width="500"/>
 </p>
 
-More examples can be found in the `examples/` folder which you can explore yourself.
-Feel free to add more examples and submit a pr for the same.
+</details>
 
-### Color Types
+<details>
+<summary><code>box.SingleDouble</code></summary>
 
- The [gookit/color](https://github.com/gookit/color) module provides support for colors in your program. It uses two main types: `FgColor` and `FgHiColor`. These types correspond to different color settings.`Color` is a key for the following maps:
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/double_single.png" alt="double single" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>box.Double</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/double.png" alt="double" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>box.DoubleSingle</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/double_single.png" alt="double single" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>box.Bold</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/bold.png" alt="bold" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>box.Round</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/round.png" alt="round" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>box.Hidden</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/hidden.png" alt="hidden" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>box.Classic</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/classic.png" alt="classic" width="500"/>
+</p>
+
+</details>
+
+<details>
+<summary><code>box.Block</code></summary>
+
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/block.png" alt="block" width="500"/>
+</p>
+
+</details>
+
+
+You can override any glyph after choosing a style:
 
 ```go
- fgColors map[string]color.Color = {
-  "Black":   color.FgBlack,
-  "Blue":    color.FgBlue,
-  "Red":     color.FgRed,
-  "Green":   color.FgGreen,
-  "Yellow":  color.FgYellow,
-  "Cyan":    color.FgCyan,
-  "Magenta": color.FgMagenta,
-  "White":   color.FgWhite,
-}
-
- fgHiColors map[string]color.Color = {
-  "HiBlack":   color.FgDarkGray,
-  "HiBlue":    color.FgLightBlue,
-  "HiRed":     color.FgLightRed,
-  "HiGreen":   color.FgLightGreen,
-  "HiYellow":  color.FgLightYellow,
-  "HiCyan":    color.FgLightCyan,
-  "HiMagenta": color.FgLightMagenta,
-  "HiWhite":   color.FgLightWhite,
-}
+b.Style(box.Single).
+  TopLeft("+").
+  TopRight("+").
+  BottomLeft("+").
+  BottomRight("+").
+  Horizontal("-").
+  Vertical("|")
 ```
 
-There are two maps, `fgColors` and `fgHiColors`, which map color names to their respective settings. Here are some examples:
+### Titles and Alignment
 
-- `fgColors` maps basic colors like Black, Blue, Red, Green, Yellow, Cyan, Magenta, and White.
-- `fgHiColors` maps high-intensity colors like HiBlack, HiBlue, HiRed, HiGreen, HiYellow, HiCyan, HiMagenta, and HiWhite.
+Title position:
 
-If you want to use high-intensity colors, make sure the color name starts with "Hi." If the color option is empty or invalid, no color will be applied.
+```go
+b.TitlePosition(box.Inside) // default
+b.TitlePosition(box.Top)
+b.TitlePosition(box.Bottom)
+```
 
-You can also use True Colors by providing them as either a `uint` or `[3]uint`. For `[3]uint`, all elements must be in the range of `[0, 0xFF]`, and for `uint`, it should be in the range of `[0x000000, 0xFFFFFF]`.
+#### Title position showcase
 
-If your terminal doesn't support True Colors, the module will automatically round the colors to match the terminal's maximum supported colors. This simplifies things for most users.
+<details>
+<summary><code>box.Inside</code></summary>
 
-If you're curious about supported terminals, you can check the list of 24-bit [supported terminals](https://gist.github.com/XVilka/8346728) and 8-bit [supported terminals](https://fedoraproject.org/wiki/Features/256_Color_Terminals).
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/single.png" alt="single" width="500"/>
+</p>
 
-Additionally, this module enables True Color and 256 Colors support on Windows Console through [Virtual Terminal Processing](https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences). However, for 256 colors, you need at least [Windows 10 Version 1511](https://en.wikipedia.org/wiki/Windows_10_version_history_(version_1511)), and for True Color support, you need at least [Windows 10 Version 1607](https://en.wikipedia.org/wiki/Windows_10_version_history_(version_1607)).
+</details>
 
-Finally, if you're using Windows, the module can detect `ConEmu` or `ANSICON` if they're installed. To ensure the best experience, it's recommended to use the latest versions of both programs.
+<details>
+<summary><code>box.Top</code></summary>
 
-### Content Wrapping
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/top.png" alt="top" width="500"/>
+</p>
 
-This library allows the usage of custom wrapping of `Content` so that the Box formed will be created according to your own needs.
+</details>
 
-To use this feature, you need to do two things:
+<details>
+<summary><code>box.Bottom</code></summary>
 
-1. Set Config.AllowWrapping to true. This tells the library to allow custom wrapping.
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/bottom.png" alt="bottom" width="500"/>
+</p>
 
-2. Optionally, you can set your own wrapping limit using Config.WrappingLimit. By default, the wrapping limit is set to 2/3 of the current terminal's width (TermWidth).
+</details>
 
-So, in simple terms, if you want to customize how content is wrapped in boxes, make sure to enable wrapping with Config.AllowWrapping, and if needed, you can adjust the wrapping limit using Config.WrappingLimit, which is initially set to 2/3 of the terminal's width.
+Content alignment:
 
-### Note
+```go
+b.ContentAlign(box.Left) // default
+b.ContentAlign(box.Center)
+b.ContentAlign(box.Right)
+```
 
-#### 1. Vertical Alignment
+#### Content Alignment showcase
 
-As different terminals have different fonts by default, the right vertical alignment may not be aligned well. You will have to change your font accordingly to make it work.
+<details>
+<summary><code>box.Left</code></summary>
 
-#### 2. Limitations of Unicode and Emoji
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/left.png" alt="left" width="500"/>
+</p>
 
-Unicode is a character encoding standard that assigns unique codes to characters from various writing systems, allowing universal text representation. 
+</details>
 
-This library relies on [mattn/go-runewidth](https://github.com/mattn/go-runewidth) to support Unicode and Emoji characters but consider the following:
+<details>
+<summary><code>box.Center</code></summary>
 
-1. Proper rendering of Unicode and Emojis on Windows is primarily supported by `Windows Terminal`, `ConEmu`, and `Mintty` as terminal emulators. They handle these characters well.
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/single.png" alt="center" width="500"/>
+</p>
 
-2. Indic text (a script used in some Indian languages) may not display correctly in most terminals. It's important to note that support for Indic text is quite limited.
+</details>
 
-3. Avoid using this library in certain environments like online code playgrounds such as [`Go Playground`](https://play.golang.org/), [`Repl.it`](https://repl.it), and in Continuous Integration/Continuous Deployment (CI/CD) pipelines. These platforms typically use fonts that only support basic ASCII characters, making it problematic to accurately calculate character lengths when the font changes dynamically.
+<details>
+<summary><code>box.Right</code></summary>
 
-4. Depending on your font settings, you may need to make adjustments to ensure proper rendering of Unicode and Emoji characters. Failure to do so could result in issues with vertical alignment.
+<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<img src="img/right.png" alt="right" width="500"/>
+</p>
 
-In essence, while this library supports Unicode and Emojis, there are limitations and considerations to keep in mind, especially when dealing with different terminal environments and character sets.
+</details>
 
-#### 3. Terminal Color Detection
 
-For beginners, this library can adjust True Color to work with your terminal's capabilities, either 8-bit or 4-bit color.
+### Padding
 
-Detecting your terminal's color capacity isn't always straightforward, and there's no universal method. However, if you know a solution for your specific terminal, you can contribute by making a pull request.
+```go
+b.Padding(px, py) // horizontal (px) and vertical (py) padding
+b.HPadding(px)    // horizontal only
+b.VPadding(py)    // vertical only
+```
 
-For Unix systems:
+Negative padding values are allowed to be set but cause `Render` to return an error.
 
-- If True Color detection fails, you can set the `COLORTERM` environment variable to `truecolor` or `24bit` for True Color support.
+### Wrapping
 
-- For 8-bit color-based terminals, if detection doesn't work, set the `TERM` environment variable to your terminal emulator's name followed by `256color`, like `xterm-256color`.
+```go
+b.WrapContent(true)       // enable wrapping (default width: 2/3 of terminal)
+b.WrapLimit(40)           // set explicit wrap width (enables wrapping)
+b.WrapContent(false)      // disable wrapping
+```
 
-Keep in mind that very old terminals like [`Windows Console (Legacy Mode)`](https://docs.microsoft.com/en-us/windows/console/legacymode) or terminals with `TERM` set to `DUMB` might not show color effects, and the module may output unexpected results or warnings.
+`Render` returns an error if the wrap limit is negative or the terminal width cannot be determined when wrapping is enabled without a limit.
 
-It's generally not recommended to use this library with color effects in Online Playgrounds, CI/CD environments, Browsers, and similar platforms since color support varies, and detection is challenging. If you encounter issues, you can open an issue and suggest a solution!
+### Colors
 
-#### 4. Tabs
+Colors can be applied to:
 
-This library supports the usage of tabs but their use should be limited.
+- Title: `TitleColor`
+- Content: `ContentColor`
+- Border: `Color`
 
-### Projects using Box CLI Maker
+Accepted formats:
 
-- <img src="img\k8s_logo.png" alt="kubernetes logo" width="20"> [kubernetes/minikube](https://github.com/kubernetes/minikube): Run Kubernetes locally.
-- +[Many More](https://pkg.go.dev/github.com/Delta456/box-cli-maker/v2?tab=importedby)!
+- First 16 ANSI names:
 
-### Acknowledgements
+  `box.Black, box.Red, box.Green, box.Yellow, box.Blue, box.Magenta, box.Cyan, box.White` and their bright variants:
+  `box.BrightBlack, box.BrightRed, box.BrightGreen, box.BrightYellow, box.BrightBlue, box.BrightMagenta, box.BrightCyan, box.BrightWhite`  
+  (plus a few aliases like `box.HiRed`, `box.HiBlue`, etc.)
 
-I thank the following people and their packages whom I have studied and was able to port to Go accordingly.
+- Hex and XParseColor formats (Supports TrueColor and 8-bit):
+
+  - `#RGB`
+  - `#RRGGBB`
+  - `rgb:RRRR/GGGG/BBBB`
+  - `rgba:RRRR/GGGG/BBBB/AAAA`
+
+Example:
+
+```go
+b.TitleColor(box.BrightYellow)
+b.ContentColor("#00FF00")
+b.Color("rgb:0000/ffff/0000")
+```
+
+Invalid colors cause `Render` to return an error.
+
+### Rendering
+
+```go
+out, err := b.Render("Title", "Content")
+if err != nil {
+    // handle invalid style, colors, padding, wrapping, etc.
+}
+
+fmt.Println(out)
+```
+
+`Render` returns an error if:
+
+- The `BoxStyle` is invalid
+- The `TitlePosition` is invalid
+- The wrap limit is negative
+- Padding is negative
+- A multiline title is used with a non‑`Inside` title position
+- Any configured colors are invalid
+- Terminal width detection fails when needed for wrapping
+
+For convenience:
+
+```go
+out := b.MustRender("Title", "Content") // panics on error
+```
+
+## Examples
+
+The [examples](examples) directory contains small, focused programs that showcase different features:
+
+- `simple_box` – minimal single box with title and content.
+- `content_align` – compare `Left`, `Center`, and `Right` content alignment.
+- `content_wrap` – demonstrate `WrapContent` / `WrapLimit` with long text.
+- `title_positions` – show `Inside`, `Top`, and `Bottom` title placement.
+- `box_styles` – render all built‑in border styles and colors.
+- `custom_box` – build boxes using fully custom corner/edge glyphs.
+- `ansi_styles_and_links` – use bold/underline/blink/strikethrough and OSC 8 hyperlinks.
+- `colors_and_unicode` – mix hex/ANSI colors with CJK, emoji, and wrapping.
+- `ansi_art` – render more decorative/"artistic" boxes.
+- `shared_styles` – derive multiple boxes from a shared base style with `Copy`.
+- `ksctl` – real‑world example from ksctl showing wide titles vs narrow content.
+- `lolcat` – rainbow color demo using custom ANSI styling helpers.
+- `readme` – code used to generate the screenshot at the top of this README.
+
+## Unicode, Emoji, and Width Handling
+
+This library uses [`mattn/go-runewidth`](https://github.com/mattn/go-runewidth) and [`github.com/charmbracelet/x/ansi`](https://github.com/charmbracelet/x/ansi) to handle:
+
+- Wide characters (e.g., CJK)
+- Emojis and other multi‑cell glyphs
+- Stripping ANSI sequences when measuring widths
+
+Note:
+
+1. Rendering quality depends on the terminal emulator and font. Some combinations may misalign visually.
+2. Indic scripts and complex text may not display correctly in most terminals.
+3. Online playgrounds and many CI environments often use basic fonts and may not render Unicode/emoji correctly; widths might be misreported.
+
+## Migration from v2
+
+v3 is a new major version with a redesigned API.
+
+Key changes:
+
+- `Config` struct and `New(Config)` have been replaced with:
+
+  ```go
+  b := box.NewBox().
+      Style(box.Single).
+      Padding(2, 1).
+      TitlePosition(box.Top).
+      ContentAlign(box.Left)
+  ```
+
+- String‑based fields (`Type`, `ContentAlign`, `TitlePos`) are now strongly typed:
+  - `"Single"` → `box.Single`
+  - `"Top"` → `box.Top`
+  - `"Center"` → `box.Center`
+
+- Colors:
+  - No more `interface{}` colors (`uint`, `[3]uint`, etc.).
+  - Use ANSI names or the documented hex/rgb formats instead.
+  - Invalid colors now **error** at `Render` time.
+
+- `Print` / `Println` behavior can be replicated by `fmt.Println(b.MustRender(...))` or your own helper.
+
+Read more at [Migration guide](./MIGRATION.md).
+
+The old v2 API remains available at:
+
+```bash
+go get github.com/Delta456/box-cli-maker/v2
+```
+
+but is no longer actively developed.
+
+## Projects Using Box CLI Maker
+
+- <img src="img/k8s_logo.png" alt="kubernetes logo" width="20"> [kubernetes/minikube](https://github.com/kubernetes/minikube): Run Kubernetes locally.
+- And others listed on [pkg.go.dev](https://pkg.go.dev/github.com/box-cli-maker/box-cli-maker/v3?tab=importedby).
+
+## Acknowledgements
+
+Thanks to:
 
 - [thecodrr/boxx](https://github.com/thecodrr/boxx)
 - [Atrox/box](https://github.com/Atrox/box)
-- [sindreorhus-cli-boxes](https://github.com/sindresorhus/cli-boxes)
+- [sindreorhus/cli-boxes](https://github.com/sindresorhus/cli-boxes)
 
-Also special thanks to [@elimsteve](https://github.com/elimisteve) who helped me to optimize the code and told me the best possible ways to fix my problems, [@JalonSolov](https://github.com/JalonSolov) for tab lines support and [Kunal Raghav](https://github.com/KunalRaghav) for making the library's logo.
+for inspiration, and to all contributors who have improved this library over time.
 
-Kudos to [moul/golang-repo-template](https://github.com/moul/golang-repo-template) for their Go template.
+## License
 
-### License
-
-Licensed under [MIT](LICENSE)
+Licensed under [MIT](LICENSE).

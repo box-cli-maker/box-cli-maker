@@ -1,0 +1,40 @@
+package main
+
+import (
+	"fmt"
+	"image/color"
+	"math"
+	"strings"
+
+	box "github.com/box-cli-maker/box-cli-maker/v3"
+	"github.com/charmbracelet/x/ansi"
+)
+
+func main() {
+	b := box.NewBox().Padding(2, 5).Style(box.Single).Color(box.Cyan).ContentAlign(box.Center)
+	s, err := b.Render(lolcat("Box CLI Maker"), lolcat("Render highly customizable boxes\n in the terminal"))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(s)
+}
+
+func lolcat(str string) string {
+	var output string
+	freq := float64(0.1)
+	for s := range strings.SplitSeq(str, "") {
+		output += normalStyle(freq, s)
+		freq += 0.1
+	}
+	return output
+}
+
+func normalStyle(num float64, s string) string {
+	red := uint8(math.Sin(num+0)*127 + 128)
+	green := uint8(math.Sin(num+2)*127 + 128)
+	blue := uint8(math.Sin(num+4)*127 + 128)
+
+	c := &color.RGBA{R: red, G: green, B: blue, A: 255}
+	style := ansi.Style{}.ForegroundColor(c)
+	return style.Styled(s)
+}
