@@ -1,3 +1,4 @@
+// Deprecated: use github.com/box-cli-maker/box-cli-maker/v3 instead.
 module github.com/Delta456/box-cli-maker/v2
 
 go 1.15
