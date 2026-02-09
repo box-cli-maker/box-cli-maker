@@ -363,15 +363,6 @@ The [examples](examples) directory contains small, focused programs that showcas
 - `lolcat` – rainbow color demo using custom ANSI styling helpers.
 - `readme` – code used to generate the screenshot at the top of this README.
 
-Run any example with:
-
-```bash
-go run ./examples/simple_box
-go run ./examples/content_align
-```
-
----
-
 ## Unicode, Emoji, and Width Handling
 
 This library uses [`mattn/go-runewidth`](https://github.com/mattn/go-runewidth) and [`github.com/charmbracelet/x/ansi`](https://github.com/charmbracelet/x/ansi) to handle:
