@@ -90,7 +90,7 @@ fmt.Println(b.MustRender("Box CLI Maker", "Render highly customizable boxes\n in
 3. **Update your code for the new API:**
 	 - Use method chaining for configuration.
 	 - Use strongly typed constants for style, alignment, and colors.
-	 - See the [v3 README](https://github.com/box-cli-maker/box-cli-maker#quick-start) for examples.
+	 - See the [v3 README](https://github.com/box-cli-maker/box-cli-maker) for examples.
 4. **Remove the old dependency:**
 	 ```sh
 	 go mod tidy
