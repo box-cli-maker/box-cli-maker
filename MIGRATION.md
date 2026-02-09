@@ -35,7 +35,7 @@ This guide will help you migrate your projects from v2 to v3 of `box-cli-maker`,
 | **Box Construction**| `box.New(box.Config{...})`                                                           | `box.NewBox().Style(...).Padding(...)...`                                            |
 | **Config Options**  | Strings for style, alignment, etc. (`Type: "Single"`)                               | Strongly typed constants (`.Style(box.Single)`)                                      |
 | **Field Names**     | `Type`, `TitlePos`, `ContentAlign`                                                   | `.Style()`, `.TitlePosition()`, `.ContentAlign()`                                    |
-| **Color Handling**  | Various types and string names                                                       | Only named ANSI, hex (`#RRGGBB`), or XParseColor formats                             |
+| **Color Handling**  | Various types and string names                                                       | Only named ANSI colors, hex (`#RGB`, `#RRGGBB`), or XParseColor formats              |
 | **Rendering**       | `b.String("Title", "Content")`                                                    | `b.MustRender("Title", "Content")` or `b.Render(...)`                             |
 | **Print Methods**   | `b.Print()`, `b.Println()`                                                           | Removed; use `fmt.Println(b.MustRender(...))`                                        |
 | **Wrapping**        | Implicit/less explicit                                                               | `.WrapContent(true)`, `.WrapLimit(width)`                                            |
@@ -50,13 +50,13 @@ This guide will help you migrate your projects from v2 to v3 of `box-cli-maker`,
 import box "github.com/Delta456/box-cli-maker/v2"
 
 cfg := box.Config{
-		Type:        "Single",
-		Px:           2,
-        Py:           1,
-		ContentAlign: "Center",
-		TitlePos:    "Top",
-		Color:       "Cyan",
-		TitleColor:  "BrightYellow",
+	Type:         "Single",
+	Px:           2,
+	Py:           1,
+	ContentAlign: "Center",
+	TitlePos:     "Top",
+	Color:        "Cyan",
+	TitleColor:   "BrightYellow",
 }
 b := box.New(cfg)
 fmt.Println(b.String("Box CLI Maker", "Render highly customizable boxes\n in the terminal"))
@@ -67,12 +67,12 @@ fmt.Println(b.String("Box CLI Maker", "Render highly customizable boxes\n in the
 import box "github.com/box-cli-maker/box-cli-maker/v3"
 
 b := box.NewBox().
-		Style(box.Single).
-		Padding(2, 1).
-		TitlePosition(box.Top).
-		ContentAlign(box.Center).
-		Color(box.Cyan).
-		TitleColor(box.BrightYellow)
+	Style(box.Single).
+	Padding(2, 1).  // horizontal, vertical
+	TitlePosition(box.Top).
+	ContentAlign(box.Center).
+	Color(box.Cyan).
+	TitleColor(box.BrightYellow)
 
 fmt.Println(b.MustRender("Box CLI Maker", "Render highly customizable boxes\n in the terminal"))
 ```
