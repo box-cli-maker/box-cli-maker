@@ -561,10 +561,8 @@ func TestTitleColorFunc(t *testing.T) {
 		t.Fatalf("Render error: %v", err)
 	}
 
-	clean := ansi.Strip(out)
-
-	if !strings.Contains(clean, "<<Title>>") {
-		t.Errorf("expected transformed title, got: %q", clean)
+	if !strings.Contains(out, "<<Title>>") {
+		t.Errorf("expected transformed title, got: %q", out)
 	}
 }
 
@@ -580,9 +578,7 @@ func TestContentColorFunc(t *testing.T) {
 		t.Fatalf("Render error: %v", err)
 	}
 
-	clean := ansi.Strip(out)
-
-	if !strings.Contains(clean, "[[Content]]") {
-		t.Errorf("expected transformed content, got: %q", clean)
+	if !strings.Contains(out, "[[Content]]") {
+		t.Errorf("expected transformed content, got: %q", out)
 	}
 }

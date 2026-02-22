@@ -318,6 +318,29 @@ b.Color("rgb:0000/ffff/0000")
 
 Invalid colors cause `Render` to return an error.
 
+### Color Functions
+
+In addition to static colors, you can define custom transformation functions
+for the title and content using:
+
+- `TitleColorFunc`
+- `ContentColorFunc`
+
+These functions take the original string and return a transformed version.
+This enables advanced effects.
+
+Example:
+
+```go
+box.NewBox().
+	TitleColorFunc(func(s string) string {
+		return color.Red(s)
+	}).
+	ContentColorFunc(func(s string) string {
+		return color.Cyan(s)
+	})
+```
+
 ### Rendering
 
 ```go
@@ -377,33 +400,6 @@ Note:
 2. Indic scripts and complex text may not display correctly in most terminals.
 3. Online playgrounds and many CI environments often use basic fonts and may not render Unicode/emoji correctly; widths might be misreported.
 
-## Color Functions
-
-In addition to static colors, you can define custom transformation functions
-for the title and content using:
-
-- `TitleColorFunc`
-- `ContentColorFunc`
-
-These functions take the original string and return a transformed version.
-This enables advanced effects.
-
-Example:
-
-```go
-b := box.NewBox().
-    TitleColorFunc(func(s string) string {
-        return "<<" + s + ">>"
-    }).
-    ContentColorFunc(func(s string) string {
-        return strings.ToUpper(s)
-    })
-
-out := b.MustRender("Title", "Content")
-fmt.Println(out)
-
-
-```
 ## Migration from v2
 
 v3 is a new major version with a redesigned API.

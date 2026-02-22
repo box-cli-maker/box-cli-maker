@@ -77,6 +77,23 @@
 // #RGB / #RRGGBB / rgb:RRRR/GGGG/BBBB / rgba:RRRR/GGGG/BBBB/AAAA value.
 // Invalid colors cause Render to return an error.
 //
+
+// # Color Functions
+//
+// In addition to static colors, you can provide custom transformation
+// functions for title and content using TitleColorFunc and ContentColorFunc.
+//
+// These functions receive the raw string and must return a transformed string.
+//
+// Example:
+//		box.NewBox().
+//	    TitleColorFunc(func(s string) string {
+//			 return color.Red(s)
+//		}).
+//	 	ContentColorFunc(func(s string) string {
+//			return color.Cyan(s)
+//		})
+
 // # Errors
 //
 // Render returns an error if the style or title position is invalid, the wrap
@@ -95,24 +112,4 @@
 //	warn := base.Copy().Color(box.Yellow)
 //
 // Each Copy can then be customized and rendered independently.
-
-// # Color Functions
-//
-// In addition to static colors, you can provide custom transformation
-// functions for title and content using TitleColorFunc and ContentColorFunc.
-//
-// These functions receive the raw string and must return a transformed string.
-//
-// Example:
-//
-//	b := box.NewBox().
-//		TitleColorFunc(func(s string) string {
-//			return "<<" + s + ">>"
-//		}).
-//		ContentColorFunc(func(s string) string {
-//			return strings.ToUpper(s)
-//		})
-//
-//	out := b.MustRender("Title", "Content")
-
 package box
