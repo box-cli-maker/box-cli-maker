@@ -35,6 +35,12 @@ type Box struct {
 	bottomLeft string
 	// horizontal renders the glyph used for the top and bottom edges.
 	horizontal string
+	// titleColorFunc optionally transforms the title text before rendering.
+	titleColorFunc func(str string) string
+	// contentColorFunc optionally transforms each content line before rendering.
+	contentColorFunc func(str string) string
+	// colorFunc optionally transforms both title and content before rendering.
+	colorFunc func(str string) string
 	config
 }
 
@@ -199,6 +205,54 @@ func (b *Box) TitlePosition(pos TitlePosition) *Box {
 	return b
 }
 
+// TitleColorFunc sets a function that will be applied to the title text
+// before rendering. This allows dynamic coloring like gradients, animations,
+// or any custom text transformation.
+//
+// The function takes the raw title string and returns a modified string
+// (usually with ANSI color codes). If both TitleColor and TitleColorFunc are set,
+// TitleColorFunc takes precedence.
+//
+// Example:
+//
+//	b.TitleColorFunc(lolcat) // applies rainbow gradient to title
+
+func (b *Box) TitleColorFunc(fn func(str string) string) *Box {
+	b.titleColorFunc = fn
+	return b
+}
+
+// ContentColorFunc sets a function that will be applied to all content lines
+// before rendering. Perfect for applying rainbow effects, syntax highlighting,
+// or any per-line text transformation.
+//
+// The function takes a raw content line and returns a modified string.
+// If both ContentColor and ContentColorFunc are set, ContentColorFunc takes precedence.
+//
+// Example:
+//
+//	b.ContentColorFunc(lolcat) // makes all content rainbow-colored
+func (b *Box) ContentColorFunc(fn func(str string) string) *Box {
+	b.contentColorFunc = fn
+	return b
+}
+
+// ColorFunc sets a function that will be applied to both title and content
+// if no more specific color functions (TitleColorFunc, ContentColorFunc) are set.
+// This is a convenient way to apply the same transformation to all text in the box.
+//
+// The function takes a raw string and returns a modified string.
+// Individual TitleColorFunc or ContentColorFunc override this setting.
+//
+// Example:
+//
+//	b.ColorFunc(lolcat) // applies rainbow to both title and content
+
+func (b *Box) ColorFunc(fn func(str string) string) *Box {
+	b.colorFunc = fn
+	return b
+}
+
 // WrapContent enables or disables automatic wrapping of content.
 //
 // When enabled, content is wrapped to fit roughly two-thirds of the terminal
@@ -246,6 +300,21 @@ func (b *Box) MustRender(title, content string) string {
 //   - a multiline title is used with a non-Inside TitlePosition, or
 //   - any configured colors are invalid.
 func (b *Box) Render(title, content string) (string, error) {
+	if b.titleColorFunc != nil {
+		title = b.titleColorFunc(title)
+	}
+	if b.contentColorFunc != nil {
+		content = b.contentColorFunc(content)
+	}
+	if b.colorFunc != nil {
+		if b.titleColorFunc == nil {
+			title = b.colorFunc(title)
+		}
+		if b.contentColorFunc == nil {
+			content = b.colorFunc(content)
+		}
+	}
+
 	if b.styleSet {
 		if _, ok := boxes[b.config.style]; !ok {
 			return "", fmt.Errorf("invalid Box style %s", b.config.style)
