@@ -201,7 +201,7 @@ func (b *Box) TitlePosition(pos TitlePosition) *Box {
 	return b
 }
 
-// TitleColorFunc sets a callback function for title content
+// TitleColorFunc sets a callback function for title color
 func (b *Box) TitleColorFunc(fn func(str string) string) *Box {
 	b.config.titleColorFunc = fn
 	return b

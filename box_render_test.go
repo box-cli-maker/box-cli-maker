@@ -548,3 +548,41 @@ func TestRenderBoxCustomGlyphsWithoutNewBoxMethod(t *testing.T) {
 		}
 	}
 }
+
+func TestTitleColorFunc(t *testing.T) {
+	b := NewBox().
+		Style(Single).
+		TitleColorFunc(func(s string) string {
+			return "<<" + s + ">>"
+		})
+
+	out, err := b.Render("Title", "Content")
+	if err != nil {
+		t.Fatalf("Render error: %v", err)
+	}
+
+	clean := ansi.Strip(out)
+
+	if !strings.Contains(clean, "<<Title>>") {
+		t.Errorf("expected transformed title, got: %q", clean)
+	}
+}
+
+func TestContentColorFunc(t *testing.T) {
+	b := NewBox().
+		Style(Single).
+		ContentColorFunc(func(s string) string {
+			return "[[" + s + "]]"
+		})
+
+	out, err := b.Render("Title", "Content")
+	if err != nil {
+		t.Fatalf("Render error: %v", err)
+	}
+
+	clean := ansi.Strip(out)
+
+	if !strings.Contains(clean, "[[Content]]") {
+		t.Errorf("expected transformed content, got: %q", clean)
+	}
+}
