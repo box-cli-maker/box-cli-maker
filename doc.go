@@ -95,4 +95,24 @@
 //	warn := base.Copy().Color(box.Yellow)
 //
 // Each Copy can then be customized and rendered independently.
+
+// # Color Functions
+//
+// In addition to static colors, you can provide custom transformation
+// functions for title and content using TitleColorFunc and ContentColorFunc.
+//
+// These functions receive the raw string and must return a transformed string.
+//
+// Example:
+//
+//	b := box.NewBox().
+//		TitleColorFunc(func(s string) string {
+//			return "<<" + s + ">>"
+//		}).
+//		ContentColorFunc(func(s string) string {
+//			return strings.ToUpper(s)
+//		})
+//
+//	out := b.MustRender("Title", "Content")
+
 package box
