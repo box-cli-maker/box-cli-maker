@@ -5,7 +5,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/box-cli-maker/box-cli-maker/v3.svg)](https://pkg.go.dev/github.com/box-cli-maker/box-cli-maker/v3)
 [![Go](https://github.com/box-cli-maker/box-cli-maker/actions/workflows/go.yml/badge.svg)](https://github.com/box-cli-maker/box-cli-maker/actions/workflows/go.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/box-cli-maker/box-cli-maker)](https://goreportcard.com/report/github.com/box-cli-maker/box-cli-maker)
+[![Go Report Card](https://goreportcard.com/badge/github.com/box-cli-maker/box-cli-maker/v3)](https://goreportcard.com/report/github.com/box-cli-maker/box-cli-maker/v3)
 [![GitHub release](https://img.shields.io/github/release/box-cli-maker/box-cli-maker.svg)](https://github.com/box-cli-maker/box-cli-maker/releases)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 

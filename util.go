@@ -256,7 +256,7 @@ func stringColorToHex(color string) string {
 	return ""
 }
 
-// addStylePreservingOriginalFormat allows to add style around the orginal formating
+// addStylePreservingOriginalFormat allows to add style around the original formating
 func addStylePreservingOriginalFormat(s string, f func(a string) string) string {
 	const reset = "\033[0m"
 	if !strings.Contains(s, reset) {
