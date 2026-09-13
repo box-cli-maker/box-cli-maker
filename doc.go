@@ -57,26 +57,26 @@
 //	box.Top
 //	box.Bottom
 //
-// Title alignment is controlled with TitleAlign and the AlignType constants:
-// Inside defaults to Center (within box), Top/Bottom default to Left (on border).
+// Title alignment is controlled with TitleAlign and content alignment with
+// ContentAlign; both use the AlignType constants:
 //
 //	box.Left
 //	box.Center
 //	box.Right
 //
-// Content alignment is controlled with ContentAlign and the AlignType
-// constants:
-//
-//	box.Left
-//	box.Center
-//	box.Right
+// An Inside title defaults to Center; a Top/Bottom title defaults to Left on
+// the border. Content defaults to Left.
 //
 // # Padding
 //
 // Padding adds space inside the box borders between the content and the edges.
 // Horizontal padding adds spaces on the left and right of each line. Vertical
 // padding adds blank lines above and below the content. Use Padding to set
-// both at once, or HPadding / VPadding to set each independently. Negative
+// both at once, or HPadding / VPadding to set each independently.
+//
+// The argument order is horizontal first: Padding(2, 1) means 2 columns of
+// side padding and 1 blank row above and below — the reverse of CSS's
+// "padding: vertical horizontal" shorthand. Padding defaults to 0; negative
 // padding causes Render to return an error.
 //
 // # Margin
@@ -84,7 +84,8 @@
 // Margin adds space outside the box borders. Horizontal margin prepends spaces
 // to every rendered line. Vertical margin adds blank lines above and below the
 // box. Use Margin to set both at once, or HMargin / VMargin to set each
-// independently. Negative margin causes Render to return an error.
+// independently. The argument order matches Padding: horizontal first. Margin
+// defaults to 0; negative margin causes Render to return an error.
 //
 // # Wrapping
 //
@@ -99,17 +100,19 @@
 // # Styled content
 //
 // Content and titles may already contain ANSI styling — colors, bold,
-// underline, and OSC 8 hyperlinks. Every rendered row is self-contained:
-// styles or hyperlinks that would span a line break (from wrapping or the
-// content's own newlines) are closed at the end of each row and re-opened on
-// the next, so user styling never bleeds into the borders or padding, and
-// spans keep their styling across wrapped lines even when Color or
-// ContentColor is set.
+// underline, and OSC 8 hyperlinks — and can be passed in as-is: user styling
+// never bleeds into the borders or padding, styling survives wrapping, and
+// this composes with Color and ContentColor.
+//
+// Every rendered row is made self-contained: styles or hyperlinks that would
+// span a line break (from wrapping or the content's own newlines) are closed
+// at the end of each row and re-opened on the next.
 //
 // # Colors
 //
-// TitleColor, ContentColor, and Color accept either one of the first 16 ANSI
-// color name constants (e.g. box.Green, box.BrightRed) or a
+// TitleColor, ContentColor, and Color accept either one of the 16 ANSI color
+// name constants — the 8 base names (e.g. box.Green), each also with a Bright
+// prefix (box.BrightRed) or its Hi alias (box.HiRed) — or a
 // #RGB / #RRGGBB / rgb:RRRR/GGGG/BBBB / rgba:RRRR/GGGG/BBBB/AAAA value.
 // Invalid colors cause Render to return an error.
 //
