@@ -415,7 +415,7 @@ Colors can be applied to:
 
 Accepted formats:
 
-- The 16 ANSI color names: `Black`, `Red`, `Green`, `Yellow`, `Blue`, `Magenta`, `Cyan`, `White` — each also available with a `Bright` prefix (e.g. `box.BrightYellow`) or its `Hi` alias (e.g. `box.HiRed`).
+- The 16 ANSI color names: `box.Black`, `box.Red`, `box.Green`, `box.Yellow`, `box.Blue`, `box.Magenta`, `box.Cyan`, `box.White` — each also available with a `Bright` prefix (e.g. `box.BrightYellow`) or its `Hi` alias (e.g. `box.HiRed`).
 - Hex and XParseColor formats (TrueColor and 8-bit): `#RGB`, `#RRGGBB`, `rgb:RRRR/GGGG/BBBB`, `rgba:RRRR/GGGG/BBBB/AAAA`
 
 Example:
