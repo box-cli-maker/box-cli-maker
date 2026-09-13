@@ -234,11 +234,13 @@ b.TitlePosition(box.Bottom)
 
 Title alignment:
 
+`TitleAlign` sets where the title sits within its position — across the box for `Inside`, along the border for `Top`/`Bottom` — so it's naturally paired with `TitlePosition`:
+
 ```go
-b.TitleAlign(box.Left) // default for box.Top/box.Bottom Title Position
-b.TitleAlign(box.Center) // default for box.Inside Title Position
-b.TitleAlign(box.Right)
+b.TitlePosition(box.Top).TitleAlign(box.Center) // title centered on the top border
 ```
+
+Accepted values are `box.Left`, `box.Center`, and `box.Right` (calls can come in any order — configuration is applied at `Render`). If you don't call `TitleAlign`, the default depends on position: `Inside` titles are centered, `Top`/`Bottom` titles are left‑aligned.
 
 #### Title Alignment showcase
 
