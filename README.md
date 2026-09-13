@@ -394,7 +394,7 @@ styled := "\x1b[31mthis part is red\x1b[0m and this part is plain"
 out, _ := box.NewBox().WrapLimit(24).Render("", styled)
 ```
 
-<p align="center"><img src="img/ansi_safe.png" alt="styled content: v3.0.0 vs v3.1.0" width="420"/></p>
+<p align="center"><img src="img/ansi_safe.png" alt="unclosed styling bleeding into the border, versus staying on the text" width="420"/></p>
 
 What you can rely on:
 

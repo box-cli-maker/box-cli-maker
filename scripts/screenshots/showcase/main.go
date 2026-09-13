@@ -67,16 +67,24 @@ func scene(name string) (string, bool) {
 	case "margin":
 		return label("no margin") + plain().MustRender("", line) + "\n" +
 			label("Margin(6, 1)") + plain().Margin(6, 1).MustRender("", line), true
-	case "ansi_safe":
-		// Same input both panes: a red span crossing the content's own
-		// newline. v3.0.0 let it paint the padding and then lost it on the
-		// next row; v3.1.0 keeps the styling on the text alone.
+	case "ansi_safe", "ansi_safe_versions":
+		// Same input in both panes: a red span crossing the content's own
+		// newline. The top pane is v3.0.0's real output, where the unclosed
+		// span paints the borders; the bottom is the current render, where
+		// each row closes and re-arms it.
+		//
+		// The README labels the panes by what they show (the reader cares
+		// about the behavior); the release notes label them by version.
+		before, after := "styling bleeds into the border", "styling stays on the text"
+		if name == "ansi_safe_versions" {
+			before, after = "v3.0.0", "v3.1.0"
+		}
 		styled := "\x1b[31mred one\nred two\x1b[0m plain"
 		// Identical configuration to the captured pane — no colors set on
 		// the box at all, so the only difference is the fix itself.
 		now := box.NewBox().Padding(2, 0)
-		return label("v3.0.0") + strings.TrimSuffix(legacyV300, "\n") + "\n\n" +
-			label("v3.1.0") + now.MustRender("", styled), true
+		return label(before) + strings.TrimSuffix(legacyV300, "\n") + "\n\n" +
+			label(after) + now.MustRender("", styled), true
 	case "wrap":
 		long := "Render highly customizable terminal boxes"
 		return label("no wrapping") + plain().MustRender("", long) + "\n" +
