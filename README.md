@@ -75,7 +75,7 @@ Configure it via fluent methods, then call `Render` (or `MustRender`) to get the
 ### Construction
 
 ```go
-b := box.NewBox() // recommended
+b := box.NewBox()
 ```
 
 You can clone a configured box and tweak it:
@@ -322,7 +322,7 @@ b.HPadding(px)    // horizontal only
 b.VPadding(py)    // vertical only
 ```
 
-Note the argument order: horizontal comes first, so `Padding(2, 1)` means 2 columns of side padding and 1 blank row above and below — the reverse of CSS's `padding: vertical horizontal` shorthand.
+Horizontal comes first — the reverse of CSS's `padding: vertical horizontal` shorthand.
 
 Padding defaults to 0. Setting negative padding causes `Render` to return an error.
 
@@ -338,13 +338,15 @@ b.HMargin(mx)    // horizontal only
 b.VMargin(my)    // vertical only
 ```
 
-Argument order matches `Padding`: horizontal first, so `Margin(3, 1)` means 3 columns of left margin and 1 blank line above and below.
+The argument order matches `Padding`: horizontal first.
 
 Margin defaults to 0. Setting negative margin causes `Render` to return an error.
 
 <p align="center"><img src="img/margin.png" alt="margin comparison" width="480"/></p>
 
 ### Wrapping
+
+Long content can wrap automatically to fit the terminal, or at an exact width with `WrapLimit`. Wrapping is off by default.
 
 ```go
 b.WrapContent(true)       // enable wrapping (default: 2/3 of terminal width, minus any HMargin)
@@ -381,7 +383,7 @@ b.Color("rgb:0000/ffff/0000")
 
 Invalid colors cause `Render` to return an error.
 
-Colors are automatically converted to the detected capability of the terminal (TrueColor, 256‑color, or 16‑color), and suppressed entirely when the output does not support color — `NO_COLOR` set, `TERM=dumb`, or stdout redirected to a file/pipe — so logs and captured output stay free of escape sequences.
+Colors automatically adapt to what the terminal supports (TrueColor, 256‑color, or 16‑color). When the output can't show color at all — `NO_COLOR` set, `TERM=dumb`, or output piped to a file — colors are dropped entirely, so logs stay free of escape codes.
 
 ### Styled Content and ANSI Safety
 
@@ -460,7 +462,7 @@ Note:
 
 1. Rendering quality depends on the terminal emulator and font. Some combinations may misalign visually.
 2. Indic scripts and complex text may not display correctly in most terminals.
-3. Online playgrounds and many CI environments often use basic fonts and may not render Unicode/emoji correctly; widths might be misreported.
+3. Online playgrounds and many CI environments often use basic fonts and may not render Unicode/emoji correctly, so boxes may look misaligned there.
 
 ## Migration from v2
 

@@ -116,11 +116,10 @@
 // #RGB / #RRGGBB / rgb:RRRR/GGGG/BBBB / rgba:RRRR/GGGG/BBBB/AAAA value.
 // Invalid colors cause Render to return an error.
 //
-// Colors are automatically converted to the terminal's detected capability
-// (TrueColor, 256-color, or 16-color) and suppressed entirely when the
-// output does not support color — NO_COLOR set, TERM=dumb, or stdout
-// redirected to a file or pipe — so captured output stays free of escape
-// sequences.
+// Colors automatically adapt to what the terminal supports (TrueColor,
+// 256-color, or 16-color). When the output cannot show color at all —
+// NO_COLOR set, TERM=dumb, or output piped to a file — colors are dropped
+// entirely, so captured output stays free of escape sequences.
 //
 // # Errors
 //
