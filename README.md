@@ -31,7 +31,7 @@ Used by <img src="img/k8s_logo.png" alt="kubernetes logo" width="20"> [kubernete
   - Automatic conversion to the terminal's color capability; suppressed for `NO_COLOR` and piped output
 - Unicode and emoji support with proper width handling
 - Derived styles with `Copy()` for building box families from a shared base
-- Explicit errors from `Render`, plus `MustRender` for panic‑on‑error 
+- Explicit errors from `Render`, plus `MustRender` for panic‑on‑error
 
 ## Installation
 
@@ -54,13 +54,13 @@ func main() {
     b := box.NewBox().
         Style(box.Single).  // single-line border
         Padding(2, 1).      // inner padding: x (horizontal), y (vertical)
-        Margin(3, 5).       // outer margin: x (horizontal), y (vertical)
+        Margin(3, 1).       // outer margin: x (horizontal), y (vertical)
         TitlePosition(box.Top).
         ContentAlign(box.Center).
         Color(box.Cyan).
         TitleColor(box.BrightYellow)
 
-    out, err := b.Render("Box CLI Maker", "Render highly customizable boxes\n in the terminal")
+    out, err := b.Render("Box CLI Maker", "Render highly customizable boxes\nin the terminal")
     if err != nil {
         panic(err)
     }
@@ -98,12 +98,13 @@ Select a built‑in style:
 ```go
 b.Style(box.Double)
 ```
+
 #### Styles showcase
 
 <details>
 <summary><code>box.Single</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/single.png" alt="single" width="500"/>
 </p>
 
@@ -112,7 +113,7 @@ b.Style(box.Double)
 <details>
 <summary><code>box.SingleDouble</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/single_double.png" alt="single double" width="500"/>
 </p>
 
@@ -121,7 +122,7 @@ b.Style(box.Double)
 <details>
 <summary><code>box.Double</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/double.png" alt="double" width="500"/>
 </p>
 
@@ -130,7 +131,7 @@ b.Style(box.Double)
 <details>
 <summary><code>box.DoubleSingle</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/double_single.png" alt="double single" width="500"/>
 </p>
 
@@ -139,7 +140,7 @@ b.Style(box.Double)
 <details>
 <summary><code>box.Bold</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/bold.png" alt="bold" width="500"/>
 </p>
 
@@ -148,7 +149,7 @@ b.Style(box.Double)
 <details>
 <summary><code>box.Round</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/round.png" alt="round" width="500"/>
 </p>
 
@@ -157,7 +158,7 @@ b.Style(box.Double)
 <details>
 <summary><code>box.Hidden</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/hidden.png" alt="hidden" width="500"/>
 </p>
 
@@ -166,7 +167,7 @@ b.Style(box.Double)
 <details>
 <summary><code>box.Classic</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/classic.png" alt="classic" width="500"/>
 </p>
 
@@ -175,12 +176,11 @@ b.Style(box.Double)
 <details>
 <summary><code>box.Block</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/block.png" alt="block" width="500"/>
 </p>
 
 </details>
-
 
 You can override any glyph after choosing a style:
 
@@ -209,7 +209,7 @@ b.TitlePosition(box.Bottom)
 <details>
 <summary><code>box.Inside</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/single.png" alt="single" width="500"/>
 </p>
 
@@ -218,7 +218,7 @@ b.TitlePosition(box.Bottom)
 <details>
 <summary><code>box.Top</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/top.png" alt="top" width="500"/>
 </p>
 
@@ -227,7 +227,7 @@ b.TitlePosition(box.Bottom)
 <details>
 <summary><code>box.Bottom</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/bottom.png" alt="bottom" width="500"/>
 </p>
 
@@ -246,78 +246,27 @@ b.TitleAlign(box.Right)
 <details>
 <summary><code>box.Left</code></summary>
 
-> <details>
-> <summary><code>box.Inside</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/inside_left.png" alt="inside left" width="500"/>
-> </p>
-> </details>
-
-> <details>
-> <summary><code>box.Top</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/top.png" alt="top left" width="500"/>
-> </p>
-> </details>
-
-> <details>
-> <summary><code>box.Bottom</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/bottom.png" alt="bottom left" width="500"/>
-> </p>
-> </details>
+<p align="center"><b>Inside</b><br/><img src="img/inside_left.png" alt="inside left" width="500"/></p>
+<p align="center"><b>Top</b><br/><img src="img/top.png" alt="top left" width="500"/></p>
+<p align="center"><b>Bottom</b><br/><img src="img/bottom.png" alt="bottom left" width="500"/></p>
 
 </details>
 
 <details>
 <summary><code>box.Center</code></summary>
 
-> <details>
-> <summary><code>box.Inside</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/single.png" alt="inside center" width="500"/>
-> </p>
-> </details>
-
-> <details>
-> <summary><code>box.Top</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/top_center.png" alt="top center" width="500"/>
-> </p>
-> </details>
-
-> <details>
-> <summary><code>box.Bottom</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/bottom_center.png" alt="bottom center" width="500"/>
-> </p>
-> </details>
+<p align="center"><b>Inside</b><br/><img src="img/single.png" alt="inside center" width="500"/></p>
+<p align="center"><b>Top</b><br/><img src="img/top_center.png" alt="top center" width="500"/></p>
+<p align="center"><b>Bottom</b><br/><img src="img/bottom_center.png" alt="bottom center" width="500"/></p>
 
 </details>
 
 <details>
 <summary><code>box.Right</code></summary>
 
-> <details>
-> <summary><code>box.Inside</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/inside_right.png" alt="inside right" width="500"/>
-> </p>
-> </details>
-
-> <details>
-> <summary><code>box.Top</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/top_right.png" alt="top right" width="500"/>
-> </p>
-> </details>
-
-> <details>
-> <summary><code>box.Bottom</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/bottom_right.png" alt="bottom right" width="500"/>
-> </p>
-> </details>
+<p align="center"><b>Inside</b><br/><img src="img/inside_right.png" alt="inside right" width="500"/></p>
+<p align="center"><b>Top</b><br/><img src="img/top_right.png" alt="top right" width="500"/></p>
+<p align="center"><b>Bottom</b><br/><img src="img/bottom_right.png" alt="bottom right" width="500"/></p>
 
 </details>
 
@@ -334,7 +283,7 @@ b.ContentAlign(box.Right)
 <details>
 <summary><code>box.Left</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/left.png" alt="left" width="500"/>
 </p>
 
@@ -343,7 +292,7 @@ b.ContentAlign(box.Right)
 <details>
 <summary><code>box.Center</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/single.png" alt="center" width="500"/>
 </p>
 
@@ -352,12 +301,11 @@ b.ContentAlign(box.Right)
 <details>
 <summary><code>box.Right</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/right.png" alt="right" width="500"/>
 </p>
 
 </details>
-
 
 ### Padding
 
@@ -465,8 +413,7 @@ fmt.Println(out)
 - The `TitlePosition` is invalid
 - The `TitleAlign` or `ContentAlign` is invalid
 - The wrap limit is not positive
-- Padding is negative
-- Margin is negative
+- Padding or margin is negative
 - A multiline title is used with a non‑`Inside` title position
 - Any configured colors are invalid
 - Terminal width detection fails when needed for wrapping
