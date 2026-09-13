@@ -11,6 +11,14 @@ import unicodedata
 
 SGR = re.compile(r"\x1b\[([0-9;]*)m")
 
+# Basic SGR foreground colors, in a palette that suits the dark canvas.
+BASIC = {
+    "30": "#3B4048", "31": "#E2634F", "32": "#4FC088", "33": "#FFC24B",
+    "34": "#6AA7E8", "35": "#C678DD", "36": "#4FC1C9", "37": "#C8CCD4",
+    "90": "#5C665E", "91": "#FF7A66", "92": "#6EF0C1", "93": "#FFD98A",
+    "94": "#8FC2FF", "95": "#D9A0E8", "96": "#7FDDE3", "97": "#FFFFFF",
+}
+
 
 def cell_width(ch: str) -> int:
     if unicodedata.east_asian_width(ch) in ("W", "F"):
@@ -31,9 +39,12 @@ def cells(text: str, color: str | None) -> str:
 
 def convert(ans: str) -> str:
     body = []
+    # SGR state survives newlines in a real terminal, so it is carried across
+    # lines here too — that carry-over is exactly what unclosed styling does
+    # to the rows below it.
+    color = None
     for line in ans.rstrip("\n").split("\n"):
         pos = 0
-        color = None
         parts = []
         for m in SGR.finditer(line):
             if m.start() > pos:
@@ -42,6 +53,8 @@ def convert(ans: str) -> str:
             if params.startswith("38;2;"):
                 r, g, b = params.split(";")[2:5]
                 color = f"rgb({r},{g},{b})"
+            elif params in BASIC:
+                color = BASIC[params]
             elif params in ("", "0"):
                 color = None
             pos = m.end()

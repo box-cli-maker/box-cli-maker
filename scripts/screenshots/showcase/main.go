@@ -5,12 +5,21 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"os"
+	"strings"
 
 	box "github.com/box-cli-maker/box-cli-maker/v3"
 	"github.com/charmbracelet/x/ansi"
 )
+
+// legacyV300 is the output v3.0.0 produced for the styled-content input in
+// the ansi_safe scene, captured once from that release. v3.0.0 is frozen, so
+// the "before" pane is a recorded fact rather than something to re-render.
+//
+//go:embed legacy_v300.ans
+var legacyV300 string
 
 const (
 	violet = "#8B75FF"
@@ -58,6 +67,16 @@ func scene(name string) (string, bool) {
 	case "margin":
 		return label("no margin") + plain().MustRender("", line) + "\n" +
 			label("Margin(6, 1)") + plain().Margin(6, 1).MustRender("", line), true
+	case "ansi_safe":
+		// Same input both panes: a red span crossing the content's own
+		// newline. v3.0.0 let it paint the padding and then lost it on the
+		// next row; v3.1.0 keeps the styling on the text alone.
+		styled := "\x1b[31mred one\nred two\x1b[0m plain"
+		// Identical configuration to the captured pane — no colors set on
+		// the box at all, so the only difference is the fix itself.
+		now := box.NewBox().Padding(2, 0)
+		return label("v3.0.0") + strings.TrimSuffix(legacyV300, "\n") + "\n\n" +
+			label("v3.1.0") + now.MustRender("", styled), true
 	case "wrap":
 		long := "Render highly customizable terminal boxes"
 		return label("no wrapping") + plain().MustRender("", long) + "\n" +
