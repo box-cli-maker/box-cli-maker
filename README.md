@@ -495,14 +495,6 @@ go get github.com/Delta456/box-cli-maker/v2
 
 but is no longer actively developed.
 
-## Featured In
-
-- [GitHub Open Source Friday](https://www.youtube.com/watch?v=gs8FFp0rAbk)
-- [GitHub Release Radar, November 2022 Edition](https://github.blog/open-source/release-radar-nov-2022/)
-- [Golang Weekly Issue 340](https://golangweekly.com/issues/340)
-- [Golang Weekly Issue 435](https://golangweekly.com/issues/435)
-- [Golang Weekly Issue 589](https://golangweekly.com/issues/589)
-
 ## Acknowledgements
 
 Thanks to:
