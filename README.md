@@ -495,11 +495,6 @@ go get github.com/Delta456/box-cli-maker/v2
 
 but is no longer actively developed.
 
-## Projects Using Box CLI Maker
-
-- <img src="img/k8s_logo.png" alt="kubernetes logo" width="20"> [kubernetes/minikube](https://github.com/kubernetes/minikube): Run Kubernetes locally.
-- And others listed on [pkg.go.dev](https://pkg.go.dev/github.com/box-cli-maker/box-cli-maker/v3?tab=importedby).
-
 ## Featured In
 
 - [GitHub Open Source Friday](https://www.youtube.com/watch?v=gs8FFp0rAbk)
