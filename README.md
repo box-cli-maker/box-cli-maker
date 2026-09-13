@@ -390,7 +390,7 @@ Colors automatically adapt to what the terminal supports (TrueColor, 256‑color
 Your text may already be styled before it reaches the box — by your logger, a color library, or your own escape codes. That's fine: pass it in as-is, and the box renders correctly around it.
 
 ```go
-styled := "\x1b[31mthis part is red\x1b[0m and this part is plain"
+styled := "\x1b[31mthis red part is long enough to wrap\x1b[0m and this part is plain"
 out, _ := box.NewBox().WrapLimit(24).Render("", styled)
 ```
 
