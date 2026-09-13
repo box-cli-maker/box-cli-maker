@@ -197,8 +197,10 @@ b.Style(box.Single).
 
 Title position:
 
+`TitlePosition` decides where the title goes: inside the box, on the top border, or on the bottom border. The default is `box.Inside`.
+
 ```go
-b.TitlePosition(box.Inside) // default
+b.TitlePosition(box.Inside)
 b.TitlePosition(box.Top)
 b.TitlePosition(box.Bottom)
 ```
@@ -273,8 +275,10 @@ Accepted values are `box.Left`, `box.Center`, and `box.Right` (calls can come in
 
 Content alignment:
 
+`ContentAlign` decides whether content lines sit on the left, in the center, or on the right of the box. The box is as wide as its longest line, so it's the shorter lines that move. The default is `box.Left`.
+
 ```go
-b.ContentAlign(box.Left) // default
+b.ContentAlign(box.Left)
 b.ContentAlign(box.Center)
 b.ContentAlign(box.Right)
 ```
