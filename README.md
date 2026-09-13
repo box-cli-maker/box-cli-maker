@@ -442,15 +442,21 @@ Colors are automatically converted to the detected capability of the terminal (T
 
 ### Styled Content and ANSI Safety
 
-Content and titles may already contain ANSI styling — colors, bold/underline, even [OSC 8 hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) — and the box will render correctly around them:
+Your text may already be styled before it reaches the box — by your logger, a color library, or your own escape codes. That's fine: pass it in as-is, and the box renders correctly around it.
 
 ```go
-b := box.NewBox().WrapLimit(24).ContentColor(box.Green)
-out, _ := b.Render("", "plain \x1b[31mred fragment\x1b[0m and a "+
-    "\x1b]8;;https://example.com\x1b\\clickable link\x1b]8;;\x1b\\")
+styled := "\x1b[31mthis part is red\x1b[0m and this part is plain"
+out, _ := box.NewBox().WrapLimit(24).Render("", styled)
 ```
 
-Every rendered row is self‑contained: styles or hyperlinks that would span a line break (from wrapping or your own newlines) are closed at the end of each row and re‑opened on the next, so user styling never bleeds into the borders or padding, borders never become part of a hyperlink, and your spans keep their styling across wrapped lines — including when `Color`/`ContentColor` is set.
+What you can rely on:
+
+- Colors and styles in your text never leak into the borders or padding.
+- Styling survives wrapping: when a colored sentence breaks across lines, every line keeps its color.
+- [Clickable hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) (OSC 8) stay clickable — and the borders never become part of the link.
+- This works together with `Color` / `ContentColor`: your styling and the box's styling don't fight.
+
+There is nothing to enable — this is how `Render` always behaves. (For the curious: every rendered line is made self‑contained by closing any open styling at the line's end and re‑opening it on the next line.)
 
 ### Rendering
 
