@@ -5,13 +5,14 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/box-cli-maker/box-cli-maker/v3.svg)](https://pkg.go.dev/github.com/box-cli-maker/box-cli-maker/v3)
 [![Go](https://github.com/box-cli-maker/box-cli-maker/actions/workflows/go.yml/badge.svg)](https://github.com/box-cli-maker/box-cli-maker/actions/workflows/go.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/box-cli-maker/box-cli-maker/v3)](https://goreportcard.com/report/github.com/box-cli-maker/box-cli-maker/v3)
 [![GitHub release](https://img.shields.io/github/release/box-cli-maker/box-cli-maker.svg)](https://github.com/box-cli-maker/box-cli-maker/releases)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 
 Box CLI Maker is a Go library for rendering highly customizable boxes in the terminal.
 
-<img src="img/readme.png" alt="readme" width="500"/>
+Used by <img src="img/k8s_logo.png" alt="kubernetes logo" width="20"> [kubernetes/minikube](https://github.com/kubernetes/minikube) · Featured in [Golang Weekly](https://golangweekly.com/issues/589) (×3) and GitHub's [Release Radar](https://github.blog/open-source/release-radar-nov-2022/)
+
+<img src="img/hero.png" alt="a weather card rendered with Box CLI Maker" width="650"/>
 
 </div>
 
@@ -21,12 +22,15 @@ Box CLI Maker is a Go library for rendering highly customizable boxes in the ter
 - Custom glyphs for all corners and edges
 - Title positions: Inside, Top, Bottom
 - Title and Content alignment: Left, Center, Right
+- Inner padding and outer margin
 - Optional content wrapping with `WrapContent` and `WrapLimit`
 - Color support with:
   - First 16 ANSI color names
   - `#RGB`, `#RRGGBB`, `rgb:RRRR/GGGG/BBBB`, `rgba:RRRR/GGGG/BBBB/AAAA`
+  - Automatic conversion to the terminal's color capability; suppressed for `NO_COLOR` and piped output
 - Unicode and emoji support with proper width handling
-- Explicit errors from `Render`, plus `MustRender` for panic‑on‑error 
+- Derived styles with `Copy()` for building box families from a shared base
+- Explicit errors from `Render`, plus `MustRender` for panic‑on‑error
 
 ## Installation
 
@@ -47,15 +51,15 @@ import (
 
 func main() {
     b := box.NewBox().
-    Style(box.Single).  // single-line border
-    Padding(2, 1).      // inner padding: x (horizontal), y (vertical)
-    Margin(3, 5).       // outer margin: x (horizontal), y (vertical)
-    TitlePosition(box.Top).
-    ContentAlign(box.Center).
-    Color(box.Cyan).
-    TitleColor(box.BrightYellow)
+        Style(box.Single).  // single-line border
+        Padding(2, 1).      // inner padding: x (horizontal), y (vertical)
+        Margin(3, 1).       // outer margin: x (horizontal), y (vertical)
+        TitlePosition(box.Top).
+        ContentAlign(box.Center).
+        Color(box.Cyan).
+        TitleColor(box.BrightYellow)
 
-    out, err := b.Render("Box CLI Maker", "Render highly customizable boxes\n in the terminal")
+    out, err := b.Render("Box CLI Maker", "Render highly customizable boxes\nin the terminal")
     if err != nil {
         panic(err)
     }
@@ -71,7 +75,7 @@ Configure it via fluent methods, then call `Render` (or `MustRender`) to get the
 ### Construction
 
 ```go
-b := box.NewBox() // recommended
+b := box.NewBox()
 ```
 
 You can clone a configured box and tweak it:
@@ -93,12 +97,13 @@ Select a built‑in style:
 ```go
 b.Style(box.Double)
 ```
+
 #### Styles showcase
 
 <details>
 <summary><code>box.Single</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/single.png" alt="single" width="500"/>
 </p>
 
@@ -107,7 +112,7 @@ b.Style(box.Double)
 <details>
 <summary><code>box.SingleDouble</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/single_double.png" alt="single double" width="500"/>
 </p>
 
@@ -116,7 +121,7 @@ b.Style(box.Double)
 <details>
 <summary><code>box.Double</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/double.png" alt="double" width="500"/>
 </p>
 
@@ -125,7 +130,7 @@ b.Style(box.Double)
 <details>
 <summary><code>box.DoubleSingle</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/double_single.png" alt="double single" width="500"/>
 </p>
 
@@ -134,7 +139,7 @@ b.Style(box.Double)
 <details>
 <summary><code>box.Bold</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/bold.png" alt="bold" width="500"/>
 </p>
 
@@ -143,7 +148,7 @@ b.Style(box.Double)
 <details>
 <summary><code>box.Round</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/round.png" alt="round" width="500"/>
 </p>
 
@@ -152,7 +157,7 @@ b.Style(box.Double)
 <details>
 <summary><code>box.Hidden</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/hidden.png" alt="hidden" width="500"/>
 </p>
 
@@ -161,7 +166,7 @@ b.Style(box.Double)
 <details>
 <summary><code>box.Classic</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/classic.png" alt="classic" width="500"/>
 </p>
 
@@ -170,12 +175,11 @@ b.Style(box.Double)
 <details>
 <summary><code>box.Block</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/block.png" alt="block" width="500"/>
 </p>
 
 </details>
-
 
 You can override any glyph after choosing a style:
 
@@ -193,8 +197,10 @@ b.Style(box.Single).
 
 Title position:
 
+`TitlePosition` decides where the title goes: inside the box, on the top border, or on the bottom border. The default is `box.Inside`.
+
 ```go
-b.TitlePosition(box.Inside) // default
+b.TitlePosition(box.Inside)
 b.TitlePosition(box.Top)
 b.TitlePosition(box.Bottom)
 ```
@@ -204,7 +210,7 @@ b.TitlePosition(box.Bottom)
 <details>
 <summary><code>box.Inside</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/single.png" alt="single" width="500"/>
 </p>
 
@@ -213,7 +219,7 @@ b.TitlePosition(box.Bottom)
 <details>
 <summary><code>box.Top</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/top.png" alt="top" width="500"/>
 </p>
 
@@ -222,7 +228,7 @@ b.TitlePosition(box.Bottom)
 <details>
 <summary><code>box.Bottom</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/bottom.png" alt="bottom" width="500"/>
 </p>
 
@@ -230,96 +236,49 @@ b.TitlePosition(box.Bottom)
 
 Title alignment:
 
+`TitleAlign` decides where the title sits: across the box for `Inside` titles, or along the border for `Top` and `Bottom` titles. It works together with `TitlePosition`, and the two can be called in any order:
+
 ```go
-b.TitleAlign(box.Left) // default for box.Top/box.Bottom Title Position
-b.TitleAlign(box.Center) // default for box.Inside Title Position
-b.TitleAlign(box.Right)
+b.TitlePosition(box.Top).TitleAlign(box.Center) // title centered on the top border
 ```
+
+The values are `box.Left`, `box.Center`, and `box.Right`. If you don't set it, `Inside` titles are centered and `Top`/`Bottom` titles are left‑aligned.
 
 #### Title Alignment showcase
 
 <details>
 <summary><code>box.Left</code></summary>
 
-> <details>
-> <summary><code>box.Inside</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/inside_left.png" alt="inside left" width="500"/>
-> </p>
-> </details>
-
-> <details>
-> <summary><code>box.Top</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/top.png" alt="top left" width="500"/>
-> </p>
-> </details>
-
-> <details>
-> <summary><code>box.Bottom</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/bottom.png" alt="bottom left" width="500"/>
-> </p>
-> </details>
+<p align="center"><code>box.Inside</code><br/><img src="img/inside_left.png" alt="inside left" width="500"/></p>
+<p align="center"><code>box.Top</code><br/><img src="img/top.png" alt="top left" width="500"/></p>
+<p align="center"><code>box.Bottom</code><br/><img src="img/bottom.png" alt="bottom left" width="500"/></p>
 
 </details>
 
 <details>
 <summary><code>box.Center</code></summary>
 
-> <details>
-> <summary><code>box.Inside</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/single.png" alt="inside center" width="500"/>
-> </p>
-> </details>
-
-> <details>
-> <summary><code>box.Top</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/top_center.png" alt="top center" width="500"/>
-> </p>
-> </details>
-
-> <details>
-> <summary><code>box.Bottom</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/bottom_center.png" alt="bottom center" width="500"/>
-> </p>
-> </details>
+<p align="center"><code>box.Inside</code><br/><img src="img/single.png" alt="inside center" width="500"/></p>
+<p align="center"><code>box.Top</code><br/><img src="img/top_center.png" alt="top center" width="500"/></p>
+<p align="center"><code>box.Bottom</code><br/><img src="img/bottom_center.png" alt="bottom center" width="500"/></p>
 
 </details>
 
 <details>
 <summary><code>box.Right</code></summary>
 
-> <details>
-> <summary><code>box.Inside</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/inside_right.png" alt="inside right" width="500"/>
-> </p>
-> </details>
-
-> <details>
-> <summary><code>box.Top</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/top_right.png" alt="top right" width="500"/>
-> </p>
-> </details>
-
-> <details>
-> <summary><code>box.Bottom</code></summary>
-> <p align="center" style="margin-top: 30px; margin-bottom: 20px;">
-> <img src="img/bottom_right.png" alt="bottom right" width="500"/>
-> </p>
-> </details>
+<p align="center"><code>box.Inside</code><br/><img src="img/inside_right.png" alt="inside right" width="500"/></p>
+<p align="center"><code>box.Top</code><br/><img src="img/top_right.png" alt="top right" width="500"/></p>
+<p align="center"><code>box.Bottom</code><br/><img src="img/bottom_right.png" alt="bottom right" width="500"/></p>
 
 </details>
 
 Content alignment:
 
+`ContentAlign` decides whether content lines sit on the left, in the center, or on the right of the box. The box is as wide as its longest line, so it's the shorter lines that move. The default is `box.Left`.
+
 ```go
-b.ContentAlign(box.Left) // default
+b.ContentAlign(box.Left)
 b.ContentAlign(box.Center)
 b.ContentAlign(box.Right)
 ```
@@ -329,7 +288,7 @@ b.ContentAlign(box.Right)
 <details>
 <summary><code>box.Left</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/left.png" alt="left" width="500"/>
 </p>
 
@@ -338,7 +297,7 @@ b.ContentAlign(box.Right)
 <details>
 <summary><code>box.Center</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/single.png" alt="center" width="500"/>
 </p>
 
@@ -347,22 +306,27 @@ b.ContentAlign(box.Right)
 <details>
 <summary><code>box.Right</code></summary>
 
-<p align="center" style="margin-top: 30px; margin-bottom: 20px;">
+<p align="center">
 <img src="img/right.png" alt="right" width="500"/>
 </p>
 
 </details>
 
-
 ### Padding
 
+Padding adds space inside the box borders, between the border and the content: `px` columns of spaces on both the left and right of every line, and `py` blank rows above and below the content.
+
 ```go
-b.Padding(px, py) // horizontal (px) and vertical (py) padding
+b.Padding(px, py) // set both: horizontal (px), then vertical (py)
 b.HPadding(px)    // horizontal only
 b.VPadding(py)    // vertical only
 ```
 
-Setting negative padding causes `Render` to return an error.
+Horizontal comes first — the reverse of CSS's `padding: vertical horizontal` shorthand.
+
+Padding defaults to 0. Setting negative padding causes `Render` to return an error.
+
+<p align="center"><img src="img/padding.png" alt="padding comparison" width="480"/></p>
 
 ### Margin
 
@@ -374,9 +338,15 @@ b.HMargin(mx)    // horizontal only
 b.VMargin(my)    // vertical only
 ```
 
-Setting negative margin causes `Render` to return an error.
+The argument order matches `Padding`: horizontal first.
+
+Margin defaults to 0. Setting negative margin causes `Render` to return an error.
+
+<p align="center"><img src="img/margin.png" alt="margin comparison" width="480"/></p>
 
 ### Wrapping
+
+Long content can wrap automatically to fit the terminal, or at an exact width with `WrapLimit`. Wrapping is off by default.
 
 ```go
 b.WrapContent(true)       // enable wrapping (default: 2/3 of terminal width, minus any HMargin)
@@ -384,7 +354,11 @@ b.WrapLimit(40)           // set explicit wrap width (enables wrapping)
 b.WrapContent(false)      // disable wrapping
 ```
 
-`Render` returns an error if the wrap limit is negative or the terminal width cannot be determined when wrapping is enabled without a limit.
+<p align="center"><img src="img/wrap.png" alt="wrapping comparison" width="480"/></p>
+
+Tabs are expanded (at 8‑column stops) before wrapping, so the configured limit is honored even for tab‑heavy content.
+
+`Render` returns an error if the wrap limit is not positive or the terminal width cannot be determined when wrapping is enabled without a limit.
 
 ### Colors
 
@@ -396,18 +370,8 @@ Colors can be applied to:
 
 Accepted formats:
 
-- First 16 ANSI names:
-
-  `box.Black, box.Red, box.Green, box.Yellow, box.Blue, box.Magenta, box.Cyan, box.White` and their bright variants:
-  `box.BrightBlack, box.BrightRed, box.BrightGreen, box.BrightYellow, box.BrightBlue, box.BrightMagenta, box.BrightCyan, box.BrightWhite`  
-  (plus a few aliases like `box.HiRed`, `box.HiBlue`, etc.)
-
-- Hex and XParseColor formats (Supports TrueColor and 8-bit):
-
-  - `#RGB`
-  - `#RRGGBB`
-  - `rgb:RRRR/GGGG/BBBB`
-  - `rgba:RRRR/GGGG/BBBB/AAAA`
+- The 16 ANSI color names: `box.Black`, `box.Red`, `box.Green`, `box.Yellow`, `box.Blue`, `box.Magenta`, `box.Cyan`, `box.White` — each also available with a `Bright` prefix (e.g. `box.BrightYellow`) or its `Hi` alias (e.g. `box.HiRed`).
+- Hex and XParseColor formats (TrueColor and 8-bit): `#RGB`, `#RRGGBB`, `rgb:RRRR/GGGG/BBBB`, `rgba:RRRR/GGGG/BBBB/AAAA`
 
 Example:
 
@@ -418,6 +382,28 @@ b.Color("rgb:0000/ffff/0000")
 ```
 
 Invalid colors cause `Render` to return an error.
+
+Colors automatically adapt to what the terminal supports (TrueColor, 256‑color, or 16‑color). When the output can't show color at all — `NO_COLOR` set, `TERM=dumb`, or output piped to a file — colors are dropped entirely, so logs stay free of escape codes.
+
+### Styled Content and ANSI Safety
+
+Your text may already be styled before it reaches the box — by your logger, a color library, or your own escape codes. That's fine: pass it in as-is, and the box renders correctly around it.
+
+```go
+styled := "\x1b[31mthis red part is long enough to wrap\x1b[0m and this part is plain"
+out, _ := box.NewBox().WrapLimit(24).Render("", styled)
+```
+
+<p align="center"><img src="img/ansi_safe.png" alt="unclosed styling bleeding into the border, versus staying on the text" width="420"/></p>
+
+What you can rely on:
+
+- Colors and styles in your text never leak into the borders or padding.
+- Styling survives wrapping: when a colored sentence breaks across lines, every line keeps its color.
+- [Clickable hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda) (OSC 8) stay clickable — and the borders never become part of the link.
+- This works together with `Color` / `ContentColor`: your styling and the box's styling don't fight.
+
+There is nothing to enable — this is how `Render` always behaves. (For the curious: every rendered line is made self‑contained by closing any open styling at the line's end and re‑opening it on the next line.)
 
 ### Rendering
 
@@ -435,9 +421,8 @@ fmt.Println(out)
 - The `BoxStyle` is invalid
 - The `TitlePosition` is invalid
 - The `TitleAlign` or `ContentAlign` is invalid
-- The wrap limit is negative
-- Padding is negative
-- Margin is negative
+- The wrap limit is not positive
+- Padding or margin is negative
 - A multiline title is used with a non‑`Inside` title position
 - Any configured colors are invalid
 - Terminal width detection fails when needed for wrapping
@@ -455,8 +440,8 @@ The [examples](examples) directory contains small, focused programs that showcas
 - `simple_box` – minimal single box with title and content.
 - `content_align` – compare `Left`, `Center`, and `Right` content alignment.
 - `content_wrap` – demonstrate `WrapContent` / `WrapLimit` with long text.
-- `title_positions` – show `Inside`, `Top`, and `Bottom` title placement.
-- `title_alignments` – compare `Left`, `Center`, and `Right` title alignment.
+- `titles` – every title position (`Inside`, `Top`, `Bottom`) with every alignment (`Left`, `Center`, `Right`).
+- `spacing` – inner padding vs outer margin, separately and combined.
 - `box_styles` – render all built‑in border styles and colors.
 - `custom_box` – build boxes using fully custom corner/edge glyphs.
 - `ansi_styles_and_links` – use bold/underline/blink/strikethrough and OSC 8 hyperlinks.
@@ -479,7 +464,7 @@ Note:
 
 1. Rendering quality depends on the terminal emulator and font. Some combinations may misalign visually.
 2. Indic scripts and complex text may not display correctly in most terminals.
-3. Online playgrounds and many CI environments often use basic fonts and may not render Unicode/emoji correctly; widths might be misreported.
+3. Online playgrounds and many CI environments often use basic fonts and may not render Unicode/emoji correctly, so boxes may look misaligned there.
 
 ## Migration from v2
 
@@ -519,10 +504,11 @@ go get github.com/Delta456/box-cli-maker/v2
 
 but is no longer actively developed.
 
-## Projects Using Box CLI Maker
+Using Box CLI Maker in your project? [Add it to the adopters list](https://github.com/box-cli-maker) — we'd love to feature it.
 
-- <img src="img/k8s_logo.png" alt="kubernetes logo" width="20"> [kubernetes/minikube](https://github.com/kubernetes/minikube): Run Kubernetes locally.
-- And others listed on [pkg.go.dev](https://pkg.go.dev/github.com/box-cli-maker/box-cli-maker/v3?tab=importedby).
+## Sponsors
+
+Thanks to [CodeRabbit](https://coderabbit.ai) for sponsoring my open source work.
 
 ## Acknowledgements
 

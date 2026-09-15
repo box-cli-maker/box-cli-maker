@@ -21,17 +21,16 @@ func main() {
 	for _, pos := range positions {
 		for _, align := range alignments {
 			b := box.NewBox().
-				Padding(2, 5).
+				Padding(2, 1).
 				Style(box.Single).
+				Color("#8B75FF").
+				TitleColor("#00FFB2").
+				ContentColor("#12C78F").
 				TitlePosition(pos).
 				TitleAlign(align)
 
-			out, err := b.Render("Box CLI Maker", "Render highly customizable boxes\nin the terminal")
-			if err != nil {
-				panic(err)
-			}
-
-			fmt.Printf("Style: %s, TitlePosition: %s, TitleAligment: %s\n%s\n\n", box.Single, pos, align, out)
+			out := b.MustRender("Box CLI Maker", "Render highly customizable boxes\nin the terminal")
+			fmt.Printf("TitlePosition: %s, TitleAlign: %s\n%s\n", pos, align, out)
 		}
 	}
 }

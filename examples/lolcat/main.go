@@ -11,22 +11,18 @@ import (
 )
 
 func main() {
-	b := box.NewBox().Padding(2, 5).Style(box.Single).Color(box.Cyan).ContentAlign(box.Center)
-	s, err := b.Render(lolcat("Box CLI Maker"), lolcat("Render highly customizable boxes\nin the terminal"))
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(s)
+	b := box.NewBox().Padding(2, 1).Style(box.Single).Color("#8B75FF").ContentAlign(box.Center)
+	fmt.Println(b.MustRender(lolcat("Box CLI Maker"), lolcat("Render highly customizable boxes\nin the terminal")))
 }
 
 func lolcat(str string) string {
-	var output string
+	var output strings.Builder
 	freq := float64(0.1)
 	for s := range strings.SplitSeq(str, "") {
-		output += normalStyle(freq, s)
+		output.WriteString(normalStyle(freq, s))
 		freq += 0.1
 	}
-	return output
+	return output.String()
 }
 
 func normalStyle(num float64, s string) string {
