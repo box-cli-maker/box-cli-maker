@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # Render a command's ANSI output to a framed terminal-window PNG.
 #
-#   usage: shoot.sh "<command>" <output.png> [--plain]
+#   usage: shoot.sh "<command>" <output.png> [--plain] [--match <other.png>]
 #
 # --plain skips the window title bar (used for the compact showcase
 # specimens; the hero keeps the full window chrome).
+#
+# --match pads the result to another image's exact dimensions, so a pair of
+# related figures stays the same size even when one has wider labels.
 #
 # Requires: firefox, imagemagick, python3, and fontconfig with a mono font
 # plus Noto Color Emoji / Noto Sans Mono CJK for emoji and wide characters.
@@ -12,6 +15,19 @@ set -euo pipefail
 
 cmd=$1
 out=$2
+shift 2
+
+plain=""
+match=""
+while [ $# -gt 0 ]; do
+  case $1 in
+    --plain) plain=1 ;;
+    --match) match=$2; shift ;;
+    *) echo "shoot.sh: unknown option $1" >&2; exit 2 ;;
+  esac
+  shift
+done
+
 here=$(cd "$(dirname "$0")" && pwd)
 dir=$(mktemp -d)
 trap 'rm -rf "$dir"' EXIT
@@ -23,12 +39,27 @@ firefox --headless --profile "$dir/ffprof" --screenshot "$dir/full.png" \
   --window-size=2600,2200 "file://$dir/o.html" 2>/dev/null
 
 pad=52
-if [ "${3:-}" = "--plain" ]; then
+if [ -n "$plain" ]; then
   pad=40
 fi
 convert "$dir/full.png" -trim +repage -bordercolor '#101014' -border "$pad" "$dir/body.png"
+
+if [ -n "$match" ]; then
+  # Centre the body on a canvas the size of the reference image. Grow only:
+  # cropping would cut the box the figure exists to show.
+  tw=$(identify -format %w "$match")
+  th=$(identify -format %h "$match")
+  bw=$(identify -format %w "$dir/body.png")
+  bh=$(identify -format %h "$dir/body.png")
+  if [ "$tw" -lt "$bw" ]; then tw=$bw; fi
+  if [ "$th" -lt "$bh" ]; then th=$bh; fi
+  convert "$dir/body.png" -background '#101014' -gravity center \
+    -extent "${tw}x${th}" "$dir/matched.png"
+  mv "$dir/matched.png" "$dir/body.png"
+fi
+
 W=$(identify -format %w "$dir/body.png")
-if [ "${3:-}" = "--plain" ]; then
+if [ -n "$plain" ]; then
   cp "$dir/body.png" "$dir/win.png"
 else
   convert -size "${W}x92" xc:'#17171d' \
