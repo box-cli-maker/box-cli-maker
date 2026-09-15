@@ -45,7 +45,8 @@ fi
 convert "$dir/full.png" -trim +repage -bordercolor '#101014' -border "$pad" "$dir/body.png"
 
 if [ -n "$match" ]; then
-  # Centre the body on a canvas the size of the reference image. Grow only:
+  # Grow the body to the reference image's canvas, keeping it flush left so
+  # the boxes and labels land in the same column in both figures. Grow only:
   # cropping would cut the box the figure exists to show.
   tw=$(identify -format %w "$match")
   th=$(identify -format %h "$match")
@@ -53,7 +54,7 @@ if [ -n "$match" ]; then
   bh=$(identify -format %h "$dir/body.png")
   if [ "$tw" -lt "$bw" ]; then tw=$bw; fi
   if [ "$th" -lt "$bh" ]; then th=$bh; fi
-  convert "$dir/body.png" -background '#101014' -gravity center \
+  convert "$dir/body.png" -background '#101014' -gravity west \
     -extent "${tw}x${th}" "$dir/matched.png"
   mv "$dir/matched.png" "$dir/body.png"
 fi
