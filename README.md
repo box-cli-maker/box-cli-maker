@@ -506,6 +506,10 @@ but is no longer actively developed.
 
 Using Box CLI Maker in your project? [Add it to the adopters list](https://github.com/box-cli-maker) — we'd love to feature it.
 
+## Sponsors
+
+Thanks to [CodeRabbit](https://coderabbit.ai) for sponsoring this project.
+
 ## Acknowledgements
 
 Thanks to:
