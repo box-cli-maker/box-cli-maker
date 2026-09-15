@@ -508,7 +508,7 @@ Using Box CLI Maker in your project? [Add it to the adopters list](https://githu
 
 ## Sponsors
 
-Thanks to [CodeRabbit](https://coderabbit.ai) for sponsoring this project.
+Thanks to [CodeRabbit](https://coderabbit.ai) for sponsoring my open source work.
 
 ## Acknowledgements
 
